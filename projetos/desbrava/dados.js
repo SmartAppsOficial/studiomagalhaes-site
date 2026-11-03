@@ -17,5 +17,10 @@ SM_PROJETO({
   lojas: [],
   redes: [],
   contato: "",
-  apoio: { qr: "", copiaECola: "", chavePix: "", recebedor: "" }
+  apoio: {
+    qr: "img/apoio-qr.png",
+    copiaECola: "00020101021126530014br.gov.bcb.pix0131desbrava@studiomagalhaes.com.br5204000053039865802BR592560.689.820 PAULO VITOR SO6009SAO PAULO62120508DESBRAVA6304FCCB",
+    chavePix: "desbrava@studiomagalhaes.com.br",
+    recebedor: ""
+  }
 });

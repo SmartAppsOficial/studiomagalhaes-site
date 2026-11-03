@@ -37,5 +37,10 @@ SM_PROJETO({
   ],
   redes: [],
   contato: "contato@studiomagalhaes.com.br",
-  apoio: { qr: "", copiaECola: "", chavePix: "", recebedor: "" }
+  apoio: {
+    qr: "img/apoio-qr.png",
+    copiaECola: "00020101021126560014br.gov.bcb.pix0134ileapfamily@studiomagalhaes.com.br5204000053039865802BR592560.689.820 PAULO VITOR SO6009SAO PAULO62150511ILEAPFAMILY6304EF7F",
+    chavePix: "ileapfamily@studiomagalhaes.com.br",
+    recebedor: ""
+  }
 });

@@ -54,7 +54,8 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 ## Apoio (Pix)
 
 - Cada projeto usa **só o próprio QR**. O site nunca usa o QR de outro projeto, porque o dinheiro de cada um pode ir para uma conta diferente.
-- O apoio do iLeap e do iLeap Family vai para a conta do dono deles. Em `apoio`, coloque:
+- Desde 03/11/2026, por decisão do Paulo, o apoio de **todos** os projetos (iLeap e iLeap Family incluídos) vai para a conta do Studio Magalhães, cada um com a sua chave (`zerotoceo@`, `astrogoo@`, `ileap@`, `ileapfamily@` e `desbrava@`, todas em `studiomagalhaes.com.br`). O nome do projeto vai no identificador do QR, para aparecer no extrato. Não troque o QR de um projeto sem falar com o Paulo.
+- Para trocar ou criar um QR, em `apoio` coloque:
   - `qr`: `"img/apoio-qr.png"`, um PNG nítido de cerca de 480 px;
   - `copiaECola`: o código "Pix copia e cola";
   - `chavePix`: a chave;
@@ -77,6 +78,12 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 - Depois de juntar, o site atualiza sozinho.
 
 ## Recados (o mais novo em cima)
+
+### 03/11/2026, Claude do Paulo
+- **Juntei o pull request #1** (iLeap Family preenchido e regra 6) na `main`. A página foi conferida antes, sem erros.
+- **QR do Pix no iLeap, no iLeap Family e no Desbrava**, a pedido do Paulo, com as chaves `ileap@`, `ileapfamily@` e `desbrava@studiomagalhaes.com.br` (já criadas no banco do Paulo). Os QR são estáticos e sem valor, com os identificadores `ILEAP`, `ILEAPFAMILY` e `DESBRAVA`. Entraram em `projetos/<id>/img/apoio-qr.png` e em `apoio` no `dados.js` (`qr`, `copiaECola` e `chavePix`; o recebedor é o padrão do estúdio). Foi a única coisa mexida nas pastas do iLeap: o resto do iLeap Family ficou como a Laís mandou.
+- A parte "Apoio (Pix)" acima mudou: o apoio de todos os projetos vai para a conta do Studio Magalhães.
+- **Faltam:** textos, ícone e imagens do iLeap e do Desbrava; vídeo do iLeap Family; o Android do iLeap Family quando sair na Google Play.
 
 ### 03/11/2026, Claude do dono do iLeap (Laís)
 **Cadeado do site resolvido:** o GitHub emitiu o certificado de `studiomagalhaes.com.br` e eu liguei **"Enforce HTTPS"** em Settings › Pages (pela conta de dono, a pedido da Laís). Conferido: `https://studiomagalhaes.com.br` abre com cadeado e `http://` redireciona para o `https://` (301). Nenhum arquivo mudou. O aviso de "DNS check in progress" na página de configurações pode continuar um tempo; não atrapalha.
