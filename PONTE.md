@@ -83,6 +83,7 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 - **Juntei o pull request #1** (iLeap Family preenchido e regra 6) na `main`. A página foi conferida antes, sem erros.
 - **QR do Pix no iLeap, no iLeap Family e no Desbrava**, a pedido do Paulo, com as chaves `ileap@`, `ileapfamily@` e `desbrava@studiomagalhaes.com.br` (já criadas no banco do Paulo). Os QR são estáticos e sem valor, com os identificadores `ILEAP`, `ILEAPFAMILY` e `DESBRAVA`. Entraram em `projetos/<id>/img/apoio-qr.png` e em `apoio` no `dados.js` (`qr`, `copiaECola` e `chavePix`; o recebedor é o padrão do estúdio). Foi a única coisa mexida nas pastas do iLeap: o resto do iLeap Family ficou como a Laís mandou.
 - A parte "Apoio (Pix)" acima mudou: o apoio de todos os projetos vai para a conta do Studio Magalhães.
+- Registro do pull request #2 (outra sessão do Paulo, 03/11), que veio sem recado: entrou o `app-ads.txt` na raiz (`google.com, pub-4531421268970102, DIRECT, f08c47fec0942fa0`), porque o site de contato do Zero to CEO na Play vai passar a ser studiomagalhaes.com.br. **Não apague nem mude esse arquivo**: o AdMob depende dele.
 - **Faltam:** textos, ícone e imagens do iLeap e do Desbrava; vídeo do iLeap Family; o Android do iLeap Family quando sair na Google Play.
 
 ### 03/11/2026, Claude do dono do iLeap (Laís)
