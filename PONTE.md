@@ -77,7 +77,39 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 - Commits curtos, em português. Nunca use `push --force` na `main`.
 - Depois de juntar, o site atualiza sozinho.
 
+## Outdoors do Zero to CEO (`outdoors.json`)
+
+O jogo **Zero to CEO** tem 5 outdoors na cidade que mostram os projetos do estúdio. Ao abrir, ele lê o `outdoors.json` da raiz deste site: dá para trocar o que aparece sem atualizar o jogo (a mudança vale na próxima vez que alguém abrir o jogo). Sem internet, ou se o arquivo tiver erro, o jogo mostra a lista que já vem dentro dele.
+
+- Cada outdoor troca de projeto a cada `troca` segundos (entre 5 e 120; o padrão é 15).
+- Perto de um outdoor aparece o botão 📢. Ele abre um cartão com a imagem, o título, a `linha` e o botão "Ver no site", que leva ao `link`.
+- **Quem edita:** o Claude do Paulo. O lado do iLeap pede mudança no outdoor dele por recado aqui, como no resto do site.
+- **Imagens:** os caminhos partem da raiz do site. O jogo desenha o outdoor em 2:1 (800×400).
+
+Cada item da lista `outdoors` pode ser de dois jeitos:
+
+| Campo | O que é |
+|---|---|
+| `id` | Nome curto, sem espaço |
+| `link` | Para onde o "Ver no site" leva. **Precisa começar com `https://`**; sem isso o item é ignorado. |
+| `titulo`, `linha` | Título e frase curta. Aparecem no cartão (e no outdoor, quando ele é desenhado pelo jogo). |
+| `arte` | **Jeito 1: imagem pronta**, 2:1, que vai inteira no outdoor (exemplo: a capa de um projeto). |
+| `faixa` | Só com `arte`: texto numa faixa escura embaixo da imagem (opcional) |
+| `imagem`, `modo` | **Jeito 2: o jogo monta o outdoor.** `modo: "icone"` põe a imagem à esquerda e o texto à direita; `modo: "fundo"` estica a imagem no fundo, com uma sombra atrás do texto. |
+| `cor` | Cor de fundo do jeito 2 |
+| `selo` | Etiqueta amarela embaixo da `linha` (exemplo: "Em breve") |
+| `pixel` | `true` deixa pixel art nítida |
+| `en` | Os mesmos textos em inglês (`linha`, `selo`, `faixa`), para quem joga em inglês |
+
+Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem promessa). O jogo é para 13 anos ou mais. Se um dia entrar anúncio pago, ele vem por este mesmo arquivo (um item com `arte` e `link`), e isso é decisão do Paulo.
+
 ## Recados (o mais novo em cima)
+
+### 03/11/2026, Claude do Paulo (outdoors do Zero to CEO)
+- **Novo: `outdoors.json` na raiz e a pasta `outdoors/`** (explicados na parte "Outdoors do Zero to CEO", acima). A pedido do Paulo, o jogo Zero to CEO ganhou 5 outdoors na cidade com os projetos do estúdio, e eles leem este arquivo.
+- Na lista estão o estúdio, o AstroGoo, o Desbrava, o iLeap Family e o Zero to CEO. O iLeap ficou de fora porque ainda não tem texto nem imagem: quando tiver, é só pedir aqui.
+- Imagens: `outdoors/astrogoo.png`, um recorte em 2:1 da cena de Marte do storyboard, e `outdoors/desbrava.png`, o ícone do app, tirado de desbravaapp.com.br. As outras são as do próprio site: o logo do estúdio e as capas do iLeap Family e do Zero to CEO. **Nenhum arquivo do iLeap foi mexido**: o outdoor só usa a capa que já está publicada.
+- Nada mudou nas páginas do site.
 
 ### 03/11/2026, Claude do Paulo
 - **Juntei o pull request #1** (iLeap Family preenchido e regra 6) na `main`. A página foi conferida antes, sem erros.

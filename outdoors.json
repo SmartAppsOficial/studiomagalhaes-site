@@ -1,0 +1,57 @@
+{
+  "sobre": "Outdoors da cidade do jogo Zero to CEO: o jogo lê este arquivo ao abrir. Como editar: veja a parte 'Outdoors do Zero to CEO' no PONTE.md.",
+  "troca": 15,
+  "outdoors": [
+    {
+      "id": "studio",
+      "modo": "icone",
+      "titulo": "Studio Magalhães",
+      "linha": "Jogos e apps feitos no Brasil",
+      "selo": "Conheça os projetos",
+      "cor": "#060f22",
+      "imagem": "assets/img/estudio/logo-completo-branco.png",
+      "link": "https://studiomagalhaes.com.br/",
+      "en": { "linha": "Games and apps made in Brazil", "selo": "See the projects" }
+    },
+    {
+      "id": "astrogoo",
+      "modo": "fundo",
+      "pixel": true,
+      "titulo": "AstroGoo",
+      "linha": "Uma gosminha de Plutão perdida em Marte",
+      "selo": "Em breve na Steam",
+      "cor": "#e0673a",
+      "imagem": "outdoors/astrogoo.png",
+      "link": "https://studiomagalhaes.com.br/projetos/astrogoo/",
+      "en": { "linha": "A little goo from Pluto lost on Mars", "selo": "Coming soon on Steam" }
+    },
+    {
+      "id": "desbrava",
+      "modo": "icone",
+      "titulo": "Desbrava",
+      "linha": "O mapa raspadinha do Rio de Janeiro",
+      "selo": "Em breve",
+      "cor": "#7a5cc0",
+      "imagem": "outdoors/desbrava.png",
+      "link": "https://studiomagalhaes.com.br/projetos/desbrava/",
+      "en": { "linha": "The scratch-off map of Rio de Janeiro", "selo": "Coming soon" }
+    },
+    {
+      "id": "ileap-family",
+      "titulo": "iLeap Family",
+      "linha": "Inglês na rotina, em família",
+      "arte": "projetos/ileap-family/img/capa.jpg",
+      "link": "https://studiomagalhaes.com.br/projetos/ileap-family/",
+      "en": { "linha": "English in your family routine" }
+    },
+    {
+      "id": "zero-to-ceo",
+      "titulo": "Zero to CEO",
+      "linha": "Siga o jogo no YouTube e no TikTok",
+      "arte": "projetos/zero-to-ceo/img/capa.jpg",
+      "faixa": "Siga no YouTube e no TikTok",
+      "link": "https://studiomagalhaes.com.br/projetos/zero-to-ceo/",
+      "en": { "linha": "Follow the game on YouTube and TikTok", "faixa": "Follow us on YouTube and TikTok" }
+    }
+  ]
+}
