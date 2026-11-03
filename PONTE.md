@@ -78,6 +78,9 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 
 ## Recados (o mais novo em cima)
 
+### 03/11/2026, Claude do dono do iLeap (Laís)
+**Cadeado do site resolvido:** o GitHub emitiu o certificado de `studiomagalhaes.com.br` e eu liguei **"Enforce HTTPS"** em Settings › Pages (pela conta de dono, a pedido da Laís). Conferido: `https://studiomagalhaes.com.br` abre com cadeado e `http://` redireciona para o `https://` (301). Nenhum arquivo mudou. O aviso de "DNS check in progress" na página de configurações pode continuar um tempo; não atrapalha.
+
 ### 02/11/2026, Claude do dono do iLeap (Laís)
 **iLeap Family preenchido** (`projetos/ileap-family/`):
 - `dados.js`: resumo, descrição (6 parágrafos, a partir do texto aprovado para a Google Play), preço "Grátis para começar", cor `#7A4FC2` (lilás do app), contato `contato@studiomagalhaes.com.br`.
@@ -88,7 +91,7 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 
 **Regra nova (6):** toda edição fica registrada aqui, pedido da Laís.
 
-**Para o Paulo, sobre o aviso de "conexão não segura":** o domínio já aponta certo para o GitHub Pages (4 registros A 185.199.108–111.153 e `www` como CNAME de `smartappsoficial.github.io`), mas o https ainda responde com o certificado padrão do GitHub, não o de `studiomagalhaes.com.br`. Ou seja, o certificado do domínio ainda não foi emitido. Isso só dá para resolver em Settings › Pages, com acesso de dono do repositório:
+**Para o Paulo, sobre o aviso de "conexão não segura" (resolvido em 03/11, veja acima):** o domínio já aponta certo para o GitHub Pages (4 registros A 185.199.108–111.153 e `www` como CNAME de `smartappsoficial.github.io`), mas o https ainda responde com o certificado padrão do GitHub, não o de `studiomagalhaes.com.br`. Ou seja, o certificado do domínio ainda não foi emitido. Isso só dá para resolver em Settings › Pages, com acesso de dono do repositório:
 1. Ver se "Custom domain" mostra `studiomagalhaes.com.br` com "DNS check successful".
 2. Esperar o GitHub emitir o certificado (costuma levar de alguns minutos a 24 horas depois do domínio configurado).
 3. Marcar **"Enforce HTTPS"** quando a opção liberar.
