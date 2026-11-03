@@ -68,6 +68,7 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 3. Só mostre o que já está publicado na loja.
 4. Imagens leves: JPG com cerca de 80% de qualidade e até cerca de 1000 px de largura; ícone em PNG.
 5. Nada de senhas, tokens ou dados pessoais neste repositório, porque ele é público.
+6. **Toda edição fica registrada aqui.** Sempre que mexer em qualquer coisa do site, deixe no mesmo pull request um recado em "Recados", com a data, quem mexeu e o que mudou (e o que ficou faltando). Assim os dois lados sempre sabem como o site está. (Pedido da Laís, 02/11/2026.)
 
 ## Como mandar mudanças
 
@@ -76,6 +77,25 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 - Depois de juntar, o site atualiza sozinho.
 
 ## Recados (o mais novo em cima)
+
+### 03/11/2026, Claude do dono do iLeap (Laís)
+**Cadeado do site resolvido:** o GitHub emitiu o certificado de `studiomagalhaes.com.br` e eu liguei **"Enforce HTTPS"** em Settings › Pages (pela conta de dono, a pedido da Laís). Conferido: `https://studiomagalhaes.com.br` abre com cadeado e `http://` redireciona para o `https://` (301). Nenhum arquivo mudou. O aviso de "DNS check in progress" na página de configurações pode continuar um tempo; não atrapalha.
+
+### 02/11/2026, Claude do dono do iLeap (Laís)
+**iLeap Family preenchido** (`projetos/ileap-family/`):
+- `dados.js`: resumo, descrição (6 parágrafos, a partir do texto aprovado para a Google Play), preço "Grátis para começar", cor `#7A4FC2` (lilás do app), contato `contato@studiomagalhaes.com.br`.
+- Imagens: `img/icone.png` (192 px), `img/capa.jpg` (1024×500, a mesma capa da loja) e `img/1.jpg` a `img/6.jpg` (as 6 telas da loja, 720 px de largura).
+- Plataforma só **navegador** por enquanto, com o botão "Usar no navegador" (https://ileap-family.web.app). O app Android está em revisão na Google Play; pela regra 3, o Android e o link da loja entram quando ele sair.
+- `index.html`: só a `description` (texto novo).
+- Ainda faltam: vídeo (não há vídeo no YouTube ainda) e o QR do Pix do iLeap. O iLeap (`projetos/ileap/`) não foi mexido.
+
+**Regra nova (6):** toda edição fica registrada aqui, pedido da Laís.
+
+**Para o Paulo, sobre o aviso de "conexão não segura" (resolvido em 03/11, veja acima):** o domínio já aponta certo para o GitHub Pages (4 registros A 185.199.108–111.153 e `www` como CNAME de `smartappsoficial.github.io`), mas o https ainda responde com o certificado padrão do GitHub, não o de `studiomagalhaes.com.br`. Ou seja, o certificado do domínio ainda não foi emitido. Isso só dá para resolver em Settings › Pages, com acesso de dono do repositório:
+1. Ver se "Custom domain" mostra `studiomagalhaes.com.br` com "DNS check successful".
+2. Esperar o GitHub emitir o certificado (costuma levar de alguns minutos a 24 horas depois do domínio configurado).
+3. Marcar **"Enforce HTTPS"** quando a opção liberar.
+4. Se passar de 24 horas sem liberar: apagar o domínio em "Custom domain", salvar, colocar de novo e salvar. Isso pede um certificado novo.
 
 ### 02/11/2026, Claude do Paulo
 Site criado e publicado pelo GitHub Pages. As pastas `projetos/ileap/` e `projetos/ileap-family/` já existem, com textos provisórios: tipo app, plataformas Android e navegador, o iLeap Family como lançado e o iLeap em desenvolvimento. Faltam a descrição, o ícone, as imagens, o link da loja do iLeap Family e o QR do Pix de vocês. Por enquanto, as páginas mostram "em breve" e o apoio de vocês aparece como "QR Code em breve".
