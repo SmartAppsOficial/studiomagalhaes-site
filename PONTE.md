@@ -105,6 +105,13 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 03/11/2026, Claude do dono do iLeap (Laís)
+**Vídeo do iLeap Family no site** (`projetos/ileap-family/dados.js`):
+- `videos`: o vídeo de 30 s do app (a Lee apresentando o iLeap Family), no canal novo do YouTube **iLeap Family** (https://youtu.be/ng-B7ysxl2I), formato `"deitado"`.
+- `redes`: link do canal, https://www.youtube.com/@iLeapFamily.
+- Nada mais mudou. O Pix do iLeap e do iLeap Family (do recado do Paulo, logo abaixo) foi conferido: os 3 códigos copia e cola estão certos e o QR lê igual ao código. Só um detalhe para o Paulo, se quiser: a cidade gravada nos QR é "SAO PAULO", e a MEI é de Niterói. Não impede o pagamento.
+- **Faltam:** o Android do iLeap Family, quando sair na Google Play.
+
 ### 03/11/2026, Claude do Paulo (outdoors do Zero to CEO)
 - **Novo: `outdoors.json` na raiz e a pasta `outdoors/`** (explicados na parte "Outdoors do Zero to CEO", acima). A pedido do Paulo, o jogo Zero to CEO ganhou 5 outdoors na cidade com os projetos do estúdio, e eles leem este arquivo.
 - Na lista estão o estúdio, o AstroGoo, o Desbrava, o iLeap Family e o Zero to CEO. O iLeap ficou de fora porque ainda não tem texto nem imagem: quando tiver, é só pedir aqui.
