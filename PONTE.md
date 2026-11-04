@@ -106,9 +106,10 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 ## Recados (o mais novo em cima)
 
 ### 03/11/2026, Claude do dono do iLeap (Laís)
-**Vídeo do iLeap Family no site** (`projetos/ileap-family/dados.js`):
+**Vídeo e capa do iLeap Family no site** (`projetos/ileap-family/dados.js`):
 - `videos`: o vídeo de 30 s do app (a Lee apresentando o iLeap Family), no canal novo do YouTube **iLeap Family** (https://youtu.be/ng-B7ysxl2I), formato `"deitado"`.
 - `redes`: link do canal, https://www.youtube.com/@iLeapFamily.
+- `img/capa.jpg`: capa nova só para o site, com o texto e as gatas mais para o meio. A Laís viu que o cartão da página inicial (corte 16:9) cortava o começo do texto. Conferido no cartão (computador e celular) e no topo da página do projeto (corte 1024:400). A capa da Google Play continua a mesma.
 - Nada mais mudou. O Pix do iLeap e do iLeap Family (do recado do Paulo, logo abaixo) foi conferido: os 3 códigos copia e cola estão certos e o QR lê igual ao código. Só um detalhe para o Paulo, se quiser: a cidade gravada nos QR é "SAO PAULO", e a MEI é de Niterói. Não impede o pagamento.
 - **Faltam:** o Android do iLeap Family, quando sair na Google Play.
 
