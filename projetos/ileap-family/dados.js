@@ -31,11 +31,15 @@ SM_PROJETO({
     { src: "img/5.jpg", alt: "Brincadeiras e músicas para cada semana" },
     { src: "img/6.jpg", alt: "Um certificado a cada fase, em PDF e em imagem para os stories" }
   ],
-  videos: [],
+  videos: [
+    { youtube: "ng-B7ysxl2I", titulo: "Conheça a Lee e o iLeap Family", formato: "deitado" }
+  ],
   lojas: [
     { rotulo: "Usar no navegador", url: "https://ileap-family.web.app" }
   ],
-  redes: [],
+  redes: [
+    { rotulo: "YouTube", url: "https://www.youtube.com/@iLeapFamily" }
+  ],
   contato: "contato@studiomagalhaes.com.br",
   apoio: {
     qr: "img/apoio-qr.png",
