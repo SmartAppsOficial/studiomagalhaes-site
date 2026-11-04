@@ -17,7 +17,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/estilo.css">
   <style>
-    .jogar { display: grid; place-items: center; padding: 32px 0 48px; }
+    .jogar { display: grid; place-items: center; gap: 16px; padding: 32px 0 48px; }
+    .jogar-aviso { width: min(100%, 520px); display: grid; justify-items: center; gap: 12px; padding: 16px 20px; text-align: center; border-color: var(--ciano); font-size: 0.95rem; }
+    .jogar-aviso[hidden], .jogar-aviso [hidden] { display: none; }
     .jogar-caixa { width: min(100%, 520px); overflow: hidden; text-align: center; }
     .jogar-capa { aspect-ratio: 1024 / 500; background: var(--marinho); }
     .jogar-capa img { width: 100%; height: 100%; object-fit: cover; object-position: left center; }
@@ -36,6 +38,10 @@
   <div id="topo"></div>
   <main id="conteudo" class="pagina">
     <div class="envoltorio jogar">
+      <div id="aviso-app" class="vidro jogar-aviso" hidden>
+        <p>Você está no navegador de dentro do app. Para abrir no navegador do celular, toque em <strong>⋯</strong> no canto de cima e escolha <strong>abrir no navegador</strong>.</p>
+        <a id="abrir-chrome" class="botao botao-vidro botao-pequeno" href="#" hidden>Abrir no Chrome</a>
+      </div>
       <section class="vidro jogar-caixa">
         <div class="jogar-capa"><img src="../projetos/zero-to-ceo/img/capa.jpg" alt=""></div>
         <div class="jogar-info">
@@ -61,6 +67,25 @@
       var de = (new URLSearchParams(location.search).get("de") || "tiktok").toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 30) || "tiktok";
       var referrer = encodeURIComponent("utm_source=" + de + "&utm_medium=bio&utm_campaign=jogar");
       document.getElementById("baixar").href = "https://play.google.com/store/apps/details?id=com.smartapps.zerotoceo&referrer=" + referrer;
+
+      /* Dentro do navegador do TikTok (ou Instagram, Facebook, Kwai), tenta abrir a página no Chrome.
+         A tentativa automática vai num iframe escondido: se o app bloquear, a página continua aqui
+         com o aviso e o botão "Abrir no Chrome". */
+      var ua = navigator.userAgent;
+      if (!/musical_ly|trill_|BytedanceWebview|TikTok|Instagram|FBAN|FBAV|FB_IAB|Kwai/i.test(ua)) return;
+      document.getElementById("aviso-app").hidden = false;
+      if (!/android/i.test(ua)) return;
+      var chrome = "intent://" + location.host + location.pathname + location.search + "#Intent;scheme=https;package=com.android.chrome;end";
+      var botao = document.getElementById("abrir-chrome");
+      botao.href = chrome;
+      botao.hidden = false;
+      var tentou = false;
+      try { tentou = sessionStorage.getItem("sm-jogar-chrome") === "1"; sessionStorage.setItem("sm-jogar-chrome", "1"); } catch (e) {}
+      if (tentou) return;
+      var quadro = document.createElement("iframe");
+      quadro.style.display = "none";
+      quadro.src = chrome;
+      document.body.appendChild(quadro);
     })();
   </script>
   <script src="../assets/js/dados.js"></script>

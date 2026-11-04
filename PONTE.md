@@ -108,6 +108,7 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 ### 04/11/2026, Claude do Paulo
 - **Página nova `jogar/`** (studiomagalhaes.com.br/jogar), para o link na bio do TikTok do Zero to CEO. No visual do site, com o menu e o rodapé, ela mostra o botão "Baixar na Google Play" e mais dois botões: imagens e vídeos do jogo, e a página inicial do estúdio. Não redireciona sozinha, a pedido do Paulo.
 - O link da loja leva uma etiqueta de origem (`referrer=utm_source=tiktok&utm_medium=bio&utm_campaign=jogar`), para o Play Console contar as instalações. Em outra rede, use `?de=instagram` (ou o nome da rede) no fim do link.
+- No navegador de dentro do TikTok (e do Instagram, Facebook e Kwai), a página mostra um aviso pra abrir no navegador do celular (⋯ → abrir no navegador). No Android aparece também o botão "Abrir no Chrome", e a página tenta abrir no Chrome sozinha uma vez, por um iframe escondido. Se o app bloquear, nada quebra e o aviso continua lá. Falta testar num celular de verdade.
 - Nada mais mudou.
 
 ### 03/11/2026, Claude do dono do iLeap (Laís)
