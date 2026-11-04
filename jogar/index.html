@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jogar Zero to CEO · Studio Magalhães</title>
+  <meta name="description" content="Baixe o Zero to CEO, jogo casual de massinha, grátis na Google Play.">
+  <meta name="theme-color" content="#060f22">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Zero to CEO · grátis na Google Play">
+  <meta property="og:description" content="Comece cortando grama e vá abrindo negócios até virar o CEO da cidade.">
+  <meta property="og:image" content="https://studiomagalhaes.com.br/projetos/zero-to-ceo/img/capa.jpg">
+  <link rel="icon" type="image/png" href="../assets/img/estudio/favicon-32.png">
+  <link rel="apple-touch-icon" href="../assets/img/estudio/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/estilo.css">
+  <style>
+    .jogar { display: grid; place-items: center; padding: 32px 0 48px; }
+    .jogar-caixa { width: min(100%, 520px); overflow: hidden; text-align: center; }
+    .jogar-capa { aspect-ratio: 1024 / 500; background: var(--marinho); }
+    .jogar-capa img { width: 100%; height: 100%; object-fit: cover; object-position: left center; }
+    .jogar-info { display: grid; justify-items: center; gap: 14px; padding: 0 24px 28px; }
+    .jogar-icone { width: 88px; height: 88px; margin-top: -44px; border-radius: 22px; border: 3px solid var(--fundo); box-shadow: var(--sombra); }
+    .jogar-info h1 { font-size: clamp(1.8rem, 6vw, 2.4rem); }
+    .jogar-info p { color: #d3ddee; }
+    #baixar { width: 100%; min-height: 54px; font-size: 1.08rem; }
+    .jogar-acoes { justify-content: center; }
+    .jogar-acoes .botao { flex: 1 1 200px; }
+    .jogar-nota { font-size: 0.92rem; color: var(--suave) !important; }
+  </style>
+</head>
+<body data-raiz="../" data-pagina="jogar">
+  <div class="fundo" aria-hidden="true"><span class="bolha bolha-1"></span><span class="bolha bolha-2"></span><span class="bolha bolha-3"></span></div>
+  <div id="topo"></div>
+  <main id="conteudo" class="pagina">
+    <div class="envoltorio jogar">
+      <section class="vidro jogar-caixa">
+        <div class="jogar-capa"><img src="../projetos/zero-to-ceo/img/capa.jpg" alt=""></div>
+        <div class="jogar-info">
+          <img class="jogar-icone" src="../projetos/zero-to-ceo/img/icone.png" alt="" width="88" height="88">
+          <span class="rotulo">Jogo grátis para Android</span>
+          <h1>Zero to CEO</h1>
+          <p>Comece cortando grama com uma foice velha e vá abrindo negócios até virar o CEO da cidade.</p>
+          <a id="baixar" class="botao" href="https://play.google.com/store/apps/details?id=com.smartapps.zerotoceo&amp;referrer=utm_source%3Dtiktok%26utm_medium%3Dbio%26utm_campaign%3Djogar">Baixar na Google Play</a>
+          <p class="jogar-nota">Por enquanto, só para Android.</p>
+          <div class="acoes jogar-acoes">
+            <a class="botao botao-vidro" href="../projetos/zero-to-ceo/index.html">Imagens e vídeos do jogo</a>
+            <a class="botao botao-vidro" href="../index.html">Conhecer o Studio Magalhães</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div id="rodape"></div>
+  <script>
+    /* A origem vai no referrer do link da loja para o Play Console contar as instalações:
+       ?de=instagram (por exemplo) troca a origem; sem nada, conta como tiktok. */
+    (function () {
+      var de = (new URLSearchParams(location.search).get("de") || "tiktok").toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 30) || "tiktok";
+      var referrer = encodeURIComponent("utm_source=" + de + "&utm_medium=bio&utm_campaign=jogar");
+      document.getElementById("baixar").href = "https://play.google.com/store/apps/details?id=com.smartapps.zerotoceo&referrer=" + referrer;
+    })();
+  </script>
+  <script src="../assets/js/dados.js"></script>
+  <script src="../assets/js/site.js"></script>
+</body>
+</html>

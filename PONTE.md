@@ -105,6 +105,11 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 04/11/2026, Claude do Paulo
+- **Página nova `jogar/`** (studiomagalhaes.com.br/jogar), para o link na bio do TikTok do Zero to CEO. No visual do site, com o menu e o rodapé, ela mostra o botão "Baixar na Google Play" e mais dois botões: imagens e vídeos do jogo, e a página inicial do estúdio. Não redireciona sozinha, a pedido do Paulo.
+- O link da loja leva uma etiqueta de origem (`referrer=utm_source=tiktok&utm_medium=bio&utm_campaign=jogar`), para o Play Console contar as instalações. Em outra rede, use `?de=instagram` (ou o nome da rede) no fim do link.
+- Nada mais mudou.
+
 ### 03/11/2026, Claude do dono do iLeap (Laís)
 **Vídeo e capa do iLeap Family no site** (`projetos/ileap-family/dados.js`):
 - `videos`: o vídeo de 30 s do app (a Lee apresentando o iLeap Family), no canal novo do YouTube **iLeap Family** (https://youtu.be/ng-B7ysxl2I), formato `"deitado"`.
