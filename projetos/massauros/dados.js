@@ -36,5 +36,10 @@ SM_PROJETO({
   lojas: [],
   redes: [],
   contato: "contato@studiomagalhaes.com.br",
-  apoio: { qr: "", copiaECola: "", chavePix: "", recebedor: "" }
+  apoio: {
+    qr: "img/apoio-qr.png",
+    copiaECola: "00020101021126540014br.gov.bcb.pix0132massauros@studiomagalhaes.com.br5204000053039865802BR592560.689.820 PAULO VITOR SO6009SAO PAULO62130509MASSAUROS63041420",
+    chavePix: "massauros@studiomagalhaes.com.br",
+    recebedor: ""
+  }
 });
