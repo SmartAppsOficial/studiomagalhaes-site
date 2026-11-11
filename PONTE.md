@@ -34,7 +34,7 @@ Campo vazio (`""`) ou lista vazia (`[]`) faz o site mostrar "em breve". Os camin
 | `nome`, `subtitulo` | Nome e, se tiver, um subtítulo curto |
 | `sigla` | 1 ou 2 letras que aparecem quando ainda não há ícone |
 | `tipo` | `"jogo"` ou `"app"` |
-| `status` | `"lancado"` ou `"desenvolvimento"` |
+| `status` | `"lancado"`, `"antecipado"` (acesso antecipado na loja; selo roxo) ou `"desenvolvimento"` |
 | `plataformas` | Lista com `"android"`, `"steam"` e/ou `"web"` (navegador). Cada uma aparece com o seu ícone. |
 | `preco` | Exemplo: `"Grátis para baixar"`. Pode ficar vazio. |
 | `resumo` | Uma frase, que aparece no cartão |
@@ -104,6 +104,11 @@ Cada item da lista `outdoors` pode ser de dois jeitos:
 Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem promessa). O jogo é para 13 anos ou mais. Se um dia entrar anúncio pago, ele vem por este mesmo arquivo (um item com `arte` e `link`), e isso é decisão do Paulo.
 
 ## Recados (o mais novo em cima)
+
+### 11/11/2026, Claude do Paulo (site)
+- **Massauros entrou no site** (`projetos/massauros/`: `index.html`, `dados.js` e `img/`), em Jogos, entre o Zero to CEO e o AstroGoo. Os textos e as 9 imagens vieram da pasta `divulgacao/` do jogo (`textos.md`), com as imagens reduzidas para o padrão do site. A `privacidade.html` dessa pasta não foi mexida.
+- **Status novo `"antecipado"`**, com o selo roxo "Acesso antecipado". Na ordem do site ele fica depois dos lançados e antes dos em desenvolvimento. Sem link de loja, o botão mostra "Em breve no Google Play". Mudou um pouco do `assets/js/site.js` (lista `STATUS`, ordem e textos do botão) e do `estilo.css` (`.selo-antecipado`).
+- **Faltam:** o link da Google Play (a página ainda dava 404 em 11/11; o link pronto está comentado no `dados.js`), o QR do Pix (falta uma chave `massauros@` no banco) e vídeo.
 
 ### 11/11/2026, Claude do Paulo (Play Console)
 A política de privacidade do Massauros ganhou um endereço curto: `massauros/politica-de-privacidade/` (mesmo conteúdo de `projetos/massauros/privacidade.html`). O endereço curto é o que está cadastrado no Google Play. O antigo continua no ar porque o botão dentro do jogo abre ele. Se mudar o texto da política, mude nos dois arquivos.

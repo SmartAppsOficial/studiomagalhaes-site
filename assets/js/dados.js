@@ -18,7 +18,7 @@ window.SM_DADOS = {
 
   // Ordem dos projetos no site (o site separa sozinho em Jogos e Apps, lançados primeiro).
   // Projeto novo: crie a pasta projetos/<id>/ (copie outra) e ponha o id aqui.
-  projetos: ["zero-to-ceo", "astrogoo", "ileap-family", "ileap", "desbrava"]
+  projetos: ["zero-to-ceo", "massauros", "astrogoo","ileap-family", "ileap", "desbrava"]
 };
 
 window.SM_PROJETOS = {};

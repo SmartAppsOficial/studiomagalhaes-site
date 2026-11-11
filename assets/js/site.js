@@ -6,7 +6,9 @@
   const corpo = document.body;
   const raiz = corpo.dataset.raiz || "";
   const pagina = corpo.dataset.pagina;
-  const STATUS = { lancado: "Lançado", desenvolvimento: "Em desenvolvimento" };
+  const STATUS = { lancado: "Lançado", antecipado: "Acesso antecipado", desenvolvimento: "Em desenvolvimento" };
+  // Quem já dá para baixar (loja ou acesso antecipado)
+  const NA_LOJA = ["lancado", "antecipado"];
   const TIPOS = [["jogo", "Jogos"], ["app", "Apps"]];
 
   // Ícones das plataformas (Android e Steam: Simple Icons, CC0; Navegador: globo)
@@ -42,10 +44,12 @@
   function acharProjeto(id) { return projetos.find((p) => p.id === id) || null; }
   function linkProjeto(p) { return `${raiz}projetos/${p.id}/index.html`; }
   function linkApoio(p) { return `${raiz}apoiar/index.html${p ? "?projeto=" + p.id : ""}`; }
-  // Lançados primeiro, mantendo a ordem de dados.js
+  // Lançados primeiro, depois acesso antecipado e em desenvolvimento, mantendo a ordem de dados.js
   function porTipo(tipo) {
     const lista = projetos.filter((p) => p.tipo === tipo);
-    return lista.filter((p) => p.status === "lancado").concat(lista.filter((p) => p.status !== "lancado"));
+    const ordem = Object.keys(STATUS);
+    return ordem.flatMap((st) => lista.filter((p) => p.status === st))
+      .concat(lista.filter((p) => !ordem.includes(p.status)));
   }
 
   function carregarProjetos() {
@@ -199,7 +203,7 @@
 
     const lojas = p.lojas.length
       ? p.lojas.map((l) => `<a class="botao" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.rotulo)}</a>`).join("")
-      : `<span class="botao" aria-disabled="true">${p.status === "lancado" ? "Link da loja em breve" : "Ainda não está nas lojas"}</span>`;
+      : `<span class="botao" aria-disabled="true">${{ lancado: "Link da loja em breve", antecipado: "Em breve no Google Play" }[p.status] || "Ainda não está nas lojas"}</span>`;
 
     const descricao = p.descricao.length
       ? p.descricao.map((t) => `<p>${esc(t)}</p>`).join("")
@@ -284,7 +288,7 @@
           <div>
             <h2 id="titulo-apoio">Apoie este projeto</h2>
             <p>Gostou do ${esc(p.nome)}? Você pode ajudar a continuar o desenvolvimento deste projeto com uma contribuição voluntária.</p>
-            <small>O apoio vai para quem faz o projeto. Não é compra e não dá itens nem vantagens ${p.status === "lancado" ? "dentro do app ou do jogo" : "no projeto"}.</small>
+            <small>O apoio vai para quem faz o projeto. Não é compra e não dá itens nem vantagens ${NA_LOJA.includes(p.status) ? "dentro do app ou do jogo" : "no projeto"}.</small>
           </div>
           <a class="botao" href="${linkApoio(p)}">Apoiar este projeto</a>
         </section>

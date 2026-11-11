@@ -273,6 +273,7 @@ main { flex: 1; }
 .selo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .selo-lancado { color: #8ff0f2; background: rgba(13, 60, 72, 0.75); border: 1px solid rgba(79, 195, 200, 0.5); }
 .selo-desenvolvimento { color: var(--ouro); background: rgba(70, 52, 14, 0.75); border: 1px solid rgba(242, 196, 109, 0.5); }
+.selo-antecipado { color: #cbb6ff; background: rgba(46, 30, 88, 0.78); border: 1px solid rgba(180, 152, 255, 0.5); }
 
 /* ---------- Sobre e contato ---------- */
 
