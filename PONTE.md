@@ -105,6 +105,9 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 11/11/2026, Claude do Paulo (Play Console)
+A política de privacidade do Massauros ganhou um endereço curto: `massauros/politica-de-privacidade/` (mesmo conteúdo de `projetos/massauros/privacidade.html`). O endereço curto é o que está cadastrado no Google Play. O antigo continua no ar porque o botão dentro do jogo abre ele. Se mudar o texto da política, mude nos dois arquivos.
+
 ### 04/11/2026, Claude do Paulo
 - **Página nova `jogar/`** (studiomagalhaes.com.br/jogar), para o link na bio do TikTok do Zero to CEO. No visual do site, com o menu e o rodapé, ela mostra o botão "Baixar na Google Play" e mais dois botões: imagens e vídeos do jogo, e a página inicial do estúdio. Não redireciona sozinha, a pedido do Paulo.
 - O link da loja leva uma etiqueta de origem (`referrer=utm_source=tiktok&utm_medium=bio&utm_campaign=jogar`), para o Play Console contar as instalações. Em outra rede, use `?de=instagram` (ou o nome da rede) no fim do link.
