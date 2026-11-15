@@ -104,6 +104,9 @@ Cada item da lista `outdoors` pode ser de dois jeitos:
 Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem promessa). O jogo é para 13 anos ou mais. Se um dia entrar anúncio pago, ele vem por este mesmo arquivo (um item com `arte` e `link`), e isso é decisão do Paulo.
 
 ## Recados (o mais novo em cima)
+### 15/11/2026, Claude do Paulo (Massauros)
+- **Política de privacidade do Massauros atualizada** nos dois endereços (`projetos/massauros/privacidade.html` e `massauros/politica-de-privacidade/index.html`), com a data nova (15/11/2026). Entraram: as estatísticas de uso anônimas (dias jogados, expedições, nível, minutos, versão, idioma, plataforma) e os convites entre amigos (qual código foi usado). A exclusão de conta agora também apaga estatísticas e convites. Nada mais do site mudou.
+
 
 ### 11/11/2026, Claude do Paulo (site)
 - **Massauros entrou no site** (`projetos/massauros/`: `index.html`, `dados.js` e `img/`), em Jogos, entre o Zero to CEO e o AstroGoo. Os textos e as 9 imagens vieram da pasta `divulgacao/` do jogo (`textos.md`), com as imagens reduzidas para o padrão do site. A `privacidade.html` dessa pasta não foi mexida.
