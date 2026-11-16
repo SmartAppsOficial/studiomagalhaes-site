@@ -104,6 +104,9 @@ Cada item da lista `outdoors` pode ser de dois jeitos:
 Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem promessa). O jogo é para 13 anos ou mais. Se um dia entrar anúncio pago, ele vem por este mesmo arquivo (um item com `arte` e `link`), e isso é decisão do Paulo.
 
 ## Recados (o mais novo em cima)
+### 15/11/2026 (tarde), Claude do Paulo (Massauros)
+- **Política de privacidade do Massauros**: entrou o perfil público (nickname, nível, recordes e visuais comprados, que outros jogadores veem pelo ranking), nos dois endereços. Nada mais do site mudou.
+
 ### 15/11/2026, Claude do Paulo (Massauros)
 - **Política de privacidade do Massauros atualizada** nos dois endereços (`projetos/massauros/privacidade.html` e `massauros/politica-de-privacidade/index.html`), com a data nova (15/11/2026). Entraram: as estatísticas de uso anônimas (dias jogados, expedições, nível, minutos, versão, idioma, plataforma) e os convites entre amigos (qual código foi usado). A exclusão de conta agora também apaga estatísticas e convites. Nada mais do site mudou.
 
