@@ -4,15 +4,14 @@ SM_PROJETO({
   id: "massauros",
   nome: "Massauros",
   tipo: "jogo",
-  status: "antecipado",
+  status: "lancado",
   plataformas: ["android"],
   preco: "Grátis para baixar",
   resumo: "Roguelite de massinha: dome dinossauros com a comida certa, monte nos gigantes e enfrente os Alfas.",
   descricao: [
     "Massauros é uma aventura num mundo pré-histórico que muda a cada partida. Você é um Domador com arco e flecha: derruba os dinossauros, passa por cima deles com a comida certa e eles entram para a sua equipe. Os maiores viram montaria.",
     "São 92 criaturas de várias épocas, de raptores a mamutes, espalhadas por 19 biomas: florestas de samambaias, savanas, tundra da era do gelo, cavernas de cristal, recifes e terras vulcânicas. De vez em quando aparece um Alfa, gigante e muito mais forte, com golpes que avisam no chão antes de cair.",
-    "Cada expedição dá moedas para melhorar o acampamento, liberar armas novas e completar a coleção. E alguns dinos nascem raros: brilhantes, furiosos ou metálicos, às vezes tudo junto.",
-    "O jogo está em acesso antecipado no Google Play, por enquanto só no Brasil. Sua opinião ajuda a deixar o jogo melhor."
+    "Cada expedição dá moedas para melhorar o acampamento, liberar armas novas e completar a coleção. E alguns dinos nascem raros: brilhantes, furiosos ou metálicos, às vezes tudo junto."
   ],
   cor: "#e8a03a",
   icone: "img/icone.png",
@@ -31,9 +30,7 @@ SM_PROJETO({
     { src: "img/1200x1200-3-recife.jpg", alt: "Megalodonte e plesiossauro no Recife de Coral" }
   ],
   videos: [],
-  // Quando a página da Play abrir, pôr aqui:
-  // { rotulo: "Baixar na Google Play", url: "https://play.google.com/store/apps/details?id=com.studiomagalhaes.massauros" }
-  lojas: [],
+  lojas: [{ rotulo: "Baixar na Google Play", url: "https://play.google.com/store/apps/details?id=com.studiomagalhaes.massauros" }],
   redes: [],
   contato: "contato@studiomagalhaes.com.br",
   apoio: {

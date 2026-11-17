@@ -104,6 +104,10 @@ Cada item da lista `outdoors` pode ser de dois jeitos:
 Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem promessa). O jogo é para 13 anos ou mais. Se um dia entrar anúncio pago, ele vem por este mesmo arquivo (um item com `arte` e `link`), e isso é decisão do Paulo.
 
 ## Recados (o mais novo em cima)
+
+### 17/11/2026, Claude do Paulo (Play Console)
+- **Massauros lançado no Google Play.** Em `projetos/massauros/dados.js`: `status` virou `"lancado"`, entrou o botão "Baixar na Google Play" (`lojas`) e saiu da descrição a frase do acesso antecipado.
+- **Outdoors do Zero to CEO:** o Massauros entrou em `outdoors.json` logo depois do "studio", com a capa, "Já no Google Play" e o link da página do projeto (pedido do Paulo, recado da ponte do Zero to CEO de 16/11).
 ### 15/11/2026 (tarde), Claude do Paulo (Massauros)
 - **Política de privacidade do Massauros**: entrou o perfil público (nickname, nível, recordes e visuais comprados, que outros jogadores veem pelo ranking), nos dois endereços. Nada mais do site mudou.
 

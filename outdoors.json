@@ -14,6 +14,15 @@
       "en": { "linha": "Games and apps made in Brazil", "selo": "See the projects" }
     },
     {
+      "id": "massauros",
+      "titulo": "Massauros",
+      "linha": "Dome dinossauros, monte nos gigantes e enfrente os Alfas",
+      "arte": "projetos/massauros/img/capa.jpg",
+      "faixa": "Já no Google Play",
+      "link": "https://studiomagalhaes.com.br/projetos/massauros/",
+      "en": { "linha": "Tame dinosaurs, ride the giants and face the Alphas", "faixa": "Now on Google Play" }
+    },
+    {
       "id": "astrogoo",
       "modo": "fundo",
       "pixel": true,
