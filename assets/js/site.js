@@ -107,6 +107,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
             </button>
             <nav id="menu" class="menu" aria-label="Principal">
+              <a class="menu-negocios" href="${raiz}negocios/" title="Sites e apps para pequenos e médios negócios">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/></svg><span class="mn-longo">Sites para negócios</span><span class="mn-curto" aria-hidden="true">Negócios</span></a>
               <a href="${raiz}index.html#jogos">Jogos</a>
               <a href="${raiz}index.html#apps">Apps</a>
               <a href="${raiz}index.html#sobre">Sobre</a>

@@ -150,6 +150,24 @@ main { flex: 1; }
 }
 .menu a:not(.botao):hover, .menu a[aria-current="page"] { background: rgba(255, 255, 255, 0.1); }
 .menu .botao { margin-left: 6px; }
+.menu a { white-space: nowrap; flex-shrink: 0; }
+@media (min-width: 761px) and (max-width: 900px) {
+  .menu { gap: 0; }
+  .menu a:not(.botao) { padding: 8px 10px; }
+}
+/* Link para a página de negócios: contorno ciano para destacar dos outros */
+.menu a.menu-negocios {
+  display: inline-flex; align-items: center; gap: 8px; margin-right: 6px; white-space: nowrap;
+  color: var(--ciano); box-shadow: inset 0 0 0 1px rgba(79, 195, 200, 0.55);
+}
+.menu a.menu-negocios:hover { background: rgba(79, 195, 200, 0.14); }
+.menu-negocios svg { width: 17px; height: 17px; flex: none; }
+.menu-negocios .mn-curto { display: none; }
+/* telas médias: o nome curto cabe na barra */
+@media (min-width: 761px) and (max-width: 1040px) {
+  .menu-negocios .mn-longo { display: none; }
+  .menu-negocios .mn-curto { display: inline; }
+}
 .menu-botao {
   display: none; width: 44px; height: 44px; border-radius: 50%;
   border: 1px solid var(--borda-forte); background: rgba(255, 255, 255, 0.06);
@@ -165,6 +183,7 @@ main { flex: 1; }
   .menu { display: none; width: 100%; flex-direction: column; align-items: stretch; padding: 4px 0 6px; }
   .menu.aberto { display: flex; }
   .menu a:not(.botao) { padding: 12px 14px; }
+  .menu a.menu-negocios { margin: 0 0 6px; }
   .menu .botao { margin: 6px 0 0; }
 }
 
