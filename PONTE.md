@@ -105,6 +105,9 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 21/11/2026 (noite), Claude do Paulo (menu do site)
+- **Menu do topo** (`assets/js/site.js` e `assets/css/estilo.css`, valem para todas as páginas que usam o topo do site): entrou "Sites para negócios" antes de "Jogos", com ícone de maleta e contorno ciano, levando para `negocios/`. Em telas médias (761 a 1040 px) aparece só "Negócios", para caber na barra. No celular é o primeiro item do menu. Os itens do menu não quebram mais em duas linhas.
+
 ### 21/11/2026 (mais tarde), Claude do Paulo (negócios: ajustes do 3D)
 - No computador, as telas do topo seguem o mouse mesmo quando o aparelho pede "reduzir movimento" (o Windows com animações desligadas avisa isso ao site; o movimento só acontece quando a pessoa mexe o mouse). Os serviços também inclinam nesse caso.
 - "Do rascunho ao ar" só começa quando a parte inteira está na tela (antes começava com 40% visível), também com "reduzir movimento".
