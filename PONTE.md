@@ -105,6 +105,13 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 21/11/2026 (noite), Claude do Paulo (negócios: visual novo)
+- **Visual novo em `negocios/`** (a pedido do Paulo, que achou o anterior com "muita cara de Claude"): mistura da marca do estúdio com a clareza do site da Apple. Duas fontes só (Montserrat nos títulos, Inter no texto) e 7 seções em vez de 10: abertura, faixa escura com 3 motivos, 4 serviços, "Como funciona", exemplos, formulário e dúvidas (4).
+- **3D e animações:** no topo, os sites de exemplo aparecem em computador e celular em 3D; no computador as telas seguem o mouse e no celular balançam devagar. Em "Como funciona" um site se monta sozinho em camadas quando a seção aparece (sem prender a rolagem), com "Ver de novo". Títulos entram palavra por palavra e os serviços inclinam com o mouse. Quem pede "reduzir movimento" no aparelho vê tudo parado.
+- **Exemplos por recurso, não por ramo** (Reservas, Agenda online, Loja virtual, Planos e horários, Portfólio), com troca de cor da marca e atalhos que levam até a parte do site. As marcas continuam fictícias e a página avisa.
+- **O formulário não mudou por dentro:** mesmos campos, mesmo envio ao Firestore, mesmo aviso ao Apps Script e a mesma conversão do Google Ads. Saiu só o resumo ao lado do formulário. Saíram também a faixa de segmentos, o "Por que" de 5 itens e o "Quem faz".
+- Registro: a conversão do Google Ads (que faltava no recado abaixo) entrou no pull request #6.
+
 ### 21/11/2026, Claude do Paulo (negócios)
 - **Página nova `negocios/`** (studiomagalhaes.com.br/negocios): sites e apps para pequenos e médios negócios, para a campanha do Google Ads. Visual próprio, claro, com as cores do estúdio; não usa o `site.js` nem o `estilo.css`. Tem formulário de proposta em 3 etapas (objetivos com várias escolhas e "Outros", dados do negócio, contato). Sem preços, números ou depoimentos inventados; os negócios da ilustração do topo são fictícios e a página avisa.
 - **Painel `negocios/painel/`** (sem indexação no Google): só o Paulo entra, com a conta Google. Cada pedido do formulário vai para a coleção `propostas` do Firestore; o painel mostra ao vivo, com status, anotações, botão de WhatsApp e planilha (CSV). As regras do Firestore ficam **fora** deste repositório (têm o e-mail do Paulo). `negocios/firebase-config.js` guarda o projeto do Firebase (não é segredo).

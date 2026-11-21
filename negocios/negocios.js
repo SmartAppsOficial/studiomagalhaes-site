@@ -1,5 +1,7 @@
 /*
   Studio Magalhães para negócios: comportamento da página.
+  Visual: títulos que entram palavra por palavra, cena 3D no topo (segue o mouse no computador),
+  site que se monta sozinho em "Como funciona" e exemplos com recursos e cores para testar.
 
   Para onde vão os pedidos: cada pedido vira um documento na coleção "propostas" do
   Firestore (Firebase), e o Paulo vê todos no painel (negocios/painel/), entrando com o Google.
@@ -48,145 +50,254 @@
     return daUrl;
   })();
 
-  // ---------- Topo ----------
-  const topo = $("#topo");
-  const aoRolar = () => topo.classList.toggle("rolou", window.scrollY > 8);
-  aoRolar();
-  window.addEventListener("scroll", aoRolar, { passive: true });
-
   const ano = $("#ano");
   if (ano) ano.textContent = new Date().getFullYear();
 
-  // ---------- Revelar ao rolar ----------
-  const revelar = $$(".revelar");
-  if ("IntersectionObserver" in window && !reduzir) {
-    const io = new IntersectionObserver((entradas) => {
-      entradas.forEach((e) => {
-        if (!e.isIntersecting) return;
-        const irmaos = Array.from(e.target.parentElement.children).filter((c) => c.classList.contains("revelar"));
-        const i = Math.max(0, irmaos.indexOf(e.target));
-        e.target.style.transitionDelay = Math.min(i * 70, 420) + "ms";
-        e.target.classList.add("visivel");
-        io.unobserve(e.target);
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-    revelar.forEach((el) => io.observe(el));
-  } else {
-    revelar.forEach((el) => el.classList.add("visivel"));
-  }
+  // ?movimento na URL liga as animações mesmo com "reduzir movimento" (útil para conferir).
+  const forcar = new URLSearchParams(location.search).has("movimento");
+  if (forcar) doc.classList.add("forcar");
+  const calmo = reduzir && !forcar;
+  const mouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const io = (cb, opcoes) => ("IntersectionObserver" in window ? new IntersectionObserver(cb, opcoes) : null);
 
-  // ---------- Vitrine: um site sendo montado para negócios diferentes ----------
-  const TEMAS = [
-    { tema: "padaria", dominio: "padariatrigobom.com.br", nome: "Trigo Bom", tag: "Padaria artesanal", titulo: "Pão quentinho toda manhã", botao: "Ver cardápio", aviso: "“Vocês fazem encomenda para festa?”", legenda: "Cardápio + encomendas" },
-    { tema: "clinica", dominio: "sorrisoleve.com.br", nome: "Sorriso Leve", tag: "Clínica odontológica", titulo: "Seu sorriso em boas mãos", botao: "Agendar consulta", aviso: "“Tem horário na quinta à tarde?”", legenda: "Agendamento online" },
-    { tema: "oficina", dominio: "pistacerta.com.br", nome: "Pista Certa", tag: "Mecânica e revisão", titulo: "Revisão completa, sem surpresa", botao: "Pedir orçamento", aviso: "“Quanto fica a revisão do meu carro?”", legenda: "Orçamento pelo WhatsApp" }
+  // ---------- Títulos palavra por palavra + blocos que sobem ----------
+  $$(".palavras").forEach((h) => {
+    const quebrar = (n) => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach((p) => {
+          if (!p) return;
+          if (/^\s+$/.test(p)) { frag.append(p); return; }
+          const w = document.createElement("span"); w.className = "w";
+          const s = document.createElement("span"); s.textContent = p;
+          w.append(s); frag.append(w);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && n.tagName !== "BR") Array.from(n.childNodes).forEach(quebrar);
+    };
+    Array.from(h.childNodes).forEach(quebrar);
+    $$(".w>span", h).forEach((s, i) => { s.style.transitionDelay = i * 70 + "ms"; });
+  });
+  const entrar = io((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("on"); entrar.unobserve(e.target); } }), { threshold: 0.2 });
+  $$(".palavras, .sobe").forEach((el) => (entrar ? entrar.observe(el) : el.classList.add("on")));
+
+  // ---------- Abertura: cena 3D com sites de verdade ----------
+  // No computador as telas seguem o mouse; no celular balançam devagar sozinhas.
+  const VITRINE = [
+    ["brasa-e-sal", "brasaesal.com.br", "Reservas", "“Vocês fazem encomenda?”"],
+    ["clinica-alvorada", "clinicaalvorada.com.br", "Agenda online", "“Tem horário na quinta?”"],
+    ["patas-e-cia", "patasecia.com.br", "Loja virtual", "“Entregam no meu bairro?”"]
   ];
-  const navegador = $(".navegador");
-  if (navegador) {
-    const aviso = $(".aviso-flutuante");
-    const pontos = $$(".vitrine-pontos i");
-    const campos = {
-      dominio: $(".v-dominio"), nome: $(".v-nome"), tag: $(".v-tag"), titulo: $(".v-titulo"),
-      botao: $(".v-botao"), aviso: $(".v-aviso"), legenda: $(".v-legenda")
-    };
-    let atual = 0;
-    let visivel = true;
-    let timer = null;
-
-    const aplicar = (t) => {
-      navegador.dataset.tema = t.tema;
-      Object.keys(campos).forEach((k) => { if (campos[k]) campos[k].textContent = t[k]; });
-      pontos.forEach((p, i) => p.classList.toggle("ativo", i === atual));
-    };
-    const proximo = () => {
-      if (!visivel || document.hidden) return;
-      atual = (atual + 1) % TEMAS.length;
-      if (reduzir) { aplicar(TEMAS[atual]); return; }
-      navegador.classList.add("montando");
-      aviso.classList.add("saindo");
-      setTimeout(() => aplicar(TEMAS[atual]), 460);
-      setTimeout(() => navegador.classList.remove("montando"), 620);
-      setTimeout(() => aviso.classList.remove("saindo"), 1300);
-    };
-    timer = setInterval(proximo, reduzir ? 6000 : 4300);
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(([e]) => { visivel = e.isIntersecting; }).observe(navegador);
-    }
-    window.addEventListener("pagehide", () => clearInterval(timer));
+  const cena = $("#cena");
+  const vTela = $("#v-tela"), vCel = $("#v-cel");
+  let heroVisivel = true;
+  function escalaVitrine() {
+    $$("iframe", vTela).forEach((f) => { f.style.transform = "scale(" + vTela.clientWidth / 1280 + ")"; });
+    $$("iframe", vCel).forEach((f) => { f.style.transform = "scale(" + vCel.clientWidth / 390 + ")"; });
   }
+  function quadro(caixa, amostra, w, h) {
+    const f = document.createElement("iframe");
+    f.src = "amostras/" + amostra + ".html"; f.width = w; f.height = h; f.tabIndex = -1; f.style.opacity = 0;
+    f.onload = () => { f.style.opacity = 1; $$("iframe", caixa).filter((x) => x !== f).forEach((x) => setTimeout(() => x.remove(), 500)); };
+    caixa.appendChild(f);
+    escalaVitrine();
+  }
+  if (cena) {
+    const grupo = $(".grupo", cena);
+    let n = 0;
+    const mostrar = () => {
+      const v = VITRINE[n];
+      quadro(vTela, v[0], 1280, 800);
+      quadro(vCel, v[0], 390, 844);
+      $("#v-end").textContent = v[1]; $("#v-leg").textContent = v[2]; $("#v-aviso").textContent = v[3];
+      $$(".vit-legenda em i").forEach((i, k) => i.classList.toggle("on", k === n));
+    };
+    mostrar();
+    setInterval(() => { if (!heroVisivel || document.hidden) return; n = (n + 1) % VITRINE.length; mostrar(); }, 5000);
+    const obsHero = io(([e]) => { heroVisivel = e.isIntersecting; }, { threshold: 0 });
+    if (obsHero) obsHero.observe(cena);
+
+    if (!calmo && mouse) {
+      // segue o mouse na tela inteira, com suavidade
+      let alvoX = 0, alvoY = 0, x = 0, y = 0, rodando = false;
+      const passo = () => {
+        x += (alvoX - x) * 0.08; y += (alvoY - y) * 0.08;
+        grupo.style.setProperty("--ry", (-14 + x * 30).toFixed(2) + "deg");
+        grupo.style.setProperty("--rx", (6 - y * 18).toFixed(2) + "deg");
+        grupo.style.setProperty("--tx", (x * 14).toFixed(1) + "px");
+        grupo.style.setProperty("--ty", (y * 10).toFixed(1) + "px");
+        if (Math.abs(alvoX - x) > 0.001 || Math.abs(alvoY - y) > 0.001) requestAnimationFrame(passo); else rodando = false;
+      };
+      cena.classList.add("segue");
+      window.addEventListener("pointermove", (e) => {
+        if (!heroVisivel) return;
+        const r = cena.getBoundingClientRect();
+        alvoX = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2)));
+        alvoY = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2)));
+        if (!rodando) { rodando = true; requestAnimationFrame(passo); }
+      }, { passive: true });
+    } else if (!calmo) {
+      let t = 0;
+      setInterval(() => { if (!heroVisivel) return; t += 0.05; grupo.style.setProperty("--ry", (-14 + Math.sin(t) * 6) + "deg"); }, 60);
+    }
+  }
+
+  // ---------- Faixa escura: luz que segue o mouse ----------
+  const escura = $("#escura");
+  if (escura && mouse) escura.addEventListener("pointermove", (e) => {
+    const r = escura.getBoundingClientRect();
+    escura.style.setProperty("--mx", (e.clientX - r.left) + "px");
+    escura.style.setProperty("--my", (e.clientY - r.top) + "px");
+  });
+
+  // ---------- Blocos: inclinação 3D + reflexo ----------
+  if (!calmo && mouse) $$(".bloco").forEach((b) => {
+    b.addEventListener("pointermove", (e) => {
+      const r = b.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      b.style.setProperty("--by", ((x - 0.5) * 10) + "deg"); b.style.setProperty("--bx", ((0.5 - y) * 10) + "deg");
+      b.style.setProperty("--gx", x * 100 + "%"); b.style.setProperty("--gy", y * 100 + "%");
+    });
+    b.addEventListener("pointerleave", () => { b.style.setProperty("--by", "0deg"); b.style.setProperty("--bx", "0deg"); });
+  });
+
+  // ---------- Como funciona: o site se monta sozinho quando a seção aparece ----------
+  const mont = $("#como"), site = $("#site3d");
+  if (mont && site) {
+    const passos = $$("#etapas li"), barraP = $(".barra-prog"), rever = $("#rever"), finalBox = $("#final-site");
+    let pAtual = 0, anim = 0, finalPronto = false;
+    const escalaFinal = () => { const f = $("iframe", finalBox); if (f) f.style.transform = "scale(" + finalBox.clientWidth / 1280 + ")"; };
+    const carregarFinal = () => {
+      if (finalPronto) return; finalPronto = true;
+      const f = document.createElement("iframe");
+      f.src = "amostras/brasa-e-sal.html"; f.width = 1280; f.height = 840; f.tabIndex = -1;
+      finalBox.append(f); escalaFinal();
+    };
+    const montar = (p) => {
+      pAtual = p;
+      const e = 1 - Math.min(1, Math.max(0, (p - 0.45) / 0.35));   // 1 = desmontado, 0 = montado
+      site.style.setProperty("--e", e.toFixed(3));
+      site.classList.toggle("cor", p > 0.4);
+      site.classList.toggle("pronto", p > 0.86);
+      barraP.style.setProperty("--p", p);
+      const etapa = p < 0.2 ? 0 : p < 0.45 ? 1 : p < 0.8 ? 2 : 3;
+      passos.forEach((li, i) => li.classList.toggle("on", i === etapa));
+      rever.classList.toggle("mostra", p >= 1);
+    };
+    const tocar = (alvo, dur = 7000) => {
+      cancelAnimationFrame(anim);
+      const de = pAtual, t0 = performance.now(), d = Math.max(400, Math.abs(alvo - de) * dur);
+      const passo = (t) => {
+        const k = Math.min(1, (t - t0) / d), s = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        montar(de + (alvo - de) * s);
+        if (k < 1) anim = requestAnimationFrame(passo);
+      };
+      anim = requestAnimationFrame(passo);
+    };
+    montar(0);
+    const perto = io((es, o) => es.forEach((e) => { if (e.isIntersecting) { carregarFinal(); o.disconnect(); } }), { rootMargin: "400px 0px" });
+    const visto = io((es, o) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      o.disconnect();
+      if (calmo) montar(1); else setTimeout(() => tocar(1), 200);
+    }), { threshold: 0.4 });
+    if (perto && visto) { perto.observe(mont); visto.observe($(".fixo", mont)); } else { carregarFinal(); montar(1); }
+    const ALVOS = [0.1, 0.32, 0.62, 1];
+    passos.forEach((li, i) => li.addEventListener("click", () => (calmo ? montar(ALVOS[i]) : tocar(ALVOS[i], 2600))));
+    rever.addEventListener("click", () => { montar(0); tocar(1); });
+    window.addEventListener("resize", escalaFinal);
+  }
+
+  // ---------- Exemplos: recursos, cores e celular/computador ----------
+  // Para cada exemplo: a variável de cor principal do site, 4 cores para testar e atalhos para as partes.
+  const EXEMPLOS = {
+    "brasa-e-sal": { nome: "Brasa & Sal", cor: "--brasa", cores: ["#e2592a", "#c9a35c", "#3f8f5a", "#7a3fd0"], recursos: [["Cardápio", "#cardapio"], ["Reserva de mesa", "#reserva"], ["A casa", "#casa"]] },
+    "clinica-alvorada": { nome: "Clínica Alvorada", cor: "--teal", cores: ["#0f766e", "#2563eb", "#be185d", "#7c3aed"], recursos: [["Agendar horário", "#agenda"], ["Tratamentos", "#tratamentos"], ["Equipe", "#equipe"]] },
+    "patas-e-cia": { nome: "Patas & Cia", cor: "--roxo", cores: ["#6c3ce1", "#0e9f6e", "#e0453a", "#1d4ed8"], recursos: [["Produtos e carrinho", "#produtos"], ["Banho com hora marcada", "#banho"]] },
+    "pulso-academia": { nome: "Pulso Academia", cor: "--lima", cores: ["#c6ff00", "#ff4d2e", "#38bdf8", "#f5c400"], recursos: [["Grade de aulas", "#aulas"], ["Planos", "#planos"], ["Aula grátis", "#experimental"]] },
+    "traco-norte": { nome: "Traço Norte", cor: "--acento", cores: ["#d94f2b", "#1f6feb", "#2f855a", "#141414"], recursos: [["Projetos", "#projetos"], ["Processo", "#processo"], ["Contato", "#contato"]] }
+  };
+  const palco = $("#palco");
+  if (palco) {
+    const janela = $("#p-jan"), pf = $("#p-frame"), moldura = $("#moldura");
+    const caixaCores = $("#cores"), caixaRecursos = $("#recursos");
+    let atual = "brasa-e-sal", corAtual = 0, carregou = false;
+    const TAM = { pc: [1280, 800], cel: [390, 760] };
+    const ajustar = () => {
+      const [w, h] = TAM[palco.dataset.modo];
+      pf.width = w; pf.height = h;
+      const s = Math.min(1, (janela.clientWidth || 1) / w);
+      pf.style.transform = "scale(" + s + ")";
+      janela.style.height = Math.round(h * s) + "px";
+    };
+    const docExemplo = () => { try { return pf.contentDocument; } catch (e) { return null; } };
+    const aplicarCor = () => { const d = docExemplo(); if (d && d.documentElement) d.documentElement.style.setProperty(EXEMPLOS[atual].cor, EXEMPLOS[atual].cores[corAtual]); };
+    const montarControles = () => {
+      const ex = EXEMPLOS[atual];
+      caixaCores.innerHTML = "<span>Cor da marca</span>";
+      ex.cores.forEach((c, i) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "cor-b" + (i === corAtual ? " on" : ""); b.style.setProperty("--c", c);
+        b.dataset.i = i; b.setAttribute("aria-label", "Cor " + (i + 1)); b.setAttribute("aria-pressed", String(i === corAtual));
+        caixaCores.append(b);
+      });
+      caixaRecursos.innerHTML = "<span>Experimente:</span>";
+      ex.recursos.forEach(([rotulo, alvo]) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "rec"; b.dataset.h = alvo; b.textContent = rotulo;
+        caixaRecursos.append(b);
+      });
+    };
+    const carregar = () => {
+      carregou = true;
+      pf.title = "Exemplo de site: " + EXEMPLOS[atual].nome;
+      pf.src = "amostras/" + atual + ".html";
+    };
+    caixaCores.addEventListener("click", (e) => {
+      const b = e.target.closest(".cor-b"); if (!b) return;
+      corAtual = Number(b.dataset.i);
+      $$(".cor-b", caixaCores).forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", String(x === b)); });
+      aplicarCor();
+    });
+    caixaRecursos.addEventListener("click", (e) => {
+      const b = e.target.closest(".rec"); if (!b) return;
+      const d = docExemplo(); const alvo = d && d.querySelector(b.dataset.h);
+      if (alvo) { const w = d.defaultView; w.scrollTo({ top: alvo.getBoundingClientRect().top + w.scrollY - 60, behavior: calmo ? "auto" : "smooth" }); }
+    });
+    pf.addEventListener("load", () => { moldura.classList.remove("vira"); aplicarCor(); });
+    $("#abas").addEventListener("click", (e) => {
+      const b = e.target.closest(".aba"); if (!b || b.classList.contains("on")) return;
+      $$(".aba").forEach((x) => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-selected", String(on)); });
+      atual = b.dataset.a; corAtual = 0; montarControles();
+      if (!calmo) moldura.classList.add("vira");
+      setTimeout(() => { carregar(); $("#p-end").textContent = b.dataset.d; }, calmo ? 0 : 300);
+      setTimeout(() => moldura.classList.remove("vira"), 1500);
+    });
+    const definirModo = (m) => {
+      palco.dataset.modo = m;
+      $$(".modo").forEach((x) => { const on = x.dataset.m === m; x.classList.toggle("on", on); x.setAttribute("aria-pressed", String(on)); });
+      requestAnimationFrame(ajustar); setTimeout(ajustar, 520);   // depois da transição da moldura
+    };
+    $("#modos").addEventListener("click", (e) => { const b = e.target.closest(".modo"); if (b) definirModo(b.dataset.m); });
+    definirModo(window.matchMedia("(max-width: 640px)").matches ? "cel" : "pc");
+    montarControles();
+    if ("ResizeObserver" in window) new ResizeObserver(ajustar).observe(janela);
+    // só carrega o exemplo quando a seção estiver chegando na tela
+    const obsEx = io(([e], o) => { if (e.isIntersecting && !carregou) { carregar(); o.disconnect(); } }, { rootMargin: "400px 0px" });
+    if (obsEx) obsEx.observe(palco); else carregar();
+  }
+  window.addEventListener("resize", escalaVitrine);
+  window.addEventListener("load", escalaVitrine);
 
   // ---------- Barra fixa no celular ----------
   const barra = $("#barra-celular");
   const hero = $(".hero");
   const secProposta = $("#proposta");
   if (barra && "IntersectionObserver" in window) {
-    let heroVisivel = true, propostaVisivel = false;
-    const atualizar = () => barra.classList.toggle("mostrar", !heroVisivel && !propostaVisivel);
-    new IntersectionObserver(([e]) => { heroVisivel = e.isIntersecting; atualizar(); }, { threshold: 0.05 }).observe(hero);
-    new IntersectionObserver(([e]) => { propostaVisivel = e.isIntersecting; atualizar(); }, { threshold: 0 }).observe(secProposta);
-  }
-
-  // ---------- Exemplos: sites de marcas fictícias em miniatura ----------
-  const AMOSTRAS = {
-    "brasa-e-sal": { nome: "Brasa & Sal", dominio: "brasaesal.com.br", desc: "Restaurante: cardápio com abas, reserva de mesa e visual de alta gastronomia." },
-    "clinica-alvorada": { nome: "Clínica Alvorada", dominio: "clinicaalvorada.com.br", desc: "Clínica: agendamento online com horários livres, tratamentos e equipe." },
-    "traco-norte": { nome: "Traço Norte", dominio: "traconorte.arq.br", desc: "Arquitetura: portfólio editorial, prévia dos projetos ao passar o mouse e briefing." },
-    "patas-e-cia": { nome: "Patas & Cia", dominio: "patasecia.com.br", desc: "Pet shop: loja com categorias, carrinho e banho & tosa com hora marcada." },
-    "pulso-academia": { nome: "Pulso", dominio: "pulsoacademia.com.br", desc: "Academia: grade de aulas por dia, planos e aula experimental." }
-  };
-  const tela = $("#amostra-tela");
-  if (tela) {
-    const janela = $("#amostra-janela");
-    const frame = $("#amostra-frame");
-    const desc = $("#amostra-desc");
-    const endereco = $("#amostra-endereco");
-    const abas = $$(".amostra-aba");
-    const modos = $$(".modo");
-    const TAM = { pc: { w: 1280, h: 800 }, cel: { w: 390, h: 760 } };
-    let atualA = "brasa-e-sal";
-    let modo = window.matchMedia("(max-width: 640px)").matches ? "cel" : "pc";
-    let carregou = false;
-
-    const ajustar = () => {
-      const t = TAM[modo];
-      const largura = janela.clientWidth || 1;
-      const escala = Math.min(1, largura / t.w);
-      frame.style.width = t.w + "px";
-      frame.style.height = t.h + "px";
-      frame.style.transform = "scale(" + escala + ")";
-      janela.style.height = Math.round(t.h * escala) + "px";
-    };
-    const carregar = () => {
-      const a = AMOSTRAS[atualA];
-      janela.classList.add("carregando");
-      frame.title = "Exemplo de site: " + a.nome;
-      frame.src = "amostras/" + atualA + ".html";
-      endereco.textContent = a.dominio;
-      desc.textContent = a.desc;
-      carregou = true;
-    };
-    frame.addEventListener("load", () => janela.classList.remove("carregando"));
-    const aplicarModo = () => {
-      tela.dataset.modo = modo;
-      modos.forEach((m) => { const on = m.dataset.modo === modo; m.classList.toggle("ativo", on); m.setAttribute("aria-pressed", String(on)); });
-      requestAnimationFrame(ajustar);
-      setTimeout(ajustar, 520);   // depois da transição da moldura
-    };
-    abas.forEach((b) => b.addEventListener("click", () => {
-      if (b.dataset.amostra === atualA) return;
-      atualA = b.dataset.amostra;
-      abas.forEach((x) => { const on = x === b; x.classList.toggle("ativa", on); x.setAttribute("aria-selected", String(on)); });
-      carregar();
-    }));
-    modos.forEach((m) => m.addEventListener("click", () => { modo = m.dataset.modo; aplicarModo(); }));
-    if ("ResizeObserver" in window) new ResizeObserver(ajustar).observe(janela);
-    window.addEventListener("resize", ajustar);
-    aplicarModo();
-    // só carrega o exemplo quando a seção estiver chegando na tela
-    if ("IntersectionObserver" in window) {
-      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting && !carregou) { carregar(); io.disconnect(); } }, { rootMargin: "400px 0px" });
-      io.observe(tela);
-    } else carregar();
+    let heroNaTela = true, propostaNaTela = false;
+    const atualizar = () => barra.classList.toggle("mostrar", !heroNaTela && !propostaNaTela);
+    new IntersectionObserver(([e]) => { heroNaTela = e.isIntersecting; atualizar(); }, { threshold: 0.05 }).observe(hero);
+    new IntersectionObserver(([e]) => { propostaNaTela = e.isIntersecting; atualizar(); }, { threshold: 0 }).observe(secProposta);
   }
 
   // ---------- Formulário ----------
@@ -219,37 +330,6 @@
     return (el.value || "").trim();
   };
   const objetivosMarcados = () => objetivos.filter((o) => o.checked).map((o) => o.value);
-
-  // Resumo ao lado
-  const r = {
-    empresa: $("#r-empresa"), criar: $("#r-criar"), objetivos: $("#r-objetivos"),
-    ramo: $("#r-ramo"), contato: $("#r-contato")
-  };
-  function atualizarResumo() {
-    r.empresa.textContent = valor("empresa") || "Seu negócio";
-    r.criar.textContent = valor("criar") || "—";
-    r.ramo.textContent = valor("ramo") || "—";
-    const nome = valor("nome");
-    r.contato.textContent = nome ? nome + " · " + (valor("preferencia") || "WhatsApp") : "—";
-
-    const lista = objetivosMarcados().map((v) => (v === "Outros" && outrosTxt.value.trim()) ? outrosTxt.value.trim() : v);
-    const atuais = Array.from(r.objetivos.children).map((li) => li.textContent);
-    if (lista.join("|") === atuais.join("|")) return;
-    r.objetivos.innerHTML = "";
-    if (!lista.length) {
-      const li = document.createElement("li");
-      li.className = "vazio"; li.textContent = "Escolha ao lado";
-      r.objetivos.appendChild(li);
-      return;
-    }
-    lista.forEach((t) => {
-      const li = document.createElement("li");
-      li.textContent = t.length > 42 ? t.slice(0, 40) + "…" : t;
-      r.objetivos.appendChild(li);
-    });
-  }
-  form.addEventListener("input", atualizarResumo);
-  form.addEventListener("change", atualizarResumo);
 
   // "Outros" abre o campo de texto
   outrosCheck.addEventListener("change", () => {
@@ -498,5 +578,4 @@
     }
   });
 
-  atualizarResumo();
 })();
