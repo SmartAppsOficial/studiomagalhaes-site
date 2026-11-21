@@ -105,6 +105,13 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 21/11/2026 (noite), Claude do Paulo (negócios: site modelo)
+- **Página nova `negocios/modelo/`** (sem indexação no Google e sem link em nenhuma página do site): o site modelo que o Paulo usa nas reuniões com clientes. É um site de pequeno negócio que vira restaurante, clínica, loja, salão ou serviços, com um painel para mudar ao vivo ramo, cores, tema claro ou escuro, estilo, fontes, seções e textos. Os visuais ficam salvos só no aparelho de quem usa.
+- **Funciona sem internet** depois da primeira visita (`sw.js` guarda os arquivos) e pode ser instalado como app no tablet e no celular (`manifest.webmanifest`). O service worker só vale dentro de `negocios/modelo/`; o resto do site não muda.
+- Marcas, endereço ("Rua do Exemplo, 123"), telefone e @ são fictícios. Os preços aparecem como "R$ —". Os depoimentos têm o selo "Exemplo" e o aviso de que ali entram os comentários reais. Os botões só montam a mensagem e abrem o WhatsApp; nada é enviado sozinho.
+- 70 fotos do Unsplash (licença livre, uso comercial permitido; lista em `negocios/modelo/assets/fotos-lista.txt`), com até 1000 px de largura. As fontes ficam na própria pasta (licença SIL OFL).
+- **Não edite à mão:** a origem fica fora deste repositório, na pasta `site-modelo` do Paulo. Para atualizar, rode lá `node ferramentas/publicar.js <este repositório>/negocios/modelo`, que também gera um `sw.js` com versão nova.
+
 ### 21/11/2026 (noite), Claude do Paulo (menu do site)
 - **Menu do topo** (`assets/js/site.js` e `assets/css/estilo.css`, valem para todas as páginas que usam o topo do site): entrou "Sites para negócios" antes de "Jogos", com ícone de maleta e contorno ciano, levando para `negocios/`. Em telas médias (761 a 1040 px) aparece só "Negócios", para caber na barra. No celular é o primeiro item do menu. Os itens do menu não quebram mais em duas linhas.
 
