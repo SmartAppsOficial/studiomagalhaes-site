@@ -105,6 +105,16 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 21/11/2026, Claude do Paulo (negócios)
+- **Página nova `negocios/`** (studiomagalhaes.com.br/negocios): sites e apps para pequenos e médios negócios, para a campanha do Google Ads. Visual próprio, claro, com as cores do estúdio; não usa o `site.js` nem o `estilo.css`. Tem formulário de proposta em 3 etapas (objetivos com várias escolhas e "Outros", dados do negócio, contato). Sem preços, números ou depoimentos inventados; os negócios da ilustração do topo são fictícios e a página avisa.
+- **Painel `negocios/painel/`** (sem indexação no Google): só o Paulo entra, com a conta Google. Cada pedido do formulário vai para a coleção `propostas` do Firestore; o painel mostra ao vivo, com status, anotações, botão de WhatsApp e planilha (CSV). As regras do Firestore ficam **fora** deste repositório (têm o e-mail do Paulo). `negocios/firebase-config.js` guarda o projeto do Firebase (não é segredo).
+- O rodapé do site (`assets/js/site.js`) ganhou o link "Sites e apps para negócios". Nada mais do site mudou.
+- **Exemplos (`negocios/amostras/`)**: 5 sites de marcas fictícias (restaurante, clínica, arquitetura, pet shop, academia), cada um com visual próprio, mostrados em miniatura na seção "Exemplos" (computador ou celular), sem sair da página. Todos avisam que a marca é fictícia e têm `noindex`.
+- **Firebase ligado** (projeto `sm-negocios`, separado do Zero to CEO): `negocios/firebase-config.js` preenchido. O painel conversa com um Apps Script do Paulo ("SM Propostas"), que avisa cada pedido por e-mail, envia as respostas do painel pelo Gmail, traz as respostas dos clientes de volta e usa o Gemini para rascunhos. O código desse script e as regras do Firestore ficam fora deste repositório.
+- A opção "Ligação" saiu do formulário (pedido do Paulo).
+- **E-mail do projeto: negocios@studiomagalhaes.com.br** (contatos da página `negocios/`). Quem manda o formulário com e-mail recebe uma confirmação automática no estilo do estúdio.
+- **Falta:** a conversão do Google Ads em `negocios/negocios.js`.
+
 ### 17/11/2026, Claude do Paulo (Play Console)
 - **Massauros lançado no Google Play.** Em `projetos/massauros/dados.js`: `status` virou `"lancado"`, entrou o botão "Baixar na Google Play" (`lojas`) e saiu da descrição a frase do acesso antecipado.
 - **Outdoors do Zero to CEO:** o Massauros entrou em `outdoors.json` logo depois do "studio", com a capa, "Já no Google Play" e o link da página do projeto (pedido do Paulo, recado da ponte do Zero to CEO de 16/11).

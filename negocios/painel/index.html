@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Propostas · Studio Magalhães</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#060f22">
+  <link rel="icon" type="image/png" href="../../assets/img/estudio/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body data-tela="carregando">
+
+  <!-- ============ Carregando ============ -->
+  <div class="tela tela-carregando" aria-live="polite">
+    <span class="girando" aria-hidden="true"></span>
+    <span class="so-leitor">Carregando</span>
+  </div>
+
+  <!-- ============ Entrar ============ -->
+  <main class="tela tela-entrar">
+    <div class="entrar-fundo" aria-hidden="true"><i></i><i></i></div>
+    <div class="entrar-cartao">
+      <span class="logo-sm logo-grande" aria-hidden="true"></span>
+      <p class="entrar-sobre">Studio Magalhães <em>para negócios</em></p>
+      <h1>Painel de propostas</h1>
+      <p class="entrar-txt">Área restrita. Entre com a conta Google autorizada para ver os pedidos que chegam pelo site.</p>
+
+      <div class="entrar-negado" id="negado" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>
+        <span>A conta <b id="negado-email"></b> não tem acesso a este painel.</span>
+      </div>
+      <p class="entrar-erro" id="entrar-erro" hidden></p>
+
+      <button class="btn-google" id="btn-entrar" type="button">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span id="btn-entrar-txt">Entrar com Google</span>
+      </button>
+      <a class="entrar-voltar" href="../">Voltar para a página de negócios</a>
+    </div>
+  </main>
+
+  <!-- ============ Painel ============ -->
+  <div class="tela tela-painel">
+    <header class="barra">
+      <a class="barra-marca" href="../" title="Página de negócios">
+        <span class="logo-sm" aria-hidden="true"></span>
+        <span><b>Propostas</b><small>Studio Magalhães</small></span>
+      </a>
+      <div class="barra-acoes">
+        <span class="ao-vivo" title="Os pedidos novos aparecem sozinhos"><i aria-hidden="true"></i>Ao vivo</span>
+        <button class="btn-icone" id="btn-config" type="button" title="Assistente e e-mails">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+          <span>Assistente</span>
+        </button>
+        <button class="btn-icone" id="btn-csv" type="button" title="Baixar planilha (CSV)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <span>Planilha</span>
+        </button>
+        <div class="usuario">
+          <img id="usuario-foto" alt="" width="34" height="34" referrerpolicy="no-referrer" hidden>
+          <span class="usuario-inicial" id="usuario-inicial" aria-hidden="true"></span>
+          <span class="usuario-nome"><b id="usuario-nome"></b><small id="usuario-email"></small></span>
+          <button class="btn-sair" id="btn-sair" type="button">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="area">
+      <!-- Números -->
+      <section class="numeros" aria-label="Resumo">
+        <button class="numero" data-filtro="nova" type="button">
+          <span class="numero-ponto st-nova"></span><b id="n-nova">0</b><small>Novas</small>
+        </button>
+        <button class="numero" data-filtro="conversa" type="button">
+          <span class="numero-ponto st-conversa"></span><b id="n-conversa">0</b><small>Em conversa</small>
+        </button>
+        <button class="numero" data-filtro="enviada" type="button">
+          <span class="numero-ponto st-enviada"></span><b id="n-enviada">0</b><small>Proposta enviada</small>
+        </button>
+        <button class="numero" data-filtro="fechada" type="button">
+          <span class="numero-ponto st-fechada"></span><b id="n-fechada">0</b><small>Fechadas</small>
+        </button>
+        <div class="numero numero-total">
+          <b id="n-total">0</b><small>Pedidos no total</small>
+          <span class="numero-ads"><b id="n-ads">0</b> vieram de anúncio</span>
+        </div>
+      </section>
+
+      <div class="corpo">
+        <!-- Lista -->
+        <section class="lista" aria-label="Pedidos">
+          <div class="ferramentas">
+            <label class="busca">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+              <span class="so-leitor">Buscar</span>
+              <input type="search" id="busca" placeholder="Buscar por nome, negócio, ramo, cidade…" autocomplete="off">
+            </label>
+            <div class="filtros" role="tablist" aria-label="Filtrar por status">
+              <button type="button" class="filtro ativo" data-filtro="todas" role="tab" aria-selected="true">Todas</button>
+              <button type="button" class="filtro" data-filtro="nova" role="tab" aria-selected="false">Novas</button>
+              <button type="button" class="filtro" data-filtro="conversa" role="tab" aria-selected="false">Em conversa</button>
+              <button type="button" class="filtro" data-filtro="enviada" role="tab" aria-selected="false">Enviadas</button>
+              <button type="button" class="filtro" data-filtro="fechada" role="tab" aria-selected="false">Fechadas</button>
+              <button type="button" class="filtro" data-filtro="perdida" role="tab" aria-selected="false">Não seguiu</button>
+            </div>
+          </div>
+          <ul class="itens" id="itens" aria-live="polite"></ul>
+          <div class="vazio" id="vazio" hidden>
+            <div class="vazio-arte" aria-hidden="true"><span></span><span></span><span></span></div>
+            <b id="vazio-titulo">Nenhum pedido ainda</b>
+            <p id="vazio-txt">Quando alguém pedir uma proposta pelo site, ela aparece aqui na hora.</p>
+          </div>
+        </section>
+
+        <!-- Detalhe -->
+        <section class="detalhe" id="detalhe" aria-label="Pedido selecionado">
+          <div class="detalhe-vazio" id="detalhe-vazio">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+            <p>Escolha um pedido na lista para ver os detalhes.</p>
+          </div>
+          <article class="ficha" id="ficha" hidden></article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ Configurações ============ -->
+  <dialog class="config" id="config" aria-labelledby="config-titulo">
+    <form method="dialog" class="config-topo">
+      <h2 id="config-titulo">Assistente e e-mails</h2>
+      <button class="config-fechar" aria-label="Fechar">✕</button>
+    </form>
+
+    <section class="config-sec">
+      <div class="config-cab">
+        <span class="ia-selo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Gemini</span>
+        <span class="config-estado" id="cfg-gemini-estado">Verificando…</span>
+      </div>
+      <p class="config-txt">A chave fica guardada só no motor do painel (Apps Script), nunca no site. Crie uma em
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> e cole abaixo.</p>
+      <div class="config-linha">
+        <label class="so-leitor" for="cfg-chave">Chave do Gemini</label>
+        <input type="password" id="cfg-chave" autocomplete="off" placeholder="Cole a chave do Gemini (AIza…)">
+        <button type="button" class="btn-cfg" id="cfg-salvar-chave">Salvar chave</button>
+      </div>
+      <label class="config-rot" for="cfg-instrucoes">O que o assistente precisa saber sobre como você trabalha</label>
+      <textarea id="cfg-instrucoes" rows="7" maxlength="6000" placeholder="Ex.: Site institucional (até 5 páginas): a partir de R$ ___. Loja virtual: a partir de R$ ___. Prazo médio: ___ dias. Peço 50% no início e 50% na entrega. Domínio e hospedagem ficam no nome do cliente. Gosto de oferecer primeiro uma versão enxuta…"></textarea>
+      <div class="config-rodape"><span id="cfg-instr-estado"></span><button type="button" class="btn-cfg" id="cfg-salvar-instr">Salvar instruções</button></div>
+    </section>
+
+    <section class="config-sec">
+      <div class="config-cab"><b>E-mails</b><span class="config-estado" id="cfg-email-estado"></span></div>
+      <ul class="config-lista" id="cfg-email-lista"></ul>
+      <div class="config-rodape"><span id="cfg-sync-estado"></span><button type="button" class="btn-cfg btn-cfg-l" id="cfg-sincronizar">Buscar respostas agora</button></div>
+    </section>
+
+    <section class="config-sec">
+      <div class="config-cab"><b>Claude</b><span class="config-estado ok">Ligado</span></div>
+      <p class="config-txt">O Claude consegue ler um resumo do painel (pedidos, conversas e o que mudou) quando você pede numa conversa com ele, por exemplo: “Claude, o que chegou de proposta essa semana?”.</p>
+    </section>
+  </dialog>
+
+  <div class="aviso-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../firebase-config.js"></script>
+  <script type="module" src="painel.js"></script>
+</body>
+</html>

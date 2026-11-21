@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Traço Norte · Arquitetura (exemplo fictício)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--papel:#eeebe4;--tinta:#141414;--cinza:#6f6b63;--linha:#141414;--fina:rgba(20,20,20,.14);--acento:#d94f2b;--concreto:#cfcac0}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:"Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.04em;line-height:.92}p{margin:0}a{color:inherit;text-decoration:none}
+.mono{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+.c{padding:0 36px}
+.topo{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:70px;border-bottom:1px solid var(--linha);position:sticky;top:0;background:var(--papel);z-index:10}
+.topo nav{display:flex;gap:26px}.topo nav a:hover{color:var(--acento)}
+.marca{font-weight:700;letter-spacing:-.02em;font-size:1.1rem;display:flex;align-items:center;gap:10px}
+.marca i{width:16px;height:16px;border:2px solid var(--tinta);position:relative}
+.marca i::after{content:"";position:absolute;inset:3px 3px -6px -6px;border-right:2px solid var(--acento);border-bottom:2px solid var(--acento)}
+.topo .dir{justify-self:end}
+.topo .dir a{border:1px solid var(--tinta);padding:9px 16px;transition:.2s}
+.topo .dir a:hover{background:var(--tinta);color:var(--papel)}
+.hero{border-bottom:1px solid var(--linha);position:relative}
+.hero-top{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--fina)}
+.hero-top span{padding:14px 36px;border-right:1px solid var(--fina)}
+.hero-top span:last-child{border:0;text-align:right}
+.hero h1{font-size:clamp(4.4rem,15.5vw,15rem);padding:40px 36px 10px;font-weight:700;letter-spacing:-.07em}
+.hero h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--tinta)}
+.hero-base{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--fina)}
+.hero-base>*{padding:26px 36px;border-right:1px solid var(--fina)}
+.hero-base>*:last-child{border:0}
+.hero-base p{font-size:1.15rem;line-height:1.45;max-width:380px}
+.desenho{position:relative;min-height:220px;background-image:linear-gradient(var(--fina) 1px,transparent 1px),linear-gradient(90deg,var(--fina) 1px,transparent 1px);background-size:22px 22px}
+.desenho svg{position:absolute;inset:16px;width:calc(100% - 32px);height:calc(100% - 32px)}
+.desenho svg .t{stroke-dasharray:900;stroke-dashoffset:900;animation:traca 4s ease forwards}
+@keyframes traca{to{stroke-dashoffset:0}}
+.seta{display:flex;align-items:flex-end;justify-content:space-between}
+.seta b{font-size:3rem;font-weight:300;line-height:1}
+/* projetos */
+.titulo{display:flex;justify-content:space-between;align-items:end;padding:90px 36px 30px;border-bottom:1px solid var(--linha)}
+.titulo h2{font-size:clamp(2.8rem,6vw,5.5rem)}
+.proj{display:grid;grid-template-columns:80px 1.4fr 1fr 1fr 60px;align-items:center;padding:26px 36px;border-bottom:1px solid var(--fina);cursor:pointer;transition:background .3s,padding .3s;position:relative}
+.proj:hover{background:var(--tinta);color:var(--papel);padding-left:48px}
+.proj h3{font-size:clamp(1.6rem,3vw,2.6rem)}
+.proj .mono{color:var(--cinza)}.proj:hover .mono{color:var(--concreto)}
+.proj .fl{font-size:1.6rem;justify-self:end;transition:transform .3s}.proj:hover .fl{transform:rotate(-45deg);color:var(--acento)}
+.previa{position:fixed;width:300px;height:220px;pointer-events:none;opacity:0;transform:scale(.9);transition:opacity .25s,transform .25s;z-index:30;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.previa.on{opacity:1;transform:none}
+/* números/processo */
+.processo{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--linha)}
+.etapa{padding:50px 36px 60px;border-right:1px solid var(--fina);min-height:320px;display:flex;flex-direction:column;justify-content:space-between}
+.etapa:last-child{border:0}
+.etapa b{font-size:5rem;font-weight:300;letter-spacing:-.06em;line-height:1}
+.etapa h3{font-size:1.5rem;margin-bottom:12px;letter-spacing:-.03em;line-height:1.1}
+.etapa p{color:var(--cinza);line-height:1.5}
+/* contato */
+.contato{display:grid;grid-template-columns:1fr 1fr;min-height:70vh}
+.contato .esq{background:var(--tinta);color:var(--papel);padding:80px 36px;display:flex;flex-direction:column;justify-content:space-between}
+.contato h2{font-size:clamp(3rem,7vw,6.5rem)}
+.contato h2 span{color:var(--acento)}
+.contato .dir{padding:80px 36px}
+.campo{border-bottom:1px solid var(--linha);padding:18px 0;display:grid;grid-template-columns:140px 1fr;align-items:center}
+.campo input,.campo select{border:0;background:none;font:inherit;font-size:1.15rem;outline:none;color:var(--tinta);width:100%}
+.tipos{display:flex;flex-wrap:wrap;gap:8px}
+.tipos button{font:inherit;font-size:.9rem;border:1px solid var(--tinta);background:none;padding:7px 14px;cursor:pointer;transition:.2s}
+.tipos button.on,.tipos button:hover{background:var(--tinta);color:var(--papel)}
+.enviar{margin-top:36px;width:100%;padding:24px;background:var(--acento);color:#fff;border:0;font:inherit;font-size:1.3rem;font-weight:500;display:flex;justify-content:space-between;cursor:pointer;transition:.2s}
+.enviar:hover{background:var(--tinta)}
+.rod{display:flex;justify-content:space-between;padding:22px 36px;border-top:1px solid var(--linha);flex-wrap:wrap;gap:10px}
+@media(max-width:820px){
+.c,.titulo,.proj,.hero-top span,.hero-base>*,.etapa,.contato .esq,.contato .dir,.rod{padding-left:18px;padding-right:18px}
+.topo{grid-template-columns:1fr auto;padding:0 18px}.topo nav{display:none}
+.hero h1{padding:30px 18px 6px}
+.hero-top{grid-template-columns:1fr 1fr}.hero-top span:nth-child(n+3){display:none}
+.hero-base{grid-template-columns:1fr}.hero-base>*{border-right:0;border-bottom:1px solid var(--fina)}
+.proj{grid-template-columns:44px 1fr 30px;gap:6px 10px}.proj .mono.x{display:none}
+.processo{grid-template-columns:1fr}.etapa{min-height:auto;gap:30px;border-right:0;border-bottom:1px solid var(--fina)}
+.contato{grid-template-columns:1fr}.campo{grid-template-columns:1fr;gap:6px}
+.titulo{padding-top:60px}
+}
+</style>
+</head>
+<body>
+<header class="topo c">
+  <nav class="mono"><a href="#projetos">Projetos</a><a href="#processo">Processo</a></nav>
+  <a class="marca" href="#"><i></i>Traço Norte</a>
+  <div class="dir mono"><a href="#contato">Iniciar projeto</a></div>
+</header>
+
+<section class="hero">
+  <div class="hero-top mono"><span>Arquitetura e interiores</span><span>Residencial · Comercial</span><span>Est. 2014</span><span>N 22°54′</span></div>
+  <h1>TRAÇO<br><em>NORTE</em></h1>
+  <div class="hero-base">
+    <p>Projetamos casas, lojas e escritórios que respeitam o terreno, a luz e o orçamento de quem vai viver neles.</p>
+    <div class="desenho" aria-hidden="true">
+      <svg viewBox="0 0 300 180" fill="none" stroke="#141414" stroke-width="1.4">
+        <path class="t" d="M20 160h260M40 160V80l70-50 70 50v80M110 160v-46h40v46M60 100h30v26H60zM190 100h40v60M180 80h80v80"/>
+        <path class="t" d="M110 30v-14h14v24" stroke="#d94f2b" stroke-width="2"/>
+        <path class="t" d="M20 172h260M20 168v8M280 168v8" stroke-dasharray="3 4"/>
+      </svg>
+    </div>
+    <div class="seta mono"><span>Role para ver<br>os projetos</span><b>↓</b></div>
+  </div>
+</section>
+
+<section id="projetos">
+  <div class="titulo"><h2>Projetos<br>selecionados</h2><span class="mono">(06)</span></div>
+  <div class="proj" data-c="#b9b2a4,#7d7465"><span class="mono">01</span><h3>Casa Pátio</h3><span class="mono x">Residencial · 240 m²</span><span class="mono x">2025</span><span class="fl">→</span></div>
+  <div class="proj" data-c="#d94f2b,#7a2a16"><span class="mono">02</span><h3>Café Esquina</h3><span class="mono x">Comercial · 85 m²</span><span class="mono x">2025</span><span class="fl">→</span></div>
+  <div class="proj" data-c="#9fb0a3,#4f6355"><span class="mono">03</span><h3>Estúdio Serra</h3><span class="mono x">Interiores · 60 m²</span><span class="mono x">2024</span><span class="fl">→</span></div>
+  <div class="proj" data-c="#cfcac0,#8d877b"><span class="mono">04</span><h3>Escritório Linha</h3><span class="mono x">Corporativo · 320 m²</span><span class="mono x">2024</span><span class="fl">→</span></div>
+  <div class="proj" data-c="#2c2c2c,#000"><span class="mono">05</span><h3>Casa Fresta</h3><span class="mono x">Residencial · 180 m²</span><span class="mono x">2023</span><span class="fl">→</span></div>
+  <div class="proj" data-c="#e4c79a,#a07a3f"><span class="mono">06</span><h3>Loja Trama</h3><span class="mono x">Varejo · 110 m²</span><span class="mono x">2023</span><span class="fl">→</span></div>
+</section>
+<div class="previa" id="previa"></div>
+
+<section class="processo" id="processo">
+  <div class="etapa"><b>01</b><div><h3>Conversa e terreno</h3><p>Visitamos o lugar, entendemos a rotina e o orçamento antes de qualquer traço.</p></div></div>
+  <div class="etapa"><b>02</b><div><h3>Estudo preliminar</h3><p>Plantas, volumes e imagens em 3D para você enxergar o espaço.</p></div></div>
+  <div class="etapa"><b>03</b><div><h3>Projeto executivo</h3><p>Todos os detalhes para a obra sair como desenhado, sem improviso.</p></div></div>
+  <div class="etapa"><b>04</b><div><h3>Acompanhamento</h3><p>Visitas à obra e ajuste fino até a entrega das chaves.</p></div></div>
+</section>
+
+<section class="contato" id="contato">
+  <div class="esq"><span class="mono">Novo projeto</span><h2>Vamos<br>desenhar<br>o seu <span>espaço</span>?</h2><span class="mono">contato@traconorte.exemplo</span></div>
+  <form class="dir" onsubmit="event.preventDefault();this.querySelector('.enviar span').textContent='Recebido. Retornamos em breve.'">
+    <div class="campo"><span class="mono">Nome</span><input placeholder="Seu nome"></div>
+    <div class="campo"><span class="mono">Contato</span><input placeholder="E-mail ou telefone"></div>
+    <div class="campo"><span class="mono">Tipo</span><div class="tipos"><button type="button" class="on">Casa</button><button type="button">Reforma</button><button type="button">Comercial</button><button type="button">Interiores</button></div></div>
+    <div class="campo"><span class="mono">Área</span><select><option>Até 80 m²</option><option>80 a 200 m²</option><option>Acima de 200 m²</option></select></div>
+    <button class="enviar"><span>Enviar briefing</span><span>→</span></button>
+  </form>
+</section>
+<footer class="rod mono"><span>© Traço Norte Arquitetura</span><span>Marca fictícia · site de exemplo criado pelo Studio Magalhães</span></footer>
+<script>
+const pv=document.getElementById('previa');
+document.querySelectorAll('.proj').forEach(p=>{
+  p.addEventListener('mouseenter',()=>{const[a,b]=p.dataset.c.split(',');pv.style.background=`linear-gradient(160deg,${a},${b})`;pv.innerHTML=`<svg viewBox="0 0 300 220" style="width:100%;height:100%"><path d="M30 190h240M60 190V100l90-60 90 60v90M120 190v-50h60v50" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2"/></svg>`;pv.classList.add('on')});
+  p.addEventListener('mouseleave',()=>pv.classList.remove('on'));
+  p.addEventListener('mousemove',e=>{pv.style.left=(e.clientX+24)+'px';pv.style.top=(e.clientY-110)+'px'});
+});
+document.querySelectorAll('.tipos button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tipos button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+</script>
+</body>
+</html>
