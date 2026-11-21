@@ -105,6 +105,10 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 21/11/2026 (mais tarde), Claude do Paulo (negócios: ajustes do 3D)
+- No computador, as telas do topo seguem o mouse mesmo quando o aparelho pede "reduzir movimento" (o Windows com animações desligadas avisa isso ao site; o movimento só acontece quando a pessoa mexe o mouse). Os serviços também inclinam nesse caso.
+- "Do rascunho ao ar" só começa quando a parte inteira está na tela (antes começava com 40% visível), também com "reduzir movimento".
+
 ### 21/11/2026 (noite), Claude do Paulo (negócios: visual novo)
 - **Visual novo em `negocios/`** (a pedido do Paulo, que achou o anterior com "muita cara de Claude"): mistura da marca do estúdio com a clareza do site da Apple. Duas fontes só (Montserrat nos títulos, Inter no texto) e 7 seções em vez de 10: abertura, faixa escura com 3 motivos, 4 serviços, "Como funciona", exemplos, formulário e dúvidas (4).
 - **3D e animações:** no topo, os sites de exemplo aparecem em computador e celular em 3D; no computador as telas seguem o mouse e no celular balançam devagar. Em "Como funciona" um site se monta sozinho em camadas quando a seção aparece (sem prender a rolagem), com "Ver de novo". Títulos entram palavra por palavra e os serviços inclinam com o mouse. Quem pede "reduzir movimento" no aparelho vê tudo parado.
