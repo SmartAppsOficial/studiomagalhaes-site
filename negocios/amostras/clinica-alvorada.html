@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Clínica Alvorada · Odontologia (exemplo fictício)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#0f766e;--teal-2:#14b8a6;--menta:#ccfbf1;--menta-2:#f0fdfa;--areia:#fff7ed;--tinta:#0f2a2a;--suave:#5b7470;--linha:#e2ecea;--sol:#fbbf24}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:var(--tinta);background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.1}p{margin:0}a{color:inherit;text-decoration:none}
+.c{max-width:1180px;margin:0 auto;padding:0 28px}
+.topo{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--linha)}
+.topo .c{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem}
+.logo i{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--teal-2),var(--teal));display:grid;place-items:center}
+.logo i::before{content:"";width:16px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#fff;box-shadow:0 -8px 0 -4px var(--sol)}
+.logo small{display:block;font-weight:500;font-size:.72rem;color:var(--suave);letter-spacing:.02em}
+.menu{display:flex;gap:30px;font-weight:500;color:var(--suave);font-size:.95rem}
+.menu a:hover{color:var(--teal)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:999px;background:var(--teal);color:#fff;font-weight:700;font-size:.92rem;border:0;cursor:pointer;font-family:inherit;transition:.25s}
+.btn:hover{background:#0b5f58;transform:translateY(-1px)}
+.btn-c{background:var(--menta-2);color:var(--teal)}
+.btn-c:hover{background:var(--menta)}
+/* hero */
+.hero{background:linear-gradient(180deg,var(--menta-2),#fff);padding:70px 0 90px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.22),transparent 65%);right:-140px;top:-160px}
+.hero .c{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;position:relative;z-index:1}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:#fff;border:1px solid var(--linha);font-size:.82rem;font-weight:600;color:var(--teal)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--teal-2)}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4.4rem);font-weight:800;margin:22px 0 20px}
+.hero h1 span{background:linear-gradient(90deg,var(--teal),var(--teal-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.l{font-size:1.12rem;color:var(--suave);max-width:520px}
+.acoes{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.selos{display:flex;gap:26px;margin-top:40px;flex-wrap:wrap}
+.selos div{display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--suave);font-weight:500}
+.selos b{width:36px;height:36px;border-radius:10px;background:#fff;border:1px solid var(--linha);display:grid;place-items:center;color:var(--teal)}
+/* cartão de agenda */
+.agenda{background:#fff;border-radius:28px;padding:28px;box-shadow:0 40px 80px -30px rgba(15,118,110,.35),0 0 0 1px var(--linha)}
+.agenda h3{font-size:1.25rem;font-weight:700}
+.agenda>p{color:var(--suave);font-size:.9rem;margin:4px 0 20px}
+.rot{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin:18px 0 10px}
+.esp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.esp button,.dias button,.hrs button{font-family:inherit;border:1.5px solid var(--linha);background:#fff;border-radius:14px;cursor:pointer;transition:.2s;color:var(--tinta)}
+.esp button{padding:12px 8px;font-weight:600;font-size:.84rem}
+.dias{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.dias button{padding:10px 0;display:flex;flex-direction:column;align-items:center;font-size:.72rem;color:var(--suave)}
+.dias button b{font-size:1.15rem;color:var(--tinta)}
+.hrs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.hrs button{padding:10px 0;font-weight:600;font-size:.88rem}
+.hrs button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
+.on{background:var(--teal)!important;border-color:var(--teal)!important;color:#fff!important}
+.on b{color:#fff!important}
+.agenda .btn{width:100%;justify-content:center;margin-top:22px;padding:15px}
+.conf{display:none;margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--menta);color:var(--teal);font-weight:600;font-size:.9rem;text-align:center}
+/* serviços */
+.sec{padding:100px 0}
+.cab{text-align:center;max-width:620px;margin:0 auto 56px}
+.cab small{font-weight:700;color:var(--teal);font-size:.82rem;text-transform:uppercase;letter-spacing:.12em}
+.cab h2{font-size:clamp(2rem,4vw,3rem);font-weight:800;margin:12px 0}
+.cab p{color:var(--suave)}
+.servs{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.serv{padding:30px;border-radius:24px;border:1px solid var(--linha);background:#fff;transition:.3s}
+.serv:hover{transform:translateY(-4px);box-shadow:0 24px 50px -24px rgba(15,118,110,.4);border-color:var(--menta)}
+.serv .ic{width:54px;height:54px;border-radius:16px;background:var(--menta-2);display:grid;place-items:center;margin-bottom:20px}
+.serv svg{width:26px;height:26px;fill:none;stroke:var(--teal);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.serv h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.serv p{color:var(--suave);font-size:.94rem}
+.serv a{display:inline-block;margin-top:16px;font-weight:700;color:var(--teal);font-size:.9rem}
+/* equipe */
+.equipe{background:var(--areia)}
+.membros{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.membro{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 1px 0 var(--linha)}
+.foto{aspect-ratio:4/3;display:grid;place-items:end center;position:relative;overflow:hidden}
+.foto::before{content:"";position:absolute;width:46%;aspect-ratio:1;border-radius:50%;top:16%;background:rgba(255,255,255,.55)}
+.foto::after{content:"";width:76%;height:40%;border-radius:50% 50% 0 0;background:rgba(255,255,255,.55)}
+.membro div{padding:22px}
+.membro h3{font-size:1.1rem}
+.membro p{color:var(--suave);font-size:.88rem}
+.membro span{display:inline-block;margin-top:10px;font-size:.75rem;font-weight:600;color:var(--teal);background:var(--menta-2);padding:4px 10px;border-radius:999px}
+/* chamada */
+.cta{margin:0 28px 90px;border-radius:32px;background:linear-gradient(130deg,var(--teal),#0b4f4a);color:#fff;padding:70px 40px;text-align:center;position:relative;overflow:hidden}
+.cta::before{content:"";position:absolute;width:380px;height:380px;border-radius:50%;border:60px solid rgba(255,255,255,.06);left:-120px;bottom:-200px}
+.cta h2{font-size:clamp(2rem,4vw,3rem);font-weight:800;position:relative}
+.cta p{opacity:.85;margin:12px 0 28px;position:relative}
+.cta .btn{background:var(--sol);color:var(--tinta);position:relative}
+.rod{border-top:1px solid var(--linha);padding:40px 0;color:var(--suave);font-size:.88rem}
+.rod .c{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.zap{position:fixed;right:22px;bottom:22px;width:58px;height:58px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 14px 30px rgba(37,211,102,.45);z-index:20}
+.zap svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2}
+@media(max-width:860px){
+.menu{display:none}.c{padding:0 18px}.hero{padding:40px 0 60px}.hero .c{grid-template-columns:1fr;gap:36px}
+.servs,.membros{grid-template-columns:1fr}.sec{padding:70px 0}.cta{margin:0 14px 60px;padding:50px 22px}
+.topo .btn{padding:10px 16px;font-size:.82rem}.agenda{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+<header class="topo"><div class="c">
+  <a class="logo" href="#"><i></i><span>Clínica Alvorada<small>Odontologia integrada</small></span></a>
+  <nav class="menu"><a href="#tratamentos">Tratamentos</a><a href="#equipe">Equipe</a><a href="#contato">Contato</a></nav>
+  <a class="btn" href="#agenda">Agendar</a>
+</div></header>
+
+<section class="hero"><div class="c">
+  <div>
+    <span class="pill"><i></i>Horários nesta semana</span>
+    <h1>Cuidar do sorriso pode ser <span>leve</span>.</h1>
+    <p class="l">Consultas sem pressa, explicação clara de cada etapa e um ambiente pensado para quem tem medo de dentista.</p>
+    <div class="acoes"><a class="btn" href="#agenda">Agendar avaliação</a><a class="btn btn-c" href="#tratamentos">Ver tratamentos</a></div>
+    <div class="selos">
+      <div><b>✓</b>Atendimento infantil</div><div><b>✓</b>Sábados pela manhã</div><div><b>✓</b>Estacionamento</div>
+    </div>
+  </div>
+  <div class="agenda" id="agenda">
+    <h3>Agende sua consulta</h3>
+    <p>Escolha a especialidade, o dia e o horário.</p>
+    <p class="rot">Especialidade</p>
+    <div class="esp" data-g="esp"><button class="on">Avaliação</button><button>Limpeza</button><button>Clareamento</button><button>Ortodontia</button><button>Implante</button><button>Infantil</button></div>
+    <p class="rot">Dia</p>
+    <div class="dias" data-g="dia"><button class="on">seg<b>7</b></button><button>ter<b>8</b></button><button>qua<b>9</b></button><button>qui<b>10</b></button><button>sex<b>11</b></button></div>
+    <p class="rot">Horário</p>
+    <div class="hrs" data-g="hr"><button>08:00</button><button disabled>09:00</button><button class="on">10:00</button><button>11:00</button><button>14:00</button><button disabled>15:00</button><button>16:00</button><button>17:00</button></div>
+    <button class="btn" id="confirmar">Confirmar agendamento</button>
+    <p class="conf" id="conf">Pronto! Você vai receber a confirmação no WhatsApp.</p>
+  </div>
+</div></section>
+
+<section class="sec" id="tratamentos"><div class="c">
+  <div class="cab"><small>Tratamentos</small><h2>Tudo em um só lugar</h2><p>Do check-up ao implante, com o mesmo time acompanhando você.</p></div>
+  <div class="servs">
+    <div class="serv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3c-3 0-5 1.5-7 1.5C5 12 7 21 9 21c1.5 0 1.5-5 3-5s1.5 5 3 5c2 0 4-9 4-16.5C17 4.5 15 3 12 3z"/></svg></div><h3>Check-up e limpeza</h3><p>Avaliação completa, limpeza e orientação para manter tudo em dia.</p><a href="#agenda">Agendar →</a></div>
+    <div class="serv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3.5"/></svg></div><h3>Clareamento</h3><p>Em consultório ou caseiro, com acompanhamento e sem sensibilidade exagerada.</p><a href="#agenda">Agendar →</a></div>
+    <div class="serv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/><rect x="6" y="6" width="4" height="12" rx="1.5"/><rect x="14" y="6" width="4" height="12" rx="1.5"/></svg></div><h3>Ortodontia</h3><p>Aparelhos fixos e alinhadores transparentes, com planejamento digital.</p><a href="#agenda">Agendar →</a></div>
+    <div class="serv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M9 3h6l-1 6h-4z"/><path d="M10 9l-1 12h6l-1-12"/><path d="M9.5 13h5M9.3 17h5.4"/></svg></div><h3>Implantes</h3><p>Reabilitação com implantes e próteses, explicada passo a passo.</p><a href="#agenda">Agendar →</a></div>
+    <div class="serv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/></svg></div><h3>Odontopediatria</h3><p>Primeira consulta divertida, para a criança criar uma boa relação com o dentista.</p><a href="#agenda">Agendar →</a></div>
+    <div class="serv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z"/></svg></div><h3>Urgência</h3><p>Dor ou acidente? Encaixamos no mesmo dia sempre que possível.</p><a href="#agenda">Agendar →</a></div>
+  </div>
+</div></section>
+
+<section class="sec equipe" id="equipe"><div class="c">
+  <div class="cab"><small>Equipe</small><h2>Quem vai cuidar de você</h2></div>
+  <div class="membros">
+    <div class="membro"><div class="foto" style="background:linear-gradient(160deg,#99f6e4,#14b8a6)"></div><div><h3>Dra. Helena Prado</h3><p>Clínica geral e estética</p><span>CRO 00000</span></div></div>
+    <div class="membro"><div class="foto" style="background:linear-gradient(160deg,#fde68a,#f59e0b)"></div><div><h3>Dr. Rafael Nunes</h3><p>Ortodontia</p><span>CRO 00000</span></div></div>
+    <div class="membro"><div class="foto" style="background:linear-gradient(160deg,#c7d2fe,#6366f1)"></div><div><h3>Dra. Beatriz Lima</h3><p>Odontopediatria</p><span>CRO 00000</span></div></div>
+  </div>
+</div></section>
+
+<section class="cta" id="contato">
+  <h2>Sua primeira avaliação começa aqui.</h2>
+  <p>Av. Central, 500 · Sala 12 · Seg a sex 8h–18h · Sáb 8h–12h</p>
+  <a class="btn" href="#agenda">Agendar agora</a>
+</section>
+<footer class="rod"><div class="c"><span>© Clínica Alvorada</span><span>Marca fictícia · site de exemplo criado pelo Studio Magalhães</span></div></footer>
+<a class="zap" href="#agenda" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 00-7.8 13.5L3 21l4.6-1.2A9 9 0 1012 3z"/></svg></a>
+<script>
+document.querySelectorAll('[data-g]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;g.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}));
+document.getElementById('confirmar').onclick=()=>{document.getElementById('conf').style.display='block'};
+</script>
+</body>
+</html>

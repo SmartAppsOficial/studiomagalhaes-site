@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Brasa & Sal · Cozinha de fogo (exemplo fictício)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--fundo:#13100e;--fundo-2:#1c1714;--creme:#f3e9dc;--suave:#b9a996;--brasa:#e2592a;--brasa-2:#ff8a4c;--ouro:#c9a35c;--linha:rgba(243,233,220,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--fundo);color:var(--creme);font-family:Inter,system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:400;margin:0;letter-spacing:-.02em;line-height:1.02}
+a{color:inherit;text-decoration:none}p{margin:0}
+.c{max-width:1160px;margin:0 auto;padding:0 28px}
+/* topo */
+.topo{position:sticky;top:0;z-index:10;background:rgba(19,16,14,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--linha)}
+.topo .c{display:flex;align-items:center;justify-content:space-between;height:74px}
+.logo{font-family:Fraunces,serif;font-size:1.55rem;font-style:italic;letter-spacing:-.02em}
+.logo b{color:var(--brasa);font-style:normal;font-weight:600}
+.menu{display:flex;gap:34px;font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;color:var(--suave)}
+.menu a:hover{color:var(--creme)}
+.reservar{padding:12px 22px;border:1px solid var(--ouro);color:var(--ouro);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:.3s}
+.reservar:hover{background:var(--ouro);color:var(--fundo)}
+/* hero */
+.hero{position:relative;min-height:88vh;display:grid;align-items:center;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 72% 62%,rgba(226,89,42,.35),transparent 65%),radial-gradient(ellipse 40% 40% at 20% 20%,rgba(201,163,92,.12),transparent 70%)}
+.hero .c{position:relative;display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;width:100%}
+.sobre-t{font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ouro);display:flex;align-items:center;gap:14px}
+.sobre-t::before{content:"";width:40px;height:1px;background:var(--ouro)}
+.hero h1{font-size:clamp(3.2rem,7.4vw,6.6rem);margin:26px 0 28px;font-weight:300}
+.hero h1 em{color:var(--brasa-2);font-weight:400}
+.hero p{color:var(--suave);max-width:430px;font-size:1.08rem}
+.acoes{display:flex;gap:16px;margin-top:38px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:17px 30px;background:var(--brasa);color:#fff;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;transition:.3s}
+.btn:hover{background:var(--brasa-2)}
+.btn-l{background:none;border:1px solid var(--linha);color:var(--creme)}
+.btn-l:hover{border-color:var(--creme);background:none}
+.prato{position:relative;aspect-ratio:1;max-width:520px;justify-self:end;width:100%}
+.prato .anel{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(201,163,92,.35)}
+.prato .anel:nth-child(2){inset:7%;border-style:dashed;animation:gira 80s linear infinite}
+.prato .disco{position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2a221d,#0d0a08 70%);box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 0 0 10px #1f1915,inset 0 0 0 11px rgba(201,163,92,.3)}
+.prato svg{position:absolute;inset:24%;width:52%;height:52%}
+@keyframes gira{to{transform:rotate(360deg)}}
+.selo{position:absolute;right:2%;bottom:8%;width:120px;height:120px;border-radius:50%;background:var(--ouro);color:var(--fundo);display:grid;place-items:center;text-align:center;font-family:Fraunces,serif;font-style:italic;font-size:1rem;line-height:1.1;transform:rotate(-12deg);box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.selo b{display:block;font-style:normal;font-size:1.9rem;font-weight:600}
+/* faixa */
+.faixa{border-block:1px solid var(--linha);overflow:hidden;padding:22px 0;white-space:nowrap}
+.faixa div{display:inline-flex;gap:46px;animation:corre 30s linear infinite;font-family:Fraunces,serif;font-style:italic;font-size:1.6rem;color:var(--suave)}
+.faixa span::after{content:"✦";margin-left:46px;color:var(--brasa);font-style:normal;font-size:1rem}
+@keyframes corre{to{transform:translateX(-50%)}}
+/* seções */
+.sec{padding:120px 0}
+.cab{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:60px;flex-wrap:wrap}
+.cab h2{font-size:clamp(2.4rem,5vw,4rem);font-weight:300}
+.cab h2 em{color:var(--brasa-2)}
+.abas{display:flex;gap:4px;border:1px solid var(--linha);padding:4px}
+.aba{background:none;border:0;color:var(--suave);font:inherit;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;padding:12px 18px;cursor:pointer;transition:.25s}
+.aba.on{background:var(--creme);color:var(--fundo)}
+.cardapio{display:grid;grid-template-columns:1fr 1fr;gap:6px 70px}
+.prato-l{display:grid;grid-template-columns:1fr auto;gap:4px 18px;padding:26px 0;border-bottom:1px solid var(--linha);animation:surge .5s both}
+.prato-l h3{font-size:1.45rem;display:flex;align-items:baseline;gap:12px}
+.prato-l h3 small{font-family:Inter;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brasa-2);border:1px solid rgba(226,89,42,.5);padding:3px 7px}
+.prato-l .p{font-family:Fraunces,serif;font-size:1.3rem;color:var(--ouro)}
+.prato-l p{grid-column:1/-1;color:var(--suave);font-size:.95rem}
+@keyframes surge{from{opacity:0;transform:translateY(10px)}}
+/* experiência */
+.exp{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--linha)}
+.exp>div{padding:60px}
+.exp .arte{background:linear-gradient(160deg,#2a1a12,#13100e);position:relative;overflow:hidden;min-height:420px}
+.chama{position:absolute;bottom:-10%;left:50%;width:260px;height:340px;transform:translateX(-50%);filter:blur(2px)}
+.chama i{position:absolute;bottom:0;left:50%;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;transform:translateX(-50%);animation:tremula 2.4s ease-in-out infinite alternate}
+.chama i:nth-child(1){width:240px;height:320px;background:radial-gradient(ellipse at 50% 80%,#e2592a,transparent 70%);opacity:.7}
+.chama i:nth-child(2){width:150px;height:230px;background:radial-gradient(ellipse at 50% 80%,#ff8a4c,transparent 70%);animation-delay:.3s}
+.chama i:nth-child(3){width:80px;height:140px;background:radial-gradient(ellipse at 50% 80%,#ffd29a,transparent 70%);animation-delay:.6s}
+@keyframes tremula{to{transform:translateX(-50%) scaleY(1.08) scaleX(.94)}}
+.exp h2{font-size:2.8rem;font-weight:300;margin-bottom:22px}
+.exp p{color:var(--suave);margin-bottom:16px}
+.numeros{display:flex;gap:40px;margin-top:34px}
+.numeros b{display:block;font-family:Fraunces,serif;font-size:2.6rem;font-weight:300;color:var(--ouro)}
+.numeros span{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--suave)}
+/* reserva */
+.reserva{background:var(--creme);color:var(--fundo)}
+.reserva .c{display:grid;grid-template-columns:1fr 1.1fr;gap:70px;align-items:center}
+.reserva h2{font-size:clamp(2.6rem,5vw,4.2rem);font-weight:300}
+.reserva h2 em{color:var(--brasa)}
+.reserva .txt p{margin-top:20px;color:#5b4d40}
+.form{background:#fff;padding:36px;box-shadow:0 30px 60px -20px rgba(19,16,14,.35)}
+.form label{display:block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:#8a7a69;margin:0 0 10px}
+.linha{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.form input,.form select{width:100%;border:0;border-bottom:1px solid #d9cbb9;padding:10px 0;font:inherit;font-size:1rem;background:none;outline:none;color:var(--fundo)}
+.form input:focus,.form select:focus{border-color:var(--brasa)}
+.horas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.horas button{border:1px solid #d9cbb9;background:none;padding:9px 14px;font:inherit;font-size:.88rem;cursor:pointer;transition:.2s}
+.horas button.on,.horas button:hover{background:var(--fundo);color:var(--creme);border-color:var(--fundo)}
+.form .btn{width:100%;justify-content:center;border:0;cursor:pointer;font:inherit;font-size:.8rem;letter-spacing:.18em;font-weight:600}
+.ok{display:none;margin-top:14px;font-family:Fraunces,serif;font-style:italic;color:var(--brasa);font-size:1.1rem;text-align:center}
+/* rodapé */
+.rod{padding:70px 0 40px;border-top:1px solid var(--linha)}
+.rod .c{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px}
+.rod h4{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ouro);margin:0 0 14px;font-weight:500}
+.rod p{color:var(--suave);font-size:.95rem}
+.fim{margin-top:50px;padding-top:24px;border-top:1px solid var(--linha);font-size:.78rem;color:#7b6d60;text-align:center}
+@media(max-width:820px){
+.menu{display:none}.c{padding:0 20px}
+.hero{min-height:auto;padding:60px 0 80px}.hero .c{grid-template-columns:1fr}
+.prato{max-width:340px;justify-self:center;margin-top:20px}.selo{width:96px;height:96px;font-size:.85rem}.selo b{font-size:1.5rem}
+.sec{padding:80px 0}.cardapio{grid-template-columns:1fr}
+.exp{grid-template-columns:1fr}.exp>div{padding:36px 24px}.exp .arte{min-height:260px}
+.reserva .c{grid-template-columns:1fr;gap:40px}.form{padding:26px 20px}
+.rod .c{grid-template-columns:1fr}.reservar{padding:10px 14px;font-size:.7rem}
+.abas{width:100%}.aba{flex:1;padding:12px 6px;font-size:.68rem}
+}
+</style>
+</head>
+<body>
+<header class="topo"><div class="c">
+  <a class="logo" href="#">Brasa <b>&amp;</b> Sal</a>
+  <nav class="menu"><a href="#cardapio">Cardápio</a><a href="#casa">A casa</a><a href="#reserva">Reservas</a></nav>
+  <a class="reservar" href="#reserva">Reservar mesa</a>
+</div></header>
+
+<section class="hero"><div class="c">
+  <div>
+    <p class="sobre-t">Cozinha de fogo · desde 2011</p>
+    <h1>Fogo lento,<br><em>sabor</em> que fica.</h1>
+    <p>Cortes maturados na casa, legumes da feira e tudo o que passa pela brasa de lenha. Um jantar sem pressa, do jeito que tem que ser.</p>
+    <div class="acoes"><a class="btn" href="#reserva">Reservar mesa →</a><a class="btn btn-l" href="#cardapio">Ver cardápio</a></div>
+  </div>
+  <div class="prato" aria-hidden="true">
+    <span class="anel"></span><span class="anel"></span><span class="disco"></span>
+    <svg viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a3a1c"/><stop offset="1" stop-color="#3d1a0d"/></linearGradient></defs>
+      <path d="M40 110c0-30 30-50 70-48s52 24 48 46-34 40-66 38-52-12-52-36z" fill="url(#g)"/>
+      <path d="M55 100l90-8M58 116l88-8M66 131l76-7" stroke="#1a0b05" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+      <circle cx="150" cy="70" r="9" fill="#5f7d3a"/><circle cx="162" cy="84" r="7" fill="#7a9a49"/><circle cx="60" cy="150" r="6" fill="#c9a35c"/><circle cx="72" cy="158" r="4" fill="#e2592a"/>
+    </svg>
+    <span class="selo"><span><b>18h</b>de brasa no<br>costelão</span></span>
+  </div>
+</div></section>
+
+<div class="faixa" aria-hidden="true"><div>
+  <span>Costela fogo de chão</span><span>Picanha maturada</span><span>Pão de fermentação natural</span><span>Vinhos do Sul</span><span>Sobremesas na brasa</span>
+  <span>Costela fogo de chão</span><span>Picanha maturada</span><span>Pão de fermentação natural</span><span>Vinhos do Sul</span><span>Sobremesas na brasa</span>
+</div></div>
+
+<section class="sec" id="cardapio"><div class="c">
+  <div class="cab">
+    <h2>O <em>cardápio</em><br>da casa</h2>
+    <div class="abas" role="tablist">
+      <button class="aba on" data-a="entradas">Entradas</button><button class="aba" data-a="brasa">Na brasa</button><button class="aba" data-a="doces">Sobremesas</button>
+    </div>
+  </div>
+  <div class="cardapio" id="lista"></div>
+</div></section>
+
+<section class="sec" id="casa" style="padding-top:0"><div class="c">
+  <div class="exp">
+    <div class="arte" aria-hidden="true"><div class="chama"><i></i><i></i><i></i></div></div>
+    <div>
+      <p class="sobre-t">A casa</p>
+      <h2 style="margin-top:20px">Uma parrilla no meio da cidade.</h2>
+      <p>Tudo começou com uma grelha no quintal e muita gente reunida em volta. Hoje são 40 lugares, uma adega pequena e o mesmo fogo aceso desde o almoço.</p>
+      <p>Trabalhamos com produtores da região e trocamos parte do cardápio a cada estação.</p>
+      <div class="numeros"><div><b>40</b><span>lugares</span></div><div><b>120</b><span>rótulos</span></div><div><b>1</b><span>fogo, sempre aceso</span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec reserva" id="reserva"><div class="c">
+  <div class="txt">
+    <p class="sobre-t" style="color:var(--brasa)">Reservas</p>
+    <h2 style="margin-top:20px">Guardamos a <em>melhor mesa</em> pra você.</h2>
+    <p>Terça a sábado, das 19h às 23h30. Domingo, almoço das 12h às 17h. Para grupos acima de 10 pessoas, fale com a gente.</p>
+  </div>
+  <form class="form" onsubmit="event.preventDefault();document.querySelector('.ok').style.display='block'">
+    <div class="linha">
+      <div><label>Data</label><input type="date" value="2026-12-05"></div>
+      <div><label>Pessoas</label><select><option>2 pessoas</option><option>3 pessoas</option><option>4 pessoas</option><option>5 ou mais</option></select></div>
+    </div>
+    <label>Horário</label>
+    <div class="horas"><button type="button">19:00</button><button type="button" class="on">19:30</button><button type="button">20:00</button><button type="button">20:30</button><button type="button">21:00</button><button type="button">21:30</button></div>
+    <div class="linha" style="grid-template-columns:1fr"><div><label>Seu nome</label><input placeholder="Como devemos chamar você?"></div></div>
+    <button class="btn">Confirmar reserva</button>
+    <p class="ok">Reserva recebida. Até breve!</p>
+  </form>
+</div></section>
+
+<footer class="rod"><div class="c">
+  <div><a class="logo" href="#">Brasa <b>&amp;</b> Sal</a><p style="margin-top:14px">Cozinha de fogo e vinhos.<br>Rua das Acácias, 120 · Centro</p></div>
+  <div><h4>Horários</h4><p>Ter a sáb · 19h–23h30<br>Domingo · 12h–17h</p></div>
+  <div><h4>Contato</h4><p>(00) 0000-0000<br>@brasaesal</p></div>
+</div><p class="fim">Marca fictícia · site de exemplo criado pelo Studio Magalhães</p></footer>
+
+<script>
+const D={entradas:[["Pão da casa","Fermentação natural, manteiga defumada e flor de sal","24","Assinatura"],["Provoleta","Queijo provolone na brasa, orégano fresco e mel picante","38"],["Linguiça artesanal","Receita da casa, vinagrete de pimentas","34"],["Burrata e tomates","Tomates tostados, pesto de rúcula","46"]],brasa:[["Costela fogo de chão","18 horas na brasa, farofa de manteiga","98","Assinatura"],["Picanha maturada","400 g, 21 dias de maturação, chimichurri","124"],["Ancho","350 g, sal grosso e alho confitado","112"],["Legumes do dia","Abóbora, cebola e cenoura na brasa","42"]],doces:[["Abacaxi na brasa","Canela, sorvete de coco e raspas de limão","32","Da estação"],["Pudim de doce de leite","Calda de café","28"],["Petit gâteau","Chocolate 70% e sorvete de creme","34"],["Banana caramelada","Doce de leite e castanhas","30"]]};
+const L=document.getElementById('lista');
+function mostra(a){L.innerHTML=D[a].map((p,i)=>`<div class="prato-l" style="animation-delay:${i*.06}s"><h3>${p[0]}${p[3]?`<small>${p[3]}</small>`:''}</h3><span class="p">R$ ${p[2]}</span><p>${p[1]}</p></div>`).join('')}
+document.querySelectorAll('.aba').forEach(b=>b.onclick=()=>{document.querySelectorAll('.aba').forEach(x=>x.classList.remove('on'));b.classList.add('on');mostra(b.dataset.a)});
+document.querySelectorAll('.horas button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.horas button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+mostra('entradas');
+</script>
+</body>
+</html>

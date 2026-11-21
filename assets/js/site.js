@@ -144,6 +144,7 @@
               <a href="${raiz}index.html#jogos">Jogos</a>
               <a href="${raiz}index.html#apps">Apps</a>
               <a href="${raiz}apoiar/index.html">Apoiar</a>
+              <a href="${raiz}negocios/">Sites e apps para negócios</a>
               <a href="mailto:${esc(email)}">${esc(email)}</a>
             </nav>
           </div>

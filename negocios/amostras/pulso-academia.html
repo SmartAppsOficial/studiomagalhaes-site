@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pulso Academia (exemplo fictício)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--preto:#0a0a0a;--preto-2:#151515;--lima:#c6ff00;--branco:#f5f5f0;--cinza:#8a8a85;--linha:rgba(245,245,240,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--preto);color:var(--branco);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:Anton,Impact,sans-serif;font-weight:400;margin:0;text-transform:uppercase;line-height:.9;letter-spacing:.005em}p{margin:0}a{color:inherit;text-decoration:none}
+.c{max-width:1240px;margin:0 auto;padding:0 28px}
+.topo{position:fixed;top:0;left:0;right:0;z-index:10;mix-blend-mode:difference}
+.topo .c{display:flex;justify-content:space-between;align-items:center;height:76px}
+.logo{font-family:Anton;font-size:1.7rem;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.logo svg{width:34px;height:20px}
+.menu{display:flex;gap:28px;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
+/* hero */
+.hero{min-height:100vh;position:relative;display:flex;align-items:flex-end;overflow:hidden;padding-bottom:60px}
+.listras{position:absolute;inset:-20%;background:repeating-linear-gradient(-28deg,transparent 0 60px,rgba(198,255,0,.06) 60px 62px);animation:desliza 12s linear infinite}
+@keyframes desliza{to{transform:translateX(124px)}}
+.circulo{position:absolute;right:-10%;top:10%;width:62vw;max-width:760px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 40%,#2a2a2a,#0a0a0a 70%);border:1px solid var(--linha)}
+.ecg{position:absolute;left:0;right:0;top:42%;height:140px}
+.ecg path{stroke:var(--lima);stroke-width:3;fill:none;stroke-dasharray:1400;stroke-dashoffset:1400;animation:pulso 3.2s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(198,255,0,.7))}
+@keyframes pulso{60%,100%{stroke-dashoffset:0}}
+.hero .c{position:relative;width:100%}
+.hero h1{font-size:clamp(4.2rem,13vw,12rem);font-style:italic;transform:skewX(-6deg)}
+.hero h1 span{color:var(--lima)}
+.hero h1 .out{color:transparent;-webkit-text-stroke:2px var(--branco)}
+.hero-base{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-top:30px;flex-wrap:wrap}
+.hero-base p{max-width:400px;color:#c9c9c3;font-size:1.08rem}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:20px 30px;background:var(--lima);color:var(--preto);font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.92rem;clip-path:polygon(0 0,100% 0,94% 100%,0 100%);transition:.2s;border:0;cursor:pointer;font-family:inherit}
+.btn:hover{padding-right:40px}
+/* letreiro */
+.letreiro{background:var(--lima);color:var(--preto);transform:rotate(-2deg);margin:40px -20px;padding:16px 0;overflow:hidden;white-space:nowrap}
+.letreiro div{display:inline-flex;gap:30px;animation:corre 18s linear infinite;font-family:Anton;font-size:2rem;text-transform:uppercase}
+.letreiro span::after{content:"✕";margin-left:30px;font-size:1.2rem;vertical-align:middle}
+@keyframes corre{to{transform:translateX(-50%)}}
+/* modalidades */
+.sec{padding:110px 0}
+.cab{display:flex;justify-content:space-between;align-items:end;margin-bottom:50px;gap:24px;flex-wrap:wrap}
+.cab h2{font-size:clamp(3rem,7vw,6rem)}
+.cab h2 span{color:var(--lima)}
+.cab p{color:var(--cinza);max-width:340px}
+.mods{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--linha)}
+.mod{background:var(--preto);padding:34px 26px;min-height:300px;display:flex;flex-direction:column;justify-content:space-between;transition:.3s;position:relative;overflow:hidden}
+.mod::after{content:"";position:absolute;left:0;right:0;bottom:0;height:0;background:var(--lima);transition:height .35s;z-index:0}
+.mod:hover::after{height:100%}
+.mod>*{position:relative;z-index:1;transition:color .3s}
+.mod:hover>*{color:var(--preto)}
+.mod b{font-family:Anton;font-size:1rem;color:var(--lima)}
+.mod h3{font-size:2.4rem}
+.mod p{color:var(--cinza);font-size:.95rem;margin-top:10px}
+/* grade de aulas */
+.dias{display:flex;gap:6px;margin-bottom:24px;overflow-x:auto;scrollbar-width:none}
+.dias button{flex:none;font-family:Anton;font-size:1.3rem;text-transform:uppercase;padding:12px 22px;background:var(--preto-2);color:var(--cinza);border:1px solid var(--linha);cursor:pointer;transition:.2s}
+.dias button.on{background:var(--lima);color:var(--preto);border-color:var(--lima)}
+.aulas{border-top:1px solid var(--linha)}
+.aula{display:grid;grid-template-columns:120px 1fr 1fr 140px;align-items:center;padding:22px 0;border-bottom:1px solid var(--linha);animation:entra .4s both}
+@keyframes entra{from{opacity:0;transform:translateX(-12px)}}
+.aula time{font-family:Anton;font-size:1.8rem;color:var(--lima)}
+.aula h3{font-size:1.7rem}
+.aula span{color:var(--cinza)}
+.vagas{justify-self:end;font-size:.78rem;font-weight:800;text-transform:uppercase;padding:7px 12px;border:1px solid var(--lima);color:var(--lima)}
+.vagas.cheia{border-color:#ff4d4d;color:#ff4d4d}
+/* planos */
+.planos{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.plano{border:1px solid var(--linha);padding:36px 30px;position:relative;background:var(--preto-2)}
+.plano.top{background:var(--lima);color:var(--preto);border-color:var(--lima);transform:translateY(-14px)}
+.plano.top .p small,.plano.top li{color:#2b3300}
+.plano .tag{position:absolute;top:-14px;left:30px;background:var(--branco);color:var(--preto);font-weight:800;font-size:.72rem;text-transform:uppercase;padding:6px 12px;letter-spacing:.08em}
+.plano h3{font-size:2rem}
+.p{margin:22px 0;font-family:Anton;font-size:4rem;line-height:1}
+.p small{font-family:Inter;font-size:.9rem;color:var(--cinza);font-weight:600}
+.plano ul{list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:10px;color:#c9c9c3}
+.plano li::before{content:"→ ";font-weight:800}
+.plano .btn{width:100%;justify-content:center}
+.plano.top .btn{background:var(--preto);color:var(--lima)}
+/* experimental */
+.exp{border:1px solid var(--lima);display:grid;grid-template-columns:1.2fr 1fr}
+.exp>div{padding:60px 44px}
+.exp h2{font-size:clamp(3rem,6vw,5rem)}
+.exp h2 span{color:var(--lima)}
+.exp form{background:var(--preto-2);display:flex;flex-direction:column;gap:14px;justify-content:center}
+.exp input,.exp select{background:none;border:0;border-bottom:1px solid var(--linha);padding:14px 0;color:var(--branco);font:inherit;font-size:1.05rem;outline:none}
+.exp input:focus{border-color:var(--lima)}
+.exp select option{background:var(--preto)}
+.rod{padding:40px 0;color:var(--cinza);font-size:.85rem}
+.rod .c{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:860px){
+.menu{display:none}.c{padding:0 18px}.hero{min-height:88vh}
+.mods{grid-template-columns:1fr 1fr}.mod{min-height:220px;padding:24px 18px}.mod h3{font-size:1.8rem}
+.aula{grid-template-columns:80px 1fr;gap:4px 12px}.aula time{font-size:1.4rem;grid-row:span 2}.aula h3{font-size:1.4rem}.vagas{grid-column:2;justify-self:start;margin-top:6px}
+.planos{grid-template-columns:1fr}.plano.top{transform:none}
+.exp{grid-template-columns:1fr}.exp>div{padding:36px 22px}.sec{padding:80px 0}
+}
+</style>
+</head>
+<body>
+<header class="topo"><div class="c">
+  <a class="logo" href="#"><svg viewBox="0 0 34 20"><path d="M0 10h8l3-8 5 16 4-12 3 4h11" fill="none" stroke="#c6ff00" stroke-width="2.6" stroke-linejoin="round"/></svg>PULSO</a>
+  <nav class="menu"><a href="#modalidades">Modalidades</a><a href="#aulas">Aulas</a><a href="#planos">Planos</a></nav>
+  <a class="logo" href="#experimental" style="font-size:.85rem;font-family:Inter;font-weight:800">AULA GRÁTIS →</a>
+</div></header>
+
+<section class="hero">
+  <div class="listras"></div><div class="circulo"></div>
+  <svg class="ecg" viewBox="0 0 1400 140" preserveAspectRatio="none"><path d="M0 70h420l30-50 40 110 40-120 34 100 22-40h814"/></svg>
+  <div class="c">
+    <h1>Seu limite é<br>o <span>próximo</span> <span class="out">treino</span></h1>
+    <div class="hero-base">
+      <p>Musculação, funcional, cross e lutas no mesmo lugar. Aberto das 5h às 23h, com professor na sala o tempo todo.</p>
+      <a class="btn" href="#experimental">Agendar aula grátis →</a>
+    </div>
+  </div>
+</section>
+
+<div class="letreiro" aria-hidden="true"><div>
+  <span>Musculação</span><span>Funcional</span><span>Cross</span><span>Muay thai</span><span>Bike indoor</span><span>Pilates</span>
+  <span>Musculação</span><span>Funcional</span><span>Cross</span><span>Muay thai</span><span>Bike indoor</span><span>Pilates</span>
+</div></div>
+
+<section class="sec" id="modalidades"><div class="c">
+  <div class="cab"><h2>Escolha o <span>seu</span> ritmo</h2><p>Quatro salas, um app para marcar aula e acompanhar a evolução.</p></div>
+  <div class="mods">
+    <div class="mod"><b>01</b><div><h3>Musculação</h3><p>Equipamentos novos e treino montado por professor.</p></div></div>
+    <div class="mod"><b>02</b><div><h3>Funcional</h3><p>Turmas pequenas, 45 minutos, corpo todo.</p></div></div>
+    <div class="mod"><b>03</b><div><h3>Cross</h3><p>Força e condicionamento com acompanhamento.</p></div></div>
+    <div class="mod"><b>04</b><div><h3>Lutas</h3><p>Muay thai e boxe do iniciante ao avançado.</p></div></div>
+  </div>
+</div></section>
+
+<section class="sec" id="aulas" style="padding-top:0"><div class="c">
+  <div class="cab"><h2>Grade de <span>aulas</span></h2></div>
+  <div class="dias" id="dias"><button class="on" data-d="0">Seg</button><button data-d="1">Ter</button><button data-d="2">Qua</button><button data-d="3">Qui</button><button data-d="4">Sex</button><button data-d="5">Sáb</button></div>
+  <div class="aulas" id="aulas-l"></div>
+</div></section>
+
+<section class="sec" id="planos" style="padding-top:20px"><div class="c">
+  <div class="cab"><h2>Planos</h2><p>Sem taxa de matrícula. Cancele quando quiser no plano mensal.</p></div>
+  <div class="planos">
+    <div class="plano"><h3>Mensal</h3><div class="p">R$ 119<small>/mês</small></div><ul><li>Musculação livre</li><li>App de treino</li><li>Avaliação física</li></ul><a class="btn" href="#experimental">Assinar</a></div>
+    <div class="plano top"><span class="tag">Mais escolhido</span><h3>Trimestral</h3><div class="p">R$ 99<small>/mês</small></div><ul><li>Tudo do mensal</li><li>Aulas coletivas</li><li>1 convidado por mês</li></ul><a class="btn" href="#experimental">Assinar</a></div>
+    <div class="plano"><h3>Anual</h3><div class="p">R$ 89<small>/mês</small></div><ul><li>Tudo do trimestral</li><li>Lutas incluídas</li><li>Congelamento de 30 dias</li></ul><a class="btn" href="#experimental">Assinar</a></div>
+  </div>
+</div></section>
+
+<section class="sec" id="experimental" style="padding-top:0"><div class="c">
+  <div class="exp">
+    <div><h2>Primeira aula<br>é <span>por nossa conta</span></h2><p style="color:#c9c9c3;margin-top:18px">Venha conhecer a estrutura e treinar com um professor. Sem compromisso.</p></div>
+    <form onsubmit="event.preventDefault();this.querySelector('button').textContent='Agendado! Te vemos lá →'">
+      <input placeholder="Seu nome"><input placeholder="WhatsApp"><select><option>Musculação</option><option>Funcional</option><option>Cross</option><option>Lutas</option></select>
+      <button class="btn" style="margin-top:10px;justify-content:center">Quero minha aula grátis</button>
+    </form>
+  </div>
+</div></section>
+<footer class="rod"><div class="c"><span>© Pulso Academia · Rua do Treino, 77</span><span>Marca fictícia · site de exemplo criado pelo Studio Magalhães</span></div></footer>
+<script>
+const A=[[["06:00","Funcional","Prof. Léo",3],["07:00","Cross","Prof. Ana",0],["12:00","Bike indoor","Prof. Caio",8],["18:30","Muay thai","Prof. Duda",5],["19:30","Funcional","Prof. Léo",2]],[["06:30","Pilates","Prof. Bia",4],["12:15","Cross","Prof. Ana",6],["18:00","Boxe","Prof. Duda",0],["20:00","Bike indoor","Prof. Caio",7]],[["06:00","Funcional","Prof. Léo",5],["07:00","Cross","Prof. Ana",2],["18:30","Muay thai","Prof. Duda",6],["19:30","Funcional","Prof. Léo",1]],[["06:30","Pilates","Prof. Bia",3],["12:15","Cross","Prof. Ana",4],["18:00","Boxe","Prof. Duda",2],["20:00","Bike indoor","Prof. Caio",9]],[["06:00","Funcional","Prof. Léo",4],["07:00","Cross","Prof. Ana",0],["18:00","Muay thai","Prof. Duda",3]],[["09:00","Aulão funcional","Equipe",12],["10:30","Cross em dupla","Prof. Ana",6]]];
+const L=document.getElementById('aulas-l');
+function mostra(d){L.innerHTML=A[d].map((a,i)=>`<div class="aula" style="animation-delay:${i*.05}s"><time>${a[0]}</time><h3>${a[1]}</h3><span>${a[2]}</span><span class="vagas ${a[3]?'':'cheia'}">${a[3]?a[3]+' vagas':'Lotada'}</span></div>`).join('')}
+document.getElementById('dias').onclick=e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#dias button').forEach(x=>x.classList.remove('on'));b.classList.add('on');mostra(+b.dataset.d)};
+mostra(0);
+</script>
+</body>
+</html>
