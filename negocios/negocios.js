@@ -15,7 +15,7 @@
   const CONFIG = {
     email: "negocios@studiomagalhaes.com.br",
     firebase: window.SM_FIREBASE || {},
-    googleAds: { id: "", conversao: "" }
+    googleAds: { id: "AW-18540873272", conversao: "AW-18540873272/w_nMCPPk7bwdELiM_YhF" }
   };
 
   const doc = document.documentElement;
