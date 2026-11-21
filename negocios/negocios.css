@@ -123,9 +123,11 @@ button, input, textarea { font: inherit; color: inherit; }
 .marca-nome { font-family: var(--f-titulo); font-weight: 700; font-size: 1.02rem; letter-spacing: -.01em; line-height: 1.1; white-space: nowrap; }
 .marca-nome em { font-family: var(--f-serif); font-weight: 400; font-size: 1.12rem; color: var(--azul-claro); margin-left: 2px; }
 .menu { display: flex; gap: 6px; margin-left: auto; }
-.menu a { text-decoration: none; color: var(--suave); font-weight: 500; font-size: .95rem; padding: 8px 14px; border-radius: 999px; transition: color .2s, background-color .2s; }
+.menu a { text-decoration: none; color: var(--suave); font-weight: 500; font-size: .95rem; padding: 8px 14px; border-radius: 999px; white-space: nowrap; transition: color .2s, background-color .2s; }
+.topo .btn { flex: none; }
+@media (max-width: 1040px) { .menu a { padding: 8px 10px; font-size: .9rem; } }
 .menu a:hover { color: var(--tinta); background: rgba(12, 26, 54, .05); }
-@media (max-width: 880px) {
+@media (max-width: 960px) {
   .menu { display: none; }
   .topo-interno { justify-content: space-between; gap: 12px; height: 64px; }
 }
