@@ -117,8 +117,9 @@
     const obsHero = io(([e]) => { heroVisivel = e.isIntersecting; }, { threshold: 0 });
     if (obsHero) obsHero.observe(cena);
 
-    if (!calmo && mouse) {
-      // segue o mouse na tela inteira, com suavidade
+    if (mouse) {
+      // Segue o mouse na tela inteira, com suavidade. Vale mesmo com "reduzir movimento":
+      // só mexe quando a pessoa mexe o mouse (o Windows com animações desligadas avisa isso ao site).
       let alvoX = 0, alvoY = 0, x = 0, y = 0, rodando = false;
       const passo = () => {
         x += (alvoX - x) * 0.08; y += (alvoY - y) * 0.08;
@@ -151,7 +152,7 @@
   });
 
   // ---------- Blocos: inclinação 3D + reflexo ----------
-  if (!calmo && mouse) $$(".bloco").forEach((b) => {
+  if (mouse) $$(".bloco").forEach((b) => {
     b.addEventListener("pointermove", (e) => {
       const r = b.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
@@ -196,14 +197,33 @@
     };
     montar(0);
     const perto = io((es, o) => es.forEach((e) => { if (e.isIntersecting) { carregarFinal(); o.disconnect(); } }), { rootMargin: "400px 0px" });
-    const visto = io((es, o) => es.forEach((e) => {
-      if (!e.isIntersecting) return;
-      o.disconnect();
-      if (calmo) montar(1); else setTimeout(() => tocar(1), 200);
-    }), { threshold: 0.4 });
-    if (perto && visto) { perto.observe(mont); visto.observe($(".fixo", mont)); } else { carregarFinal(); montar(1); }
+    if (perto) perto.observe(mont); else carregarFinal();
+
+    // Só começa quando a parte inteira (título, etapas e o site) está na tela, abaixo do topo fixo.
+    // Se ela for maior que a tela, começa quando ocupar a tela toda.
+    const fixo = $(".fixo", mont);
+    let comecou = false;
+    const conferir = () => {
+      if (comecou) return;
+      const r = fixo.getBoundingClientRect();
+      const topoFixo = ($("#topo") || {}).offsetHeight || 0;
+      const alturaUtil = window.innerHeight - topoFixo;
+      const inteira = r.height <= alturaUtil
+        ? r.top >= topoFixo - 2 && r.bottom <= window.innerHeight + 2
+        : r.top <= topoFixo + 24 && r.bottom >= window.innerHeight - 24;
+      if (!inteira) return;
+      comecou = true;
+      window.removeEventListener("scroll", aoRolarMont);
+      window.removeEventListener("resize", aoRolarMont);
+      carregarFinal();
+      setTimeout(() => tocar(1), 250);
+    };
+    const aoRolarMont = () => conferir();
+    window.addEventListener("scroll", aoRolarMont, { passive: true });
+    window.addEventListener("resize", aoRolarMont);
+    aoRolarMont();
     const ALVOS = [0.1, 0.32, 0.62, 1];
-    passos.forEach((li, i) => li.addEventListener("click", () => (calmo ? montar(ALVOS[i]) : tocar(ALVOS[i], 2600))));
+    passos.forEach((li, i) => li.addEventListener("click", () => { comecou = true; tocar(ALVOS[i], 2600); }));
     rever.addEventListener("click", () => { montar(0); tocar(1); });
     window.addEventListener("resize", escalaFinal);
   }
