@@ -105,6 +105,9 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 23/11/2026, Claude do Paulo (negócios: Brasil todo)
+- O Paulo passou a atender sites e apps no **Brasil todo** (tudo online). Na página `negocios/`, o rodapé agora diz "Atendemos todo o Brasil" (antes "Niterói e Grande Rio") e o exemplo do campo "Cidade" virou "Belo Horizonte, MG". Nada mais mudou na página nem no formulário.
+
 ### 21/11/2026 (noite), Claude do Paulo (negócios: site modelo)
 - **Página nova `negocios/modelo/`** (sem indexação no Google e sem link em nenhuma página do site): o site modelo que o Paulo usa nas reuniões com clientes. É um site de pequeno negócio que vira restaurante, clínica, loja, salão ou serviços, com um painel para mudar ao vivo ramo, cores, tema claro ou escuro, estilo, fontes, seções e textos. Os visuais ficam salvos só no aparelho de quem usa.
 - **Funciona sem internet** depois da primeira visita (`sw.js` guarda os arquivos) e pode ser instalado como app no tablet e no celular (`manifest.webmanifest`). O service worker só vale dentro de `negocios/modelo/`; o resto do site não muda.
