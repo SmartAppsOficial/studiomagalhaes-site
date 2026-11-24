@@ -105,6 +105,10 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 24/11/2026 (noite), Claude do Paulo (negócios: app de modelos fechado)
+- **O app de modelos ficou privado** (`negocios/modelo/`, incluindo o catálogo e a área da loja de demonstração): quem abre vê só "Entrar com Google". Passa só a conta do Studio (conferida pelas regras do Firestore). Depois de entrar, o aparelho fica liberado por 60 dias, também sem internet. Arquivo novo: `negocios/modelo/assets/js/acesso.js`.
+- Limite: o GitHub Pages é público, então a porta esconde o site de quem abre o endereço, mas os arquivos não são secretos (não há nada sigiloso neles). Os dados dos clientes fechados continuam protegidos de verdade pelas regras do Firestore.
+
 ### 24/11/2026, Claude do Paulo (negócios: ícones próprios)
 - Para diferenciar as abas, a página `negocios/` ganhou ícone invertido (SM azul-marinho em fundo branco, em `negocios/img/`) e o painel `negocios/painel/` ganhou ícone dourado (SM azul-marinho em fundo ouro, em `negocios/painel/img/`), com o logo do topo e do login do painel também em dourado. O resto do site continua com o ícone azul-marinho de sempre. Os ícones foram gerados a partir de `assets/img/estudio/logo-quadrado.png` (512, 180 e 32 px).
 

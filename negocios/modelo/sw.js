@@ -1,6 +1,6 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
 // Guarda o site modelo inteiro no aparelho para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-47e66e3f36';
+const VERSAO = 'sm-modelo-ad623f566f';
 const ARQUIVOS = [
   "./",
   "assets/css/modelo.css",
@@ -87,6 +87,7 @@ const ARQUIVOS = [
   "assets/icones/icone-256.png",
   "assets/icones/icone-512.png",
   "assets/icones/icone-maskable-512.png",
+  "assets/js/acesso.js",
   "assets/js/firebase-config.js",
   "assets/js/icones.js",
   "assets/js/modelo.js",
