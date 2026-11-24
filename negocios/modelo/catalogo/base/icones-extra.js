@@ -1,0 +1,45 @@
+/* Ícones extras do Catálogo digital (somam aos de assets/js/icones.js). */
+Object.assign(window.ICONES = window.ICONES || {}, {
+  busca: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>',
+  estrela: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>',
+  olho: '<path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  olhoFechado: '<path d="M3 3l18 18M10.6 5.6A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-3 3.8M6.2 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5c1.5 0 2.9-.4 4.1-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  cima: '<path d="M6 15l6-6 6 6"/>',
+  baixo: '<path d="M6 9l6 6 6-6"/>',
+  sair: '<path d="M15 4.5h3.5v15H15M10 8l-4 4 4 4M6 12h10"/>',
+  baixar: '<path d="M12 4v11M7 10l5 5 5-5M5 19.5h14"/>',
+  grafico: '<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
+  cadeado: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+  livro: '<path d="M4 5.5A2 2 0 0 1 6 3.5h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20.5v-15M8 7.5h7"/>',
+  lista: '<path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle class="ic-cheio" cx="4.5" cy="6.5" r="1.2"/><circle class="ic-cheio" cx="4.5" cy="12" r="1.2"/><circle class="ic-cheio" cx="4.5" cy="17.5" r="1.2"/>',
+  tag: '<path d="M3.5 12.5V4h8.5l8.5 8.5-8 8z"/><circle cx="8" cy="8.5" r="1.4"/>',
+  ajustes: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+  imagem: '<rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9.5 8.5"/>',
+  copiar2: '<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/>',
+  sino: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  moeda: '<circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.5-.9-1.5-1.4-2.6-1.4-1.5 0-2.6.8-2.6 2s1 1.7 2.7 2.1c1.8.4 2.8 1 2.8 2.3s-1.2 2.1-2.8 2.1c-1.2 0-2.3-.6-2.8-1.6M12 6.3v1.5M12 16.4v1.4"/>',
+  cubo: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/>',
+
+  /* Ícones de categoria (traço fino, minimalistas) */
+  'cat-pizza': '<path d="M12 3c4 0 7.6 1.6 9 3.2L12 21 3 6.2C4.4 4.6 8 3 12 3z"/><path d="M4.7 8.7c2-1.2 4.5-1.9 7.3-1.9s5.3.7 7.3 1.9"/><circle cx="10" cy="11.2" r="1.1"/><circle cx="14" cy="13.8" r="1"/><circle cx="13.3" cy="9.9" r=".8"/>',
+  'cat-burger': '<path d="M4 10.5C4 7 7.6 4.5 12 4.5s8 2.5 8 6z"/><path d="M3.5 13.5h17"/><path d="M5 17h14v.5A2.5 2.5 0 0 1 16.5 20h-9A2.5 2.5 0 0 1 5 17.5z"/><path d="M9 7.5h.01M12 6.8h.01M15 7.5h.01"/>',
+  'cat-fritas': '<path d="M6 10h12l-1.6 10.5H7.6z"/><path d="M8.2 10V4.5M10.7 10V3.5M13.3 10V4M15.8 10V5.2"/>',
+  'cat-refri': '<path d="M6.5 8h11l-1.3 12.5H7.8z"/><path d="M6 8h12M12.5 8l1.6-5H17"/>',
+  'cat-garrafa': '<path d="M10 3h4v3.5c0 1 2 2 2 4.5v9.5H8V11c0-2.5 2-3.5 2-4.5z"/><path d="M8 13.5h8"/>',
+  'cat-combo': '<path d="M3.5 13.5C3.5 10.5 6 8.5 9 8.5s5.5 2 5.5 5z"/><path d="M3 16h12M4 18.5h10"/><path d="M16.5 9.5h4.5l-1 11h-2.5z"/><path d="M19 9.5l.8-4.5H21"/>',
+  'cat-doce': '<path d="M6 12h12l-1.6 8.5H7.6z"/><path d="M6 12a3 3 0 0 1 1.3-5.3 4.8 4.8 0 0 1 9.4 0A3 3 0 0 1 18 12"/><path d="M10 12l.5 8.5M14 12l-.5 8.5"/>',
+  'cat-sorvete': '<path d="M8 10.5l4 10 4-10"/><path d="M7.5 10.5a4.5 4.5 0 1 1 9 0z"/>',
+  'cat-cafe': '<path d="M4.5 9h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5z"/><path d="M16.5 10H18a2.5 2.5 0 0 1 0 5h-1.5M8.5 3.5c-.6.8-.6 1.7 0 2.5M12.5 3.5c-.6.8-.6 1.7 0 2.5"/>',
+  'cat-prato': '<path d="M3 17.5h18M4.8 17.5a7.2 7.2 0 0 1 14.4 0"/><path d="M12 8.5V6.8M10.5 6.8h3"/>',
+  'cat-frango': '<path d="M14.6 4.4a5 5 0 0 1 4.8 6.3c-.7 2.6-3.4 4.1-6 3.5l-3.5 3.6a2 2 0 1 1-2.9-2.8l3.6-3.6c-.6-2.6 1-5.3 3.6-6z"/>',
+  'cat-hotdog': '<rect x="3" y="9.5" width="18" height="5.5" rx="2.75"/><path d="M4.5 15.5c2.5 2.5 12.5 2.5 15 0"/><path d="M6.5 12.3c1.5-.9 2.5.9 4 0s2.5.9 4 0 2.3.9 3 0"/>',
+  'cat-salada': '<path d="M3.5 11.5h17a8.5 8.5 0 0 1-17 0z"/><path d="M8 11.5c-.4-3 1.6-5 4-5M12.5 11.5c0-2.5 2-4.5 4.5-4.5M6.8 8.2c1-.6 2.3-.5 3 .3"/>',
+  'cat-pao': '<path d="M4 11a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v8.5H4z"/><path d="M9 9.5l1.5 2M13 9.5l1.5 2"/>',
+  'cat-bolo': '<path d="M4 20.5h16V13H4z"/><path d="M4 16.2c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1 4 0"/><path d="M8 13v-2.5M12 13v-2.5M16 13v-2.5"/><path class="ic-cheio" d="M8 8.6a1 1 0 0 1-1-1c0-.6 1-1.8 1-1.8s1 1.2 1 1.8a1 1 0 0 1-1 1zM12 8.6a1 1 0 0 1-1-1c0-.6 1-1.8 1-1.8s1 1.2 1 1.8a1 1 0 0 1-1 1zM16 8.6a1 1 0 0 1-1-1c0-.6 1-1.8 1-1.8s1 1.2 1 1.8a1 1 0 0 1-1 1z"/>',
+  'cat-estrela': '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>',
+  'cat-promo': '<path d="M3.5 12.5V4h8.5l8.5 8.5-8 8z"/><path d="M9.5 14.5l5-5"/><circle cx="10" cy="10" r=".9"/><circle cx="14" cy="14" r=".9"/>',
+  'cat-presente': '<rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v8h14v-8M12 8.5v12M12 8.5S10.8 4 8.4 4a2.2 2.2 0 0 0 0 4.5H12zM12 8.5S13.2 4 15.6 4a2.2 2.2 0 0 1 0 4.5H12z"/>'
+});
+/* Lista de ícones que a loja pode escolher para as categorias. */
+window.ICONES_CATEGORIA = ['cat-pizza', 'cat-burger', 'cat-fritas', 'cat-refri', 'cat-garrafa', 'cat-combo', 'cat-doce', 'cat-sorvete', 'cat-cafe',
+  'cat-prato', 'cat-frango', 'cat-hotdog', 'cat-salada', 'cat-pao', 'cat-bolo', 'cat-estrela', 'cat-promo', 'cat-presente'];

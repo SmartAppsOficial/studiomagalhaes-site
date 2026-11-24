@@ -105,6 +105,13 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 24/11/2026, Claude do Paulo (negócios: Catálogo digital e clientes fechados)
+- **Catálogo digital no app de modelos** (`negocios/modelo/catalogo/`, sem indexação): lojas prontas por ramo, com apresentação animada, categorias com ícones (e setas nas telas pequenas), cardápio, montagem do item (tamanho, meio a meio, adicionais), carrinho que monta o pedido para o WhatsApp da loja e área da loja com senha (pedidos, produtos, categorias, opções, funcionamento, visual e manual). Pronto: `lanchonete/` (demonstração "Fornalha", senha 1234). Os outros ramos vêm depois. Na demonstração, produtos e pedidos ficam no navegador; preços e nomes são de exemplo e a página avisa.
+- **Painel do Studio dentro da loja** (botão do pincel, só no app de modelos): nome, logo (com as cores tiradas do logo), cores, animação do topo (pizza ou hambúrguer, refri e batata), letras, textos, tipo de cardápio, guardar por cliente e modo apresentação. No modo apresentação o pincel mostra só o que a loja pode experimentar.
+- **"Fechou com o cliente?"**: salva o modelo escolhido + observações na coleção nova `fechamentos` do Firestore (projeto `sm-negocios`). Sem internet ou sem login, fica na fila do aparelho e sobe depois. As regras do Firestore ganharam o bloco `fechamentos` (só a conta do Paulo); o arquivo das regras continua fora deste repositório.
+- **Página nova `negocios/clientes/`** (sem indexação): "Clientes fechados", só com o login Google do Paulo, instalável no celular (`manifest.webmanifest` e `sw.js` próprios). Lista, busca, situação (fechado, em produção, no ar, cancelado), observações editáveis e o botão "Abrir o modelo do cliente". O painel de propostas ganhou um atalho para ela.
+- **Não edite à mão** `negocios/modelo/`: a origem fica na pasta `site-modelo` do Paulo (`node ferramentas/publicar.js <este repositório>/negocios/modelo`).
+
 ### 23/11/2026, Claude do Paulo (negócios: Brasil todo)
 - O Paulo passou a atender sites e apps no **Brasil todo** (tudo online). Na página `negocios/`, o rodapé agora diz "Atendemos todo o Brasil" (antes "Niterói e Grande Rio") e o exemplo do campo "Cidade" virou "Belo Horizonte, MG". Nada mais mudou na página nem no formulário.
 

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0c1a36">
+  <title>Catálogo digital · modelos</title>
+  <link rel="icon" type="image/png" href="../assets/icones/icone-192.png">
+  <style>
+    @font-face { font-family: 'Montserrat'; src: url(../assets/fontes/montserrat.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url(../assets/fontes/inter.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+    :root { --marinho: #0c1a36; --marinho2: #132548; --ciano: #4fc3c8; --azul: #3d7cc0; --ouro: #f2c46d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; background: radial-gradient(900px 500px at 10% -10%, rgba(79,195,200,.18), transparent), radial-gradient(800px 600px at 100% 100%, rgba(61,124,192,.2), transparent), var(--marinho); color: #e7edf7; font: 400 16px/1.55 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    .caixa { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 0; }
+    .marca { display: flex; gap: 10px; align-items: center; text-decoration: none; }
+    .marca img { width: 38px; height: 38px; border-radius: 11px; }
+    .marca b { font: 700 1rem/1.1 'Montserrat', sans-serif; display: block; }
+    .marca small { color: #8ea2c4; }
+    .voltar { text-decoration: none; font-weight: 600; font-size: .9rem; border: 1px solid rgba(255,255,255,.16); padding: 9px 14px; border-radius: 12px; }
+    h1 { font: 800 clamp(2rem, 5vw, 3.2rem)/1.05 'Montserrat', sans-serif; letter-spacing: -.02em; margin: 34px 0 12px; }
+    h1 span { color: var(--ciano); }
+    .intro { color: #b5c3da; max-width: 46em; font-size: 1.05rem; }
+    .pontos { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 34px; padding: 0; list-style: none; }
+    .pontos li { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 99px; padding: 7px 13px; font-size: .88rem; }
+    .grade { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); padding-bottom: 60px; }
+    .modelo { position: relative; border-radius: 20px; overflow: hidden; background: var(--marinho2); border: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; min-height: 230px; }
+    .modelo .capa { height: 130px; background: var(--c1); position: relative; overflow: hidden; }
+    .modelo .capa::before, .modelo .capa::after { content: ''; position: absolute; border-radius: 50%; filter: blur(18px); }
+    .modelo .capa::before { width: 160px; height: 160px; right: -30px; top: -40px; background: var(--c2); opacity: .8; }
+    .modelo .capa::after { width: 120px; height: 120px; left: -20px; bottom: -60px; background: var(--c2); opacity: .45; }
+    .modelo .capa img { position: absolute; right: 14px; bottom: -26px; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(255,255,255,.85); box-shadow: 0 14px 30px -10px rgba(0,0,0,.6); z-index: 1; }
+    .modelo .corpo { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .modelo b { font: 700 1.08rem/1.25 'Montserrat', sans-serif; }
+    .modelo p { color: #8ea2c4; font-size: .88rem; margin: 0; }
+    .modelo .acoes { margin-top: auto; padding-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 700; font-size: .88rem; padding: 9px 13px; border-radius: 11px; border: 1px solid rgba(255,255,255,.16); }
+    .btn-p { background: var(--ciano); color: var(--marinho); border-color: var(--ciano); }
+    .breve { opacity: .55; }
+    .breve .selo { position: absolute; top: 12px; left: 12px; z-index: 2; background: rgba(12,26,54,.85); color: var(--ouro); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 5px 9px; border-radius: 8px; }
+    .pronto .selo { position: absolute; top: 12px; left: 12px; z-index: 2; background: var(--ciano); color: var(--marinho); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 5px 9px; border-radius: 8px; }
+    footer { color: #6f84a8; font-size: .82rem; padding: 0 0 30px; }
+  </style>
+</head>
+<body>
+  <div class="caixa">
+    <header><a class="marca" href="../"><img src="../assets/icones/icone-192.png" alt=""><span><b>Studio Magalhães</b><small>Site modelo</small></span></a>
+      <a class="voltar" href="../">← Voltar ao site modelo</a></header>
+    <h1>Catálogo digital <span>pronto por ramo</span></h1>
+    <p class="intro">Um modelo para cada tipo de loja, com apresentação animada, categorias, cardápio ou catálogo e carrinho que envia o pedido pronto para o WhatsApp. A loja recebe tudo com o nome, o logo e as cores dela, e cuida dos produtos, fotos e preços numa área com senha.</p>
+    <ul class="pontos"><li>Pedido pronto no WhatsApp</li><li>Área da loja com senha</li><li>Produtos, fotos e preços pela própria loja</li><li>Horário, entrega e taxa por bairro</li><li>Funciona no celular</li></ul>
+    <div class="grade" id="grade"></div>
+    <footer>Lojas de demonstração: nomes, produtos e preços são exemplos.</footer>
+  </div>
+  <script>
+    // Ramos escolhidos pela pesquisa de Niterói e São Gonçalo (novembro de 2026).
+    const MODELOS = [
+      { pasta: 'lanchonete', nome: 'Lanchonete, hamburgueria e pizzaria', desc: 'Pizza meio a meio, bordas, adicionais e taxa por bairro.', c1: '#1e130e', c2: '#c8321e', foto: 'lanchonete/fotos/calabresa.jpg' },
+      { nome: 'Roupas e moda', desc: 'Tamanho, cor, tabela de medidas e peça única.', c1: '#2b2522', c2: '#c9a46a' },
+      { nome: 'Pet shop', desc: 'Peso da ração, espécie e porte, repetir pedido.', c1: '#173a3a', c2: '#3fb8a5' },
+      { nome: 'Confeitaria, doces e bolos', desc: 'Massa, recheio, cobertura e data de entrega.', c1: '#3a1f2b', c2: '#e88aa8' },
+      { nome: 'Padaria e cafeteria', desc: 'Cestas, combos e horário de retirada.', c1: '#2e2216', c2: '#d9a05b' },
+      { nome: 'Celulares e eletrônicos', desc: 'Modelo compatível, cor, capacidade e garantia.', c1: '#0f1b2d', c2: '#3d7cc0' },
+      { nome: 'Restaurante e marmitaria', desc: 'Cardápio do dia e montagem da marmita.', c1: '#20291a', c2: '#8fbf5a' },
+      { nome: 'Açaí e sorvetes', desc: 'Montador passo a passo: copo, cremes e adicionais.', c1: '#2a1438', c2: '#9b5de5' },
+      { nome: 'Bebidas e adega', desc: 'Gelada ou natural, unidade ou fardo, pedido mínimo.', c1: '#14202b', c2: '#f2c46d' },
+      { nome: 'Cosméticos e perfumaria', desc: 'Tom, cor e fragrância, marcas e kits de presente.', c1: '#2d1a24', c2: '#f0a6b8' }
+    ];
+    document.getElementById('grade').innerHTML = MODELOS.map(m => m.pasta ? `
+      <article class="modelo pronto" style="--c1:${m.c1};--c2:${m.c2}"><span class="selo">Pronto</span><div class="capa">${m.foto ? `<img src="${m.foto}" alt="">` : ''}</div>
+        <div class="corpo"><b>${m.nome}</b><p>${m.desc}</p><div class="acoes"><a class="btn btn-p" href="${m.pasta}/">Abrir a loja</a><a class="btn" href="${m.pasta}/admin.html">Área da loja</a></div></div></article>` : `
+      <article class="modelo breve" style="--c1:${m.c1};--c2:${m.c2}"><span class="selo">Em breve</span><div class="capa"></div>
+        <div class="corpo"><b>${m.nome}</b><p>${m.desc}</p></div></article>`).join('');
+  </script>
+</body>
+</html>

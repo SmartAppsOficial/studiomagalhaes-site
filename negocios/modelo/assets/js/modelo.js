@@ -581,6 +581,9 @@
   <section class="sm-aba" data-painel-aba="negocio">
     <div class="sm-grupo"><h3>Ramo do negócio</h3><div class="sm-ramos">${ramosHTML}</div>
       <p class="sm-nota">Textos, fotos, ícones e seções mudam junto. Se você ainda não mexeu no visual, as cores e a fonte sugeridas para o ramo também entram.</p></div>
+    ${window.FOTOS ? '' : `<div class="sm-grupo"><h3>Catálogo digital</h3>
+      <a class="sm-btn sm-btn-p" href="catalogo/" style="width:100%;text-decoration:none">${ic('sacola')}Abrir os modelos de catálogo</a>
+      <p class="sm-nota">Lojas prontas por ramo, com carrinho que envia o pedido para o WhatsApp e área da loja com senha.</p></div>`}
     <div class="sm-grupo"><h3>Identidade</h3>
       <label class="sm-campo"><span>Nome do negócio</span><input class="sm-entrada" data-campo="nome" maxlength="60" autocomplete="off"></label>
       <label class="sm-campo"><span>WhatsApp do negócio (com DDD)</span><input class="sm-entrada" data-campo="whats" inputmode="tel" maxlength="30" placeholder="Ex.: (21) 99999-9999" autocomplete="off"></label>
