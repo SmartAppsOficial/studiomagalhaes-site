@@ -105,6 +105,10 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 24/11/2026 (noite, mais tarde), Claude do Paulo (negócios: equipe na área da loja)
+- **Área da loja do Catálogo digital** (`negocios/modelo/catalogo/`) com dois tipos de acesso: o **dono**, que tem senha e vê tudo, e os **funcionários**, que entram com nome e PIN e só veem e mudam o que o dono liberar na aba nova "Equipe". Há atalhos para Atendente, Cozinha e Gerente. A mudança de situação de pedido mostra quem fez. O manual ganhou a parte da equipe.
+- Na demonstração, a senha e as permissões são conferidas no navegador. Na versão de verdade, quem confere é o servidor.
+
 ### 24/11/2026 (noite), Claude do Paulo (negócios: app de modelos fechado)
 - **O app de modelos ficou privado** (`negocios/modelo/`, incluindo o catálogo e a área da loja de demonstração): quem abre vê só "Entrar com Google". Passa só a conta do Studio (conferida pelas regras do Firestore). Depois de entrar, o aparelho fica liberado por 60 dias, também sem internet. Arquivo novo: `negocios/modelo/assets/js/acesso.js`.
 - Limite: o GitHub Pages é público, então a porta esconde o site de quem abre o endereço, mas os arquivos não são secretos (não há nada sigiloso neles). Os dados dos clientes fechados continuam protegidos de verdade pelas regras do Firestore.

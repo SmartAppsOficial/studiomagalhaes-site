@@ -1,6 +1,6 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
 // Guarda o site modelo inteiro no aparelho para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-ad623f566f';
+const VERSAO = 'sm-modelo-d9b7068d24';
 const ARQUIVOS = [
   "./",
   "assets/css/modelo.css",

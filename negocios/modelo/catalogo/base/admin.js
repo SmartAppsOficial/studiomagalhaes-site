@@ -43,47 +43,86 @@
     return { el: f, fechar };
   }
 
+  /* ---------- Equipe: o dono e os funcionários ----------
+     O dono entra com a senha dele e vê tudo. Cada funcionário entra com o próprio nome e PIN,
+     e só vê e muda o que o dono liberou (aba Equipe). Na versão de verdade, quem confere
+     senha e permissões é o servidor; aqui, na demonstração, é o navegador. */
+  const PERMISSOES = [
+    ['pedidos', 'Ver os pedidos', 'Lista de pedidos que chegam pelo site.'],
+    ['situacao', 'Mudar a situação dos pedidos', 'Confirmar, marcar como entregue ou cancelar.'],
+    ['valores', 'Ver os totais do dia e do mês', 'Soma dos pedidos, produtos mais pedidos e planilha.'],
+    ['esgotado', 'Marcar produto esgotado ou disponível', 'O botão rápido da lista de produtos.'],
+    ['produtos', 'Editar produtos', 'Nome, descrição, preço, foto, destaque e ordem.'],
+    ['criar', 'Criar e excluir produtos', ''],
+    ['cardapio', 'Categorias e opções', 'Tamanhos, adicionais, bordas e categorias.'],
+    ['funcionamento', 'Funcionamento da loja', 'Abrir e fechar a loja, horário, entrega e pagamento.']
+  ];
+  const equipe = () => (D().equipe ||= []);
+  const lerSessao = () => { try { return JSON.parse(sessionStorage.getItem(SES) || 'null'); } catch { return null; } };
+  let sessao = lerSessao();
+  const quem = () => !sessao ? null : sessao.quem === 'dono' ? { dono: true, nome: 'Dono' } : equipe().find(f => f.id === sessao.quem && f.ativo !== false) || null;
+  const entrou = () => !!quem();
+  const pode = p => { const q = quem(); return !!q && (q.dono || !!(q.permissoes || {})[p]); };
+
   /* ---------- Entrar ---------- */
-  const entrou = () => { try { return sessionStorage.getItem(SES) === '1'; } catch { return false; } };
+  let escolhido = 'dono';
   function telaEntrar(erro = '') {
+    const ativos = equipe().filter(f => f.ativo !== false);
+    if (escolhido !== 'dono' && !ativos.some(f => f.id === escolhido)) escolhido = 'dono';
+    const ehDono = escolhido === 'dono';
     el.innerHTML = `<div class="entrar"><form class="entrar-cartao" data-entrar>
       <div class="sigla">${siglaHTML()}</div><h1>${esc(V.nome)}</h1><p>Área da loja</p>
-      <label class="campo" style="text-align:left"><span>Senha</span><input class="entrada" type="password" name="senha" autocomplete="current-password" required autofocus></label>
+      ${ativos.length ? `<div class="quem" role="group" aria-label="Quem vai entrar">
+        <button type="button" data-quem="dono" aria-pressed="${ehDono}">${ic('cadeado')}Dono</button>
+        ${ativos.map(f => `<button type="button" data-quem="${esc(f.id)}" aria-pressed="${escolhido === f.id}">${ic('grupo')}${esc(f.nome)}</button>`).join('')}</div>` : ''}
+      <label class="campo" style="text-align:left"><span>${ehDono ? 'Senha do dono' : 'PIN de ' + esc(ativos.find(f => f.id === escolhido).nome)}</span>
+        <input class="entrada" type="password" name="senha" ${ehDono ? 'autocomplete="current-password"' : 'inputmode="numeric" autocomplete="off"'} required autofocus></label>
       ${erro ? `<p style="color:#a3271a;margin:0 0 10px">${esc(erro)}</p>` : ''}
       <button class="btn btn-p" style="width:100%">${ic('cadeado')}Entrar</button>
-      ${L.demo ? `<div class="dica-demo">Demonstração: a senha é <b>${esc(L.senhaDemo)}</b></div>` : ''}
+      ${L.demo ? `<div class="dica-demo">Demonstração: senha do dono <b>${esc(L.senhaDemo)}</b>${ativos.length ? ' · PIN dos funcionários de exemplo <b>1111</b>' : ''}</div>` : ''}
       <p style="margin:16px 0 0;font-size:.85rem"><a href="index.html">Voltar para a loja</a></p>
     </form></div>`;
-    $('[data-entrar]').addEventListener('submit', e => {
+    const f = $('[data-entrar]');
+    f.addEventListener('click', e => { const b = e.target.closest('[data-quem]'); if (b) { escolhido = b.dataset.quem; telaEntrar(); } });
+    f.addEventListener('submit', e => {
       e.preventDefault();
-      if (e.target.senha.value === L.senhaDemo) { try { sessionStorage.setItem(SES, '1'); } catch { /* */ } montar(); }
-      else telaEntrar('Senha incorreta.');
+      const v = e.target.senha.value, func = equipe().find(x => x.id === escolhido);
+      const ok = escolhido === 'dono' ? v === L.senhaDemo : func && func.ativo !== false && v === func.pin;
+      if (!ok) { telaEntrar(escolhido === 'dono' ? 'Senha incorreta.' : 'PIN incorreto.'); return; }
+      sessao = { quem: escolhido }; try { sessionStorage.setItem(SES, JSON.stringify(sessao)); } catch { /* */ }
+      aba = abasPermitidas()[0][0]; montar();
     });
   }
 
   /* ---------- Estrutura ---------- */
-  const NAV = [['pedidos', 'lista', 'Pedidos'], ['produtos', 'sacola', 'Produtos'], ['categorias', 'tag', 'Categorias'], ['opcoes', 'ajustes', 'Opções'],
-    ['loja', 'loja', 'Funcionamento'], ['visual', 'paleta', 'Visual'], ['manual', 'livro', 'Manual']];
+  const NAV = [['pedidos', 'lista', 'Pedidos', () => pode('pedidos')], ['produtos', 'sacola', 'Produtos', () => pode('esgotado') || pode('produtos') || pode('criar')],
+    ['categorias', 'tag', 'Categorias', () => pode('cardapio')], ['opcoes', 'ajustes', 'Opções', () => pode('cardapio')],
+    ['loja', 'loja', 'Funcionamento', () => pode('funcionamento')], ['equipe', 'grupo', 'Equipe', () => !!quem()?.dono],
+    ['visual', 'paleta', 'Visual', () => !!quem()?.dono], ['manual', 'livro', 'Manual', () => true]];
+  const abasPermitidas = () => NAV.filter(n => n[3]());
   let aba = NAV.some(n => n[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'pedidos';
   function montar() {
+    const q = quem();
+    if (!abasPermitidas().some(n => n[0] === aba)) aba = abasPermitidas()[0][0];
     el.innerHTML = `<div class="app">
-      <aside class="lado"><div class="lado-marca"><span class="sigla">${siglaHTML()}</span><div><b>${esc(V.nome)}</b><small>Área da loja</small></div></div>
-        ${NAV.map(([id, icn, n]) => `<button type="button" class="nav-item" data-aba="${id}">${ic(icn)}<span class="txt">${n}</span>${id === 'pedidos' ? '<span class="num" data-novos hidden></span>' : ''}</button>`).join('')}
+      <aside class="lado"><div class="lado-marca"><span class="sigla">${siglaHTML()}</span><div><b>${esc(V.nome)}</b><small>${q.dono ? 'Dono' : esc(q.nome) + ' · funcionário'}</small></div></div>
+        ${abasPermitidas().map(([id, icn, n]) => `<button type="button" class="nav-item" data-aba="${id}">${ic(icn)}<span class="txt">${n}</span>${id === 'pedidos' ? '<span class="num" data-novos hidden></span>' : ''}</button>`).join('')}
         <div class="lado-pe"><a class="nav-item" href="index.html" target="_blank" rel="noopener">${ic('olho')}<span class="txt">Ver minha loja</span></a>
           <button type="button" class="nav-item" data-sair>${ic('sair')}<span class="txt">Sair</span></button>
           <small>Catálogo digital · Studio Magalhães</small></div></aside>
       <main class="principal" data-principal></main></div>`;
     $('.lado').addEventListener('click', e => {
       const b = e.target.closest('[data-aba]'); if (b) { aba = b.dataset.aba; history.replaceState(null, '', '#' + aba); render(); window.scrollTo(0, 0); }
-      if (e.target.closest('[data-sair]')) { try { sessionStorage.removeItem(SES); } catch { /* */ } telaEntrar(); }
+      if (e.target.closest('[data-sair]')) { sessao = null; try { sessionStorage.removeItem(SES); } catch { /* */ } telaEntrar(); }
     });
     render();
   }
   function render() {
+    if (!entrou()) { telaEntrar(); return; }
     $$('[data-aba]').forEach(b => b.setAttribute('aria-current', String(b.dataset.aba === aba)));
     const novos = C.pedidos().filter(p => p.status === 'novo').length, n = $('[data-novos]');
     if (n) { n.hidden = !novos; n.textContent = novos; }
-    ({ pedidos, produtos, categorias, opcoes, loja, visual, manual })[aba]();
+    ({ pedidos, produtos, categorias, opcoes, loja, equipeTela, visual, manual })[aba === 'equipe' ? 'equipeTela' : aba]();
   }
   const P = () => $('[data-principal]');
   const cab = (t, sub, acoes = '') => `<div class="cab"><div><h1>${t}</h1>${sub ? `<p>${sub}</p>` : ''}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${acoes}</div></div>`;
@@ -108,8 +147,8 @@
     const top = Object.entries(contagem).sort((a, b) => b[1] - a[1]).slice(0, 5), maior = top[0]?.[1] || 1;
     const lista = todos.filter(p => noPeriodo(p, periodo) && (filtroStatus === 'todos' || p.status === filtroStatus));
     P().innerHTML = cab('Pedidos', 'Cada pedido enviado pelo WhatsApp aparece aqui.',
-      `<button type="button" class="btn btn-peq" data-csv>${ic('baixar')}Baixar planilha</button>` + (L.demo ? `<button type="button" class="btn btn-peq" data-exemplos>${ic('brilho')}Criar pedidos de exemplo</button>` : '')) +
-    `<div class="aviso-pedidos">${ic('info')}<div><b>Importante:</b> estes números somam os <b>pedidos que os clientes enviaram</b> pelo WhatsApp. <b>Não é o dinheiro que entrou no caixa</b>: o pagamento é combinado direto com o cliente, e um pedido pode ser alterado ou desistido na conversa. Pedidos marcados como cancelados não entram na soma.</div></div>
+      (pode('valores') ? `<button type="button" class="btn btn-peq" data-csv>${ic('baixar')}Baixar planilha</button>` : '') + (L.demo && quem().dono ? `<button type="button" class="btn btn-peq" data-exemplos>${ic('brilho')}Criar pedidos de exemplo</button>` : '')) +
+    (pode('valores') ? `<div class="aviso-pedidos">${ic('info')}<div><b>Importante:</b> estes números somam os <b>pedidos que os clientes enviaram</b> pelo WhatsApp. <b>Não é o dinheiro que entrou no caixa</b>: o pagamento é combinado direto com o cliente, e um pedido pode ser alterado ou desistido na conversa. Pedidos marcados como cancelados não entram na soma.</div></div>
     <div class="numeros">
       <div class="numero"><small>Pedidos hoje</small><b>${hoje.length}</b><span>sem os cancelados</span></div>
       <div class="numero"><small>Valor dos pedidos hoje</small><b>${R(soma(hoje))}</b><span>pedido, não recebido</span></div>
@@ -117,19 +156,20 @@
       <div class="numero"><small>Valor dos pedidos no mês</small><b>${R(soma(mes))}</b><span>pedido, não recebido</span></div>
     </div>
     ${top.length ? `<div class="cartao" style="margin-top:14px"><h2>Mais pedidos no mês</h2><p class="sub">Quantidade de cada item nos pedidos do mês.</p>
-      <ul class="mais-pedidos">${top.map(([n, q]) => `<li><span>${esc(n)}</span><b>${q}</b><span class="barra-v"><i style="width:${Math.round(q / maior * 100)}%"></i></span></li>`).join('')}</ul></div>` : ''}
+      <ul class="mais-pedidos">${top.map(([n, q]) => `<li><span>${esc(n)}</span><b>${q}</b><span class="barra-v"><i style="width:${Math.round(q / maior * 100)}%"></i></span></li>`).join('')}</ul></div>` : ''}` : '') + `
     <div class="barra-ferr">
       <div class="filtros" data-periodo>${[['hoje', 'Hoje'], ['7', '7 dias'], ['mes', 'Este mês'], ['tudo', 'Tudo']].map(([v, n]) => `<button type="button" data-v="${v}" aria-pressed="${periodo === v}">${n}</button>`).join('')}</div>
       <div class="filtros" data-filtro>${[['todos', 'Todos'], ...Object.entries(STATUS)].map(([v, n]) => `<button type="button" data-v="${v}" aria-pressed="${filtroStatus === v}">${n}${v === 'novo' ? ` (${todos.filter(p => p.status === 'novo').length})` : ''}</button>`).join('')}</div>
     </div>
     <div class="pedidos">${lista.length ? lista.map(p => `<article class="pedido" data-status="${esc(p.status)}">
       <div class="pedido-cab"><div><b>Pedido nº ${p.numero}</b> · <small>${quando(p.quando)}</small><br><small>${esc(p.nome)} · ${p.tipo === 'entrega' ? `Entrega · ${esc(p.bairro)}` : 'Retirada no local'}</small></div>
-        <select class="status-sel" data-status-ped="${p.numero}" aria-label="Situação do pedido ${p.numero}">${Object.entries(STATUS).map(([v, n]) => `<option value="${v}"${p.status === v ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+        <div style="text-align:right"><select class="status-sel" data-status-ped="${p.numero}" aria-label="Situação do pedido ${p.numero}"${pode('situacao') ? '' : ' disabled title="Peça ao dono para liberar"'}>${Object.entries(STATUS).map(([v, n]) => `<option value="${v}"${p.status === v ? ' selected' : ''}>${n}</option>`).join('')}</select>
+          ${p.por ? `<br><small>${esc(STATUS[p.status])} por ${esc(p.por)}</small>` : ''}</div></div>
       <ul>${p.itens.map(i => `<li>${i.qtd}x ${esc(i.nome)} · ${R(i.total)}${i.detalhes.length ? `<small>${i.detalhes.map(esc).join(' · ')}</small>` : ''}</li>`).join('')}</ul>
       <div class="pedido-pe"><span>Total do pedido: <b>${R(p.total)}</b>${p.taxa ? ` (entrega ${R(p.taxa)})` : ''}</span><span>${esc(p.pagamento)}${p.troco ? ` · troco para R$ ${esc(p.troco)}` : ''}</span>
         ${p.endereco ? `<span>${esc(p.endereco)}</span>` : ''}${p.obs ? `<span>Obs.: ${esc(p.obs)}</span>` : ''}</div></article>`).join('')
       : `<p class="vazio">Nenhum pedido ${periodo === 'hoje' ? 'hoje' : 'neste período'}${filtroStatus !== 'todos' ? ' com essa situação' : ''}.</p>`}</div>
-    ${L.demo && todos.length ? `<p style="margin-top:20px"><button type="button" class="btn btn-peq btn-perigo" data-apagar-pedidos>${ic('lixo')}Apagar todos os pedidos (demonstração)</button></p>` : ''}`;
+    ${L.demo && todos.length && quem().dono ? `<p style="margin-top:20px"><button type="button" class="btn btn-peq btn-perigo" data-apagar-pedidos>${ic('lixo')}Apagar todos os pedidos (demonstração)</button></p>` : ''}`;
   }
   function exemplos() {
     const prods = D().produtos.filter(p => !p.pausado), bairros = D().loja.entrega.bairros, pags = D().loja.pagamentos;
@@ -173,15 +213,15 @@
           ${p.foto ? `<img src="${esc(p.foto)}" alt="">` : `<span class="sem-foto">${ic('imagem')}</span>`}
           <div style="min-width:0"><b>${esc(p.nome)}</b><small>${R(p.preco)}${p.pausado ? ' · escondido do site' : ''}</small></div>
           <div class="acoes">
-            <button type="button" class="tog tog-esgotado" data-tog="esgotado" data-id="${p.id}" aria-pressed="${!!p.esgotado}">${p.esgotado ? 'Esgotado' : 'Disponível'}</button>
-            <button type="button" class="tog tog-destaque" data-tog="destaque" data-id="${p.id}" aria-pressed="${!!p.destaque}">${ic('estrela')}Destaque</button>
+            ${pode('esgotado') || pode('produtos') ? `<button type="button" class="tog tog-esgotado" data-tog="esgotado" data-id="${p.id}" aria-pressed="${!!p.esgotado}">${p.esgotado ? 'Esgotado' : 'Disponível'}</button>` : ''}
+            ${pode('produtos') ? `<button type="button" class="tog tog-destaque" data-tog="destaque" data-id="${p.id}" aria-pressed="${!!p.destaque}">${ic('estrela')}Destaque</button>
             <button type="button" class="tog" data-tog="pausado" data-id="${p.id}" aria-pressed="${!!p.pausado}" title="${p.pausado ? 'Mostrar no site' : 'Esconder do site'}">${ic(p.pausado ? 'olhoFechado' : 'olho')}${p.pausado ? 'Escondido' : 'No site'}</button>
             <button type="button" class="btn btn-ic" data-mover="-1" data-id="${p.id}" aria-label="Subir">${ic('cima')}</button>
             <button type="button" class="btn btn-ic" data-mover="1" data-id="${p.id}" aria-label="Descer">${ic('baixo')}</button>
-            <button type="button" class="btn btn-peq" data-editar="${p.id}">${ic('editar')}Editar</button>
+            <button type="button" class="btn btn-peq" data-editar="${p.id}">${ic('editar')}Editar</button>` : ''}
           </div></div>`).join('')}</div>`;
     }).join('');
-    P().innerHTML = cab('Produtos', `${ds.produtos.length} produtos no cardápio.`, `<button type="button" class="btn btn-p" data-novo>${ic('mais')}Novo produto</button>`) +
+    P().innerHTML = cab('Produtos', `${ds.produtos.length} produtos no cardápio.`, pode('criar') ? `<button type="button" class="btn btn-p" data-novo>${ic('mais')}Novo produto</button>` : '') +
       `<div class="barra-ferr"><input class="entrada" style="max-width:320px" type="search" data-busca placeholder="Buscar produto" value="${esc(busca)}">
         <select class="entrada" style="max-width:220px" data-filtro-cat><option value="">Todas as categorias</option>${ds.categorias.map(c => `<option value="${c.id}"${filtroCat === c.id ? ' selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></div>
       ${html || '<p class="vazio">Nenhum produto encontrado.</p>'}`;
@@ -220,7 +260,7 @@
         <label class="chave"><input type="checkbox" data-c="destaque"${p.destaque ? ' checked' : ''}><span class="trilho"></span><span>Destaque</span></label>
         <label class="chave"><input type="checkbox" data-c="esgotado"${p.esgotado ? ' checked' : ''}><span class="trilho"></span><span>Esgotado</span></label>
         <label class="chave"><input type="checkbox" data-c="visivel"${!p.pausado ? ' checked' : ''}><span class="trilho"></span><span>Aparece no site</span></label></div>`,
-      `<div style="display:flex;gap:8px">${novo ? '' : `<button type="button" class="btn btn-perigo" data-excluir>${ic('lixo')}Excluir</button><button type="button" class="btn" data-duplicar>${ic('copiar2')}Duplicar</button>`}</div>
+      `<div style="display:flex;gap:8px">${novo || !pode('criar') ? '' : `<button type="button" class="btn btn-perigo" data-excluir>${ic('lixo')}Excluir</button><button type="button" class="btn" data-duplicar>${ic('copiar2')}Duplicar</button>`}</div>
        <div style="display:flex;gap:8px"><button type="button" class="btn" data-fechar>Cancelar</button><button type="button" class="btn btn-p" data-salvar>${ic('check')}Salvar</button></div>`);
     const w = j.el;
     $('[data-foto]', w).addEventListener('change', async e => {
@@ -323,6 +363,32 @@
   const caminho = (obj, k, v) => { const p = k.split('.'); const ult = p.pop(); const alvo = p.reduce((o, x) => o[x], obj); if (v === undefined) return alvo[ult]; alvo[ult] = v; };
 
   /* ============================================================
+     Equipe (só o dono vê)
+     ============================================================ */
+  const MODELOS_FUNC = {
+    atendente: { nome: 'Atendente', p: ['pedidos', 'situacao', 'esgotado'] },
+    cozinha: { nome: 'Cozinha', p: ['pedidos', 'esgotado'] },
+    gerente: { nome: 'Gerente', p: ['pedidos', 'situacao', 'valores', 'esgotado', 'produtos', 'criar', 'cardapio', 'funcionamento'] }
+  };
+  function equipeTela() {
+    const eq = equipe();
+    P().innerHTML = cab('Equipe', 'Quem entra na área da loja e o que cada pessoa vê e muda.', `<button type="button" class="btn btn-p" data-novo-func>${ic('mais')}Adicionar funcionário</button>`) + `
+    <div class="cartao"><h2>Dono</h2><p class="sub">Você vê e muda tudo, inclusive a equipe. ${L.demo ? 'Na loja de verdade, a sua senha é trocada aqui.' : ''}</p></div>
+    ${eq.map(f => `<div class="cartao" data-func="${esc(f.id)}">
+      <div class="lado2"><label class="campo"><span>Nome</span><input class="entrada" data-func-campo="nome" value="${esc(f.nome)}" maxlength="40"></label>
+        <label class="campo"><span>PIN para entrar (4 a 6 números)</span><input class="entrada" data-func-campo="pin" inputmode="numeric" value="${esc(f.pin)}" maxlength="6"></label></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px">
+        <label class="chave"><input type="checkbox" data-func-ativo${f.ativo !== false ? ' checked' : ''}><span class="trilho"></span><span>Pode entrar</span></label>
+        <span style="margin-left:auto;color:var(--suave);font-size:.85rem">Atalhos:</span>
+        ${Object.entries(MODELOS_FUNC).map(([id, m]) => `<button type="button" class="btn btn-peq" data-modelo-func="${id}">${m.nome}</button>`).join('')}</div>
+      <div class="checks">${PERMISSOES.map(([id, n, dica]) => `<label><input type="checkbox" data-perm="${id}"${(f.permissoes || {})[id] ? ' checked' : ''}>${n}${dica ? `<small>${dica}</small>` : ''}</label>`).join('')}</div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px"><button type="button" class="btn btn-peq btn-perigo" data-apagar-func>${ic('lixo')}Tirar da equipe</button></div></div>`).join('')}
+    ${eq.length ? '' : '<p class="vazio">Nenhum funcionário ainda. Toque em “Adicionar funcionário”.</p>'}
+    <div class="nota-studio">${ic('info')}<div>Dê a cada pessoa só o que ela precisa. Exemplos: <b>atendente</b> vê os pedidos e muda a situação; <b>cozinha</b> vê os pedidos e marca o que acabou.
+      Cada mudança de situação de pedido mostra quem fez.</div></div>`;
+  }
+
+  /* ============================================================
      Visual (definido pelo Studio)
      ============================================================ */
   function visual() {
@@ -364,6 +430,12 @@
         <p>O valor ao lado de cada escolha <b>soma</b> ao preço do produto (0 = grátis). Depois, em cada produto, marque quais opções ele tem.</p>`)}
       ${sec('Horário, feriados e loja fechada', `<p>Em Funcionamento, ajuste o horário de cada dia. Para feriados ou imprevistos, ligue "Fechar a loja agora" e escreva o aviso. O site para de aceitar pedidos até você desligar.</p>`)}
       ${sec('Entrega, taxa por bairro e pedido mínimo', `<p>Cadastre os bairros que você atende e a taxa de cada um. O cliente escolhe o bairro e o site soma a taxa sozinho. Com pedido mínimo, o site só deixa enviar quando o valor for atingido.</p>`)}
+      ${sec('Equipe: dono e funcionários', `<p>O pedido pode chegar no WhatsApp de quem estiver no balcão, e não no do dono. Por isso cada pessoa da equipe pode ter o próprio acesso.</p>
+        <ul><li><b>Dono:</b> entra com a senha dele e vê tudo, inclusive a aba <b>Equipe</b>.</li>
+        <li><b>Funcionário:</b> entra tocando no próprio nome e digitando o PIN. Só vê e muda o que o dono liberou.</li>
+        <li>Na aba Equipe, o dono adiciona as pessoas, escolhe o PIN e marca o que cada uma pode fazer. Os atalhos "Atendente", "Cozinha" e "Gerente" já marcam o mais comum.</li>
+        <li>Para alguém parar de entrar (por exemplo, quem saiu da loja), desligue "Pode entrar" ou tire a pessoa da equipe.</li>
+        <li>Cada mudança de situação de pedido mostra quem fez ("Confirmado por Ana").</li></ul>`)}
       ${sec('O que é com o Studio Magalhães', `<ul><li><b>Visual:</b> cores, logo, fontes, nome e textos da apresentação são mudados pelo Studio, como atualização avulsa.</li>
         <li><b>Erros:</b> se algo não funcionar, avise o Studio. Correção de erros é sempre gratuita.</li>
         <li>O Studio fornece o site. Entregadores, pagamentos e atendimento são da loja.</li></ul>`)}
@@ -375,6 +447,11 @@
   el.addEventListener('click', e => {
     const t = e.target, b = t.closest('button'); if (!b || !el.contains(b)) return;
     const ds = D(), d = b.dataset;
+    // equipe (só o dono)
+    const fEl = b.closest('[data-func]'), func = fEl ? equipe().find(x => x.id === fEl.dataset.func) : null;
+    if (d.novoFunc !== undefined && quem().dono) { equipe().push({ id: C.novoId('f'), nome: 'Novo funcionário', pin: String(1000 + Math.floor(Math.random() * 9000)), ativo: true, permissoes: { pedidos: true, situacao: true } }); salvar('Funcionário adicionado'); equipeTela(); P().lastElementChild?.previousElementSibling?.scrollIntoView({ behavior: 'smooth' }); return; }
+    if (func && d.modeloFunc && quem().dono) { func.permissoes = Object.fromEntries(MODELOS_FUNC[d.modeloFunc].p.map(p => [p, true])); salvar(`Permissões de ${MODELOS_FUNC[d.modeloFunc].nome.toLowerCase()}`); equipeTela(); return; }
+    if (func && d.apagarFunc !== undefined && quem().dono) { if (confirm(`Tirar ${func.nome} da equipe? Ele não vai mais conseguir entrar.`)) { ds.equipe = equipe().filter(x => x !== func); salvar('Funcionário removido'); equipeTela(); } return; }
     // pedidos
     if (b.closest('[data-periodo]') && d.v) { periodo = d.v; pedidos(); return; }
     if (b.closest('[data-filtro]') && d.v) { filtroStatus = d.v; pedidos(); return; }
@@ -382,10 +459,10 @@
     if (d.csv !== undefined) { baixarCSV(); return; }
     if (d.apagarPedidos !== undefined) { if (confirm('Apagar todos os pedidos desta demonstração?')) { C.salvarPedidos([]); render(); } return; }
     // produtos
-    if (d.tog) { const p = C.produto(d.id); p[d.tog] = !p[d.tog]; salvar(); produtos(); return; }
-    if (d.mover) { moverProduto(d.id, +d.mover); return; }
-    if (d.editar) { editarProduto(d.editar); return; }
-    if (d.novo !== undefined) { editarProduto(null); return; }
+    if (d.tog) { if (!(pode('produtos') || (d.tog === 'esgotado' && pode('esgotado')))) return; const p = C.produto(d.id); p[d.tog] = !p[d.tog]; salvar(); produtos(); return; }
+    if (d.mover) { if (pode('produtos')) moverProduto(d.id, +d.mover); return; }
+    if (d.editar) { if (pode('produtos')) editarProduto(d.editar); return; }
+    if (d.novo !== undefined) { if (pode('criar')) editarProduto(null); return; }
     // categorias
     if (d.moverCat) { const i = +d.i, j = i + +d.moverCat, l = ds.categorias; [l[i], l[j]] = [l[j], l[i]]; salvar('Ordem salva'); categorias(); return; }
     if (d.iconeCat) {
@@ -416,6 +493,11 @@
     const t = e.target, ds = D(), d = t.dataset;
     if (t.matches('[data-busca]')) { busca = t.value; const pos = t.selectionStart; produtos(); const n = $('[data-busca]'); n.focus(); n.setSelectionRange(pos, pos); return; }
     if (d.catNome) { C.categoria(d.catNome).nome = t.value; salvarDepois(); return; }
+    if (d.funcCampo && quem().dono) {
+      const f = equipe().find(x => x.id === t.closest('[data-func]').dataset.func);
+      if (d.funcCampo === 'pin') { t.value = t.value.replace(/\D/g, '').slice(0, 6); if (t.value.length < 4) return; }
+      f[d.funcCampo] = t.value.trim() || f[d.funcCampo]; salvarDepois(); return;
+    }
     const g = t.closest('[data-grupo]') ? C.grupo(t.closest('[data-grupo]').dataset.grupo) : null;
     if (g && d.gc === 'nome') { g.nome = t.value; salvarDepois(); return; }
     if (g && d.gc === 'max') { g.max = +t.value || 0; salvarDepois(); return; }
@@ -427,7 +509,13 @@
   el.addEventListener('change', e => {
     const t = e.target, ds = D(), d = t.dataset;
     if (t.matches('[data-filtro-cat]')) { filtroCat = t.value; produtos(); return; }
-    if (d.statusPed) { const l = C.pedidos(), p = l.find(x => x.numero === +d.statusPed); if (p) { p.status = t.value; C.salvarPedidos(l); salvo('Situação atualizada'); render(); } return; }
+    const fEl = t.closest('[data-func]');
+    if (fEl && quem().dono) {
+      const f = equipe().find(x => x.id === fEl.dataset.func);
+      if (d.perm) { (f.permissoes ||= {})[d.perm] = t.checked; salvar(); return; }
+      if (t.matches('[data-func-ativo]')) { f.ativo = t.checked; salvar(t.checked ? `${f.nome} pode entrar` : `${f.nome} não entra mais`); return; }
+    }
+    if (d.statusPed) { if (!pode('situacao')) return; const l = C.pedidos(), p = l.find(x => x.numero === +d.statusPed); if (p) { p.status = t.value; p.por = quem().nome; C.salvarPedidos(l); salvo('Situação atualizada'); render(); } return; }
     const g = t.closest('[data-grupo]') ? C.grupo(t.closest('[data-grupo]').dataset.grupo) : null;
     if (g && d.gc === 'tipo') { g.tipo = t.value; if (g.tipo === 'meio') { g.itens = []; g.obrig = false; } else if (!g.itens.length) g.itens = [{ nome: 'Escolha 1', preco: 0 }]; salvar(); opcoes(); return; }
     if (g && d.gc === 'obrig') { g.obrig = t.checked; salvar(); return; }

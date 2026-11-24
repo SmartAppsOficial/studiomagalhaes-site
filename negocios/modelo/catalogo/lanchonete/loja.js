@@ -62,6 +62,12 @@ window.LOJA = {
       pagamentos: ['Pix', 'Cartão de crédito na entrega', 'Cartão de débito na entrega', 'Dinheiro']
     },
 
+    // funcionários de exemplo (o dono cadastra os dele na aba Equipe)
+    equipe: [
+      { id: 'f-ana', nome: 'Ana (exemplo)', pin: '1111', ativo: true, permissoes: { pedidos: true, situacao: true, esgotado: true } },
+      { id: 'f-caio', nome: 'Caio (exemplo)', pin: '1111', ativo: true, permissoes: { pedidos: true, esgotado: true } }
+    ],
+
     categorias: [
       { id: 'pizzas', nome: 'Pizzas', icone: 'cat-pizza' },
       { id: 'lanches', nome: 'Lanches', icone: 'cat-burger' },

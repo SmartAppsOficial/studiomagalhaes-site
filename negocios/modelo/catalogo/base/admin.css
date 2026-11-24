@@ -18,6 +18,11 @@ h1, h2, h3 { font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; letter-s
 .sigla { width: 56px; height: 56px; border-radius: 17px; margin: 0 auto 14px; display: grid; place-items: center; background: var(--p); color: var(--p-ink); font: 800 1.5rem/1 'Bricolage Grotesque', sans-serif; }
 .entrar h1 { font-size: 1.5rem; }
 .entrar p { color: var(--suave); margin: 4px 0 18px; }
+.quem { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.quem button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--linha); background: #fff; border-radius: 99px; padding: 8px 12px; font-weight: 600; font-size: .9rem; }
+.quem button .ic { width: 16px; height: 16px; }
+.quem button[aria-pressed="true"] { background: var(--p); border-color: var(--p); color: var(--p-ink); }
+.status-sel[disabled] { opacity: .7; cursor: not-allowed; }
 .dica-demo { margin-top: 14px; font-size: .85rem; background: #eef4fb; color: #1d3f6b; padding: 8px 10px; border-radius: 10px; }
 
 /* Estrutura */
