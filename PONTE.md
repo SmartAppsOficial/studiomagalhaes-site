@@ -105,6 +105,9 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 24/11/2026, Claude do Paulo (negócios: ícones próprios)
+- Para diferenciar as abas, a página `negocios/` ganhou ícone invertido (SM azul-marinho em fundo branco, em `negocios/img/`) e o painel `negocios/painel/` ganhou ícone dourado (SM azul-marinho em fundo ouro, em `negocios/painel/img/`), com o logo do topo e do login do painel também em dourado. O resto do site continua com o ícone azul-marinho de sempre. Os ícones foram gerados a partir de `assets/img/estudio/logo-quadrado.png` (512, 180 e 32 px).
+
 ### 24/11/2026, Claude do Paulo (negócios: Catálogo digital e clientes fechados)
 - **Catálogo digital no app de modelos** (`negocios/modelo/catalogo/`, sem indexação): lojas prontas por ramo, com apresentação animada, categorias com ícones (e setas nas telas pequenas), cardápio, montagem do item (tamanho, meio a meio, adicionais), carrinho que monta o pedido para o WhatsApp da loja e área da loja com senha (pedidos, produtos, categorias, opções, funcionamento, visual e manual). Pronto: `lanchonete/` (demonstração "Fornalha", senha 1234). Os outros ramos vêm depois. Na demonstração, produtos e pedidos ficam no navegador; preços e nomes são de exemplo e a página avisa.
 - **Painel do Studio dentro da loja** (botão do pincel, só no app de modelos): nome, logo (com as cores tiradas do logo), cores, animação do topo (pizza ou hambúrguer, refri e batata), letras, textos, tipo de cardápio, guardar por cliente e modo apresentação. No modo apresentação o pincel mostra só o que a loja pode experimentar.
