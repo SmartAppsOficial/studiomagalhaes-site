@@ -75,6 +75,7 @@ window.Catalogo = (() => {
     }
     return base + extra;
   }
+  const dataBR = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(s || ''); };
   /** Linhas de detalhe de um item (para o carrinho e para a mensagem). */
   function detalhes(item) {
     const p = produto(item.produto), out = [];
@@ -82,6 +83,11 @@ window.Catalogo = (() => {
     for (const gid of p.grupos || []) {
       const g = grupo(gid); if (!g) continue;
       if (g.tipo === 'meio') { if (item.meio) out.push(`${g.nome}: ${produto(item.meio)?.nome || ''}`); continue; }
+      if (g.tipo === 'texto' || g.tipo === 'data') {
+        const val = String((item.campos || {})[gid] || '').trim();
+        if (val) out.push(`${g.nome}: ${g.tipo === 'data' ? dataBR(val) : val}`);
+        continue;
+      }
       const esc = (item.escolhas || {})[gid] || [];
       if (esc.length) out.push(`${g.nome}: ${esc.map(i => g.itens[i]?.nome).filter(Boolean).join(', ')}`);
     }

@@ -19,6 +19,8 @@ Object.assign(window.ICONES = window.ICONES || {}, {
   sino: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
   moeda: '<circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.5-.9-1.5-1.4-2.6-1.4-1.5 0-2.6.8-2.6 2s1 1.7 2.7 2.1c1.8.4 2.8 1 2.8 2.3s-1.2 2.1-2.8 2.1c-1.2 0-2.3-.6-2.8-1.6M12 6.3v1.5M12 16.4v1.4"/>',
   cubo: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/>',
+  imprimir: '<path d="M7 8V4h10v4M6 17H4.5A1.5 1.5 0 0 1 3 15.5v-5A2.5 2.5 0 0 1 5.5 8h13A2.5 2.5 0 0 1 21 10.5v5a1.5 1.5 0 0 1-1.5 1.5H18"/><rect x="7" y="14" width="10" height="6" rx="1"/>',
+  qrcode: '<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"/><path d="M14 14h2.5v2.5H14zM18 14h2.5v2.5M14 18.5h2.5v2M18 18.5h2.5v2"/>',
 
   /* Ícones de categoria (traço fino, minimalistas) */
   'cat-pizza': '<path d="M12 3c4 0 7.6 1.6 9 3.2L12 21 3 6.2C4.4 4.6 8 3 12 3z"/><path d="M4.7 8.7c2-1.2 4.5-1.9 7.3-1.9s5.3.7 7.3 1.9"/><circle cx="10" cy="11.2" r="1.1"/><circle cx="14" cy="13.8" r="1"/><circle cx="13.3" cy="9.9" r=".8"/>',
@@ -38,8 +40,15 @@ Object.assign(window.ICONES = window.ICONES || {}, {
   'cat-bolo': '<path d="M4 20.5h16V13H4z"/><path d="M4 16.2c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1 4 0"/><path d="M8 13v-2.5M12 13v-2.5M16 13v-2.5"/><path class="ic-cheio" d="M8 8.6a1 1 0 0 1-1-1c0-.6 1-1.8 1-1.8s1 1.2 1 1.8a1 1 0 0 1-1 1zM12 8.6a1 1 0 0 1-1-1c0-.6 1-1.8 1-1.8s1 1.2 1 1.8a1 1 0 0 1-1 1zM16 8.6a1 1 0 0 1-1-1c0-.6 1-1.8 1-1.8s1 1.2 1 1.8a1 1 0 0 1-1 1z"/>',
   'cat-estrela': '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>',
   'cat-promo': '<path d="M3.5 12.5V4h8.5l8.5 8.5-8 8z"/><path d="M9.5 14.5l5-5"/><circle cx="10" cy="10" r=".9"/><circle cx="14" cy="14" r=".9"/>',
-  'cat-presente': '<rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v8h14v-8M12 8.5v12M12 8.5S10.8 4 8.4 4a2.2 2.2 0 0 0 0 4.5H12zM12 8.5S13.2 4 15.6 4a2.2 2.2 0 0 1 0 4.5H12z"/>'
+  'cat-presente': '<rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v8h14v-8M12 8.5v12M12 8.5S10.8 4 8.4 4a2.2 2.2 0 0 0 0 4.5H12zM12 8.5S13.2 4 15.6 4a2.2 2.2 0 0 1 0 4.5H12z"/>',
+  'cat-roupa': '<path d="M8.5 4.5l3.5 2 3.5-2 5 3.5-2.5 4-2.5-1.5V20h-7v-9.5L6 12 3.5 8z"/>',
+  'cat-vestido': '<path d="M9 4l3 2.5L15 4l1.5 5-1.5 2 3.5 9h-13L9 11 7.5 9z"/>',
+  'cat-acessorio': '<path d="M7 9h10l1.5 11h-13z"/><path d="M9.5 9V7a2.5 2.5 0 0 1 5 0v2"/>',
+  'cat-pet': '<circle cx="8" cy="8.5" r="2"/><circle cx="16" cy="8.5" r="2"/><circle cx="5.5" cy="13" r="1.8"/><circle cx="18.5" cy="13" r="1.8"/><path d="M12 12.5c-2.8 0-4.8 2.2-4.8 4.4 0 1.4 1.1 2.1 2.5 2.1 1 0 1.6-.4 2.3-.4s1.3.4 2.3.4c1.4 0 2.5-.7 2.5-2.1 0-2.2-2-4.4-4.8-4.4z"/>',
+  'cat-celular': '<rect x="6.5" y="2.5" width="11" height="19" rx="2.4"/><path d="M10.5 18h3"/>',
+  'cat-cosmetico': '<path d="M9 10h6v10H9z"/><path d="M10 10V6l4-2v6"/>',
+  'cat-mercado': '<path d="M3 5h2.5l2.2 10.5h10.8l2-7.5H6.3"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>'
 });
 /* Lista de ícones que a loja pode escolher para as categorias. */
 window.ICONES_CATEGORIA = ['cat-pizza', 'cat-burger', 'cat-fritas', 'cat-refri', 'cat-garrafa', 'cat-combo', 'cat-doce', 'cat-sorvete', 'cat-cafe',
-  'cat-prato', 'cat-frango', 'cat-hotdog', 'cat-salada', 'cat-pao', 'cat-bolo', 'cat-estrela', 'cat-promo', 'cat-presente'];
+  'cat-prato', 'cat-frango', 'cat-hotdog', 'cat-salada', 'cat-pao', 'cat-bolo', 'cat-mercado', 'cat-roupa', 'cat-vestido', 'cat-acessorio', 'cat-pet', 'cat-celular', 'cat-cosmetico', 'cat-estrela', 'cat-promo', 'cat-presente'];

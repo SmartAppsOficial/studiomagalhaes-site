@@ -18,6 +18,11 @@ h1, h2, h3 { font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; letter-s
 .sigla { width: 56px; height: 56px; border-radius: 17px; margin: 0 auto 14px; display: grid; place-items: center; background: var(--p); color: var(--p-ink); font: 800 1.5rem/1 'Bricolage Grotesque', sans-serif; }
 .entrar h1 { font-size: 1.5rem; }
 .entrar p { color: var(--suave); margin: 4px 0 18px; }
+.quem { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.quem button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--linha); background: #fff; border-radius: 99px; padding: 8px 12px; font-weight: 600; font-size: .9rem; }
+.quem button .ic { width: 16px; height: 16px; }
+.quem button[aria-pressed="true"] { background: var(--p); border-color: var(--p); color: var(--p-ink); }
+.status-sel[disabled] { opacity: .7; cursor: not-allowed; }
 .dica-demo { margin-top: 14px; font-size: .85rem; background: #eef4fb; color: #1d3f6b; padding: 8px 10px; border-radius: 10px; }
 
 /* Estrutura */
@@ -111,6 +116,21 @@ textarea.entrada { min-height: 74px; resize: vertical; }
 .pedido-pe { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--suave); font-size: .88rem; border-top: 1px dashed var(--linha); padding-top: 8px; }
 .pedido-pe b { color: var(--tinta); }
 .status-sel { border-radius: 99px; padding: 6px 10px; border: 1px solid var(--linha); font-weight: 700; font-size: .85rem; background: #fff; }
+.pedido-acoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; }
+.motivos-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.motivos-chips button { border: 1px solid var(--linha); background: #fff; border-radius: 99px; padding: 6px 12px; font-size: .86rem; font-weight: 600; }
+.motivos-chips button[aria-pressed="true"] { border-color: var(--p); background: color-mix(in oklab, var(--p) 10%, #fff); color: var(--p); }
+.msg-previa { background: #e7f6ea; color: #164f25; border: 1px solid #bce3c5; border-radius: 12px; padding: 12px 14px; font-size: .9rem; white-space: pre-wrap; margin-top: 8px; }
+.qr-caixa { display: grid; grid-template-columns: 180px 1fr; gap: 18px; align-items: center; }
+@media (max-width: 600px) { .qr-caixa { grid-template-columns: 1fr; justify-items: center; } }
+.qr-previa { width: 180px; height: 180px; padding: 8px; background: #fff; border: 1px solid var(--linha); border-radius: 14px; display: grid; place-items: center; }
+.qr-previa svg { width: 100%; height: 100%; display: block; }
+.cupom-row { display: grid; grid-template-columns: 1.2fr 90px 90px 100px auto auto; gap: 6px; align-items: center; margin-bottom: 8px; }
+@media (max-width: 720px) { .cupom-row { grid-template-columns: 1fr 1fr; } }
+.entreg-row { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+@media (max-width: 620px) { .entreg-row { grid-template-columns: 1fr 1fr; } }
+.pedido-entreg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--linha); font-size: .86rem; }
+.pedido-entreg select { border: 1px solid var(--linha); border-radius: 9px; padding: 5px 8px; background: #fff; font-weight: 600; }
 .vazio { text-align: center; color: var(--suave); padding: 30px 10px; }
 
 /* Produtos */

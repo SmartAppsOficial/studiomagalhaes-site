@@ -14,13 +14,48 @@
   const PASTA = location.pathname.split('/').filter(Boolean).slice(-2, -1)[0] || L.id; // ex.: "lanchonete"
 
   const FONTES = {
-    marcante: { nome: 'Marcante', t: "'Bricolage Grotesque', system-ui, sans-serif", c: "'DM Sans', system-ui, sans-serif" },
-    moderna: { nome: 'Moderna', t: "'Montserrat', system-ui, sans-serif", c: "'Inter', system-ui, sans-serif" },
-    acolhedora: { nome: 'Acolhedora', t: "'Fraunces', Georgia, serif", c: "'Nunito Sans', system-ui, sans-serif" },
-    elegante: { nome: 'Elegante', t: "'Playfair Display', Georgia, serif", c: "'Source Sans 3', system-ui, sans-serif" }
+    marcante:    { nome: 'Marcante',    t: "'Bricolage Grotesque', system-ui, sans-serif", c: "'DM Sans', system-ui, sans-serif" },
+    moderna:     { nome: 'Moderna',     t: "'Montserrat', system-ui, sans-serif",          c: "'Inter', system-ui, sans-serif" },
+    acolhedora:  { nome: 'Acolhedora',  t: "'Fraunces', Georgia, serif",                   c: "'Nunito Sans', system-ui, sans-serif" },
+    elegante:    { nome: 'Elegante',    t: "'Playfair Display', Georgia, serif",           c: "'Source Sans 3', system-ui, sans-serif" },
+    geometrica:  { nome: 'Geométrica',  t: "'Outfit', system-ui, sans-serif",              c: "'Plus Jakarta Sans', system-ui, sans-serif", g: ['Outfit', 'Plus Jakarta Sans'] },
+    minimalista: { nome: 'Minimalista', t: "'Space Grotesk', system-ui, sans-serif",       c: "'Inter', system-ui, sans-serif",             g: ['Space Grotesk'] },
+    impacto:     { nome: 'Impacto',     t: "'Syne', system-ui, sans-serif",                c: "'DM Sans', system-ui, sans-serif",           g: ['Syne'] },
+    forte:       { nome: 'Forte',       t: "'Bebas Neue', system-ui, sans-serif",          c: "'DM Sans', system-ui, sans-serif",           g: ['Bebas Neue'] },
+    urbana:      { nome: 'Urbana',      t: "'Anton', system-ui, sans-serif",               c: "'Inter', system-ui, sans-serif",             g: ['Anton'] },
+    luxo:        { nome: 'Luxo',        t: "'Cormorant Garamond', Georgia, serif",         c: "'Lato', system-ui, sans-serif",              g: ['Cormorant Garamond', 'Lato'] },
+    boutique:    { nome: 'Boutique',    t: "'Cinzel', Georgia, serif",                     c: "'Montserrat', system-ui, sans-serif",        g: ['Cinzel'] },
+    editorial:   { nome: 'Editorial',   t: "'DM Serif Display', Georgia, serif",           c: "'DM Sans', system-ui, sans-serif",           g: ['DM Serif Display'] },
+    artesanal:   { nome: 'Artesanal',   t: "'Abril Fatface', Georgia, serif",              c: "'Poppins', system-ui, sans-serif",           g: ['Abril Fatface', 'Poppins'] },
+    jovem:       { nome: 'Jovem',       t: "'Poppins', system-ui, sans-serif",             c: "'Nunito', system-ui, sans-serif",            g: ['Poppins', 'Nunito'] },
+    suave:       { nome: 'Suave',       t: "'Quicksand', system-ui, sans-serif",           c: "'Nunito', system-ui, sans-serif",            g: ['Quicksand', 'Nunito'] },
+    clean:       { nome: 'Clean',       t: "'Sora', system-ui, sans-serif",                c: "'Inter', system-ui, sans-serif",             g: ['Sora'] },
+    tech:        { nome: 'Tech',        t: "'Exo 2', system-ui, sans-serif",               c: "'Inter', system-ui, sans-serif",             g: ['Exo 2'] },
+    classica:    { nome: 'Clássica',    t: "'Merriweather', Georgia, serif",               c: "'Open Sans', system-ui, sans-serif",         g: ['Merriweather', 'Open Sans'] },
+    sofisticada: { nome: 'Sofisticada', t: "'Lora', Georgia, serif",                       c: "'Work Sans', system-ui, sans-serif",         g: ['Lora', 'Work Sans'] },
+    gourmet:     { nome: 'Gourmet',     t: "'Libre Baskerville', Georgia, serif",          c: "'Lato', system-ui, sans-serif",              g: ['Libre Baskerville', 'Lato'] },
+    delicada:    { nome: 'Delicada',    t: "'Bodoni Moda', Georgia, serif",                c: "'Montserrat', system-ui, sans-serif",        g: ['Bodoni Moda'] },
+    bold:        { nome: 'Condensada',  t: "'Oswald', system-ui, sans-serif",              c: "'Open Sans', system-ui, sans-serif",         g: ['Oswald', 'Open Sans'] },
+    retro:       { nome: 'Retrô',       t: "'Righteous', system-ui, sans-serif",           c: "'Nunito', system-ui, sans-serif",            g: ['Righteous', 'Nunito'] },
+    manuscrita:  { nome: 'Manuscrita',  t: "'Pacifico', cursive",                          c: "'Quicksand', system-ui, sans-serif",         g: ['Pacifico', 'Quicksand'] }
   };
-  const PALETAS = [['#c8321e', '#f6b52e'], ['#e85d04', '#ffd166'], ['#d62828', '#2a9d8f'], ['#9d0208', '#f48c06'], ['#1d4ed8', '#fbbf24'],
-    ['#15803d', '#facc15'], ['#7c3aed', '#fb7185'], ['#0f766e', '#f59e0b'], ['#b5482a', '#e9c46a'], ['#111827', '#f97316']];
+  let fontesExtrasCarregadas = false;
+  function carregarFontesPainel() {
+    if (fontesExtrasCarregadas) return;
+    fontesExtrasCarregadas = true;
+    const nomes = [...new Set(Object.values(FONTES).flatMap(f => f.g || []))];
+    const query = nomes.map(n => `family=${encodeURIComponent(n).replace(/%20/g, '+')}:wght@400;600;700;800`).join('&');
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?${query}&display=swap`;
+    document.head.appendChild(link);
+  }
+  const PALETAS = [
+    ['#c8321e', '#f6b52e'], ['#e85d04', '#ffd166'], ['#c94a72', '#f3b7c8'], ['#6b238c', '#f4b942'], ['#1d4ed8', '#fbbf24'],
+    ['#15803d', '#facc15'], ['#7c3aed', '#fb7185'], ['#0f766e', '#f59e0b'], ['#8c4a2f', '#e9c46a'], ['#111827', '#f97316'],
+    ['#991b1b', '#eab308'], ['#0e7490', '#38bdf8'], ['#be185d', '#f9a8d4'], ['#3f6212', '#d9f99d'], ['#4338ca', '#a5b4fc'],
+    ['#b45309', '#fde047'], ['#1e293b', '#10b981'], ['#9d174d', '#fbbf24'], ['#047857', '#6ee7b7'], ['#581c87', '#e879f9']
+  ];
   const PLANOS = ['Catálogo digital · R$ 49,90/mês', 'Site premium · R$ 79,90/mês', 'Site premium · R$ 199,90/mês (2 atualizações)', 'Outro (anotar nas observações)'];
 
   /* ---------- Cores ---------- */
@@ -95,14 +130,52 @@
     a.innerHTML = ic(icone) + esc(t); a.hidden = false; clearTimeout(aviT); aviT = setTimeout(() => { a.hidden = true; }, 2600);
   }
   const apresentando = () => document.body.classList.contains('est-apresentando');
+  let previaAberta = true;
   let rascunho = { responsavel: '', contato: '', plano: PLANOS[0], obs: '' };
+
+  function htmlPreviaViva() {
+    const V = C.visual, T = C.textos;
+    const cena = V.cena !== 'nenhuma' && window.CENAS && window.CENAS[V.cena] ? window.CENAS[V.cena]() : null;
+    const prods = (C.dados.produtos || []).filter(p => !p.pausado).slice(0, 3);
+    return `<div class="est-previa-bar">
+        <b>Prévia ao vivo</b>
+        <div class="est-previa-acoes">
+          <button type="button" class="est-previa-btn" data-aleatorio title="Gerar estilo aleatório">${ic('brilho')}Aleatório</button>
+          <button type="button" class="est-previa-btn" data-toggle-previa>${previaAberta ? 'Ocultar' : 'Mostrar'}</button>
+        </div>
+      </div>
+      <div class="est-mini-site" data-hero-estilo="${esc(V.estiloHero || 'escuro')}" data-hero-fundo="${esc(V.fundoHero || 'pontos')}" data-grade="${esc(V.grade || 'horizontal')}" data-cantos="${esc(V.cantos || 'arredondado')}" data-topo="${esc(V.topoEstilo || 'claro')}">
+        <div class="est-mini-topo">
+          <span class="est-mini-logo">${V.logo ? `<img src="${esc(V.logo)}" alt="">` : esc(V.sigla)}</span>
+          <div class="est-mini-marca"><b>${esc(V.nome)}</b><small>${esc(V.segmento)}</small></div>
+          <span class="est-mini-dot"></span>
+        </div>
+        <div class="est-mini-hero${cena ? '' : ' sem-cena'}">
+          <div class="est-mini-htxt">
+            <span class="est-mini-selo">${esc(T.selo)}</span>
+            <div class="est-mini-tit">${esc(T.titulo)}</div>
+            <span class="est-mini-cta">${esc(T.botao || 'Ver catálogo')}</span>
+          </div>
+          ${cena ? `<div class="est-mini-cena">${cena.principal}</div>` : ''}
+        </div>
+        <div class="est-mini-cards">
+          ${prods.map(p => `<div class="est-mini-card"><div><span></span><span></span></div><img src="${esc(p.foto)}" alt=""></div>`).join('')}
+        </div>
+      </div>`;
+  }
+  function atualizarPrevia() {
+    const w = $('[data-previa-wrap]', painel);
+    if (!w) return;
+    w.classList.toggle('fechada', !previaAberta);
+    w.innerHTML = htmlPreviaViva();
+  }
 
   function montar() {
     const V = C.visual, T = C.textos, l = C.dados.loja, cliente = apresentando();
     const fonteAtual = Object.entries(FONTES).find(([, f]) => f.t === V.fontes.t)?.[0];
-    const partidas = Object.entries(L.partidas || {});
     const clientes = C.clientes();
     let n = 0; const num = () => `<span class="n">${++n}</span>`;
+    const secPrevia = () => `<div class="est-previa-wrap${previaAberta ? '' : ' fechada'}" data-previa-wrap>${htmlPreviaViva()}</div>`;
     const secNome = () => `<section class="est-grupo"><h3>${num()}Nome e logo</h3>
         <label class="est-campo"><span>Nome da loja</span><input class="est-entrada" data-v="nome" value="${esc(V.nome)}" maxlength="40" autocomplete="off"></label>
         <label class="est-campo"><span>Frase abaixo do nome</span><input class="est-entrada" data-v="segmento" value="${esc(V.segmento)}" maxlength="40" autocomplete="off"></label>
@@ -112,15 +185,31 @@
         ${cliente ? '' : `<p class="est-nota">Dica: tire uma foto do logo na fachada ou no Instagram da loja. Ao colocar o logo, o site já se pinta com as cores dele.</p>
         <label class="est-campo" style="margin-top:12px"><span>WhatsApp da loja (para o pedido de teste chegar nela)</span><input class="est-entrada" data-whats inputmode="tel" value="${esc(l.whats)}" placeholder="(21) 99999-9999"></label>`}
       </section>`;
-    const secPartida = () => partidas.length ? `<section class="est-grupo"><h3>${num()}Tipo de cardápio</h3><div class="est-ops">
-        ${partidas.map(([id, p]) => `<button type="button" class="est-op" data-partida="${id}" aria-pressed="${V.partida === id}">${ic(p.cena === 'pizza' ? 'cat-pizza' : 'cat-burger')}${esc(p.nome)}</button>`).join('')}</div>
-        <p class="est-nota">Troca o cardápio de exemplo, a animação e os textos do topo.</p></section>` : '';
-    const secCena = () => `<section class="est-grupo"><h3>${num()}Animação do topo</h3><div class="est-ops">
-        ${Object.entries(window.CENAS_NOMES || {}).map(([id, nm]) => `<button type="button" class="est-op" data-cena="${id}" aria-pressed="${V.cena === id}">${ic(id === 'pizza' ? 'cat-pizza' : id === 'lanche' ? 'cat-burger' : 'brilho')}${esc(nm)}</button>`).join('')}</div></section>`;
+    const cenasLista = (L.cenas && L.cenas.length ? L.cenas : Object.keys(window.CENAS_NOMES || {})).filter(id => (window.CENAS_NOMES || {})[id]);
+    const thumbCena = id => {
+      try { const c = window.CENAS && window.CENAS[id] && window.CENAS[id](); return c && c.principal ? `<span class="est-thumb-cena">${c.principal}</span>` : ic('brilho'); }
+      catch { return ic('brilho'); }
+    };
+    const secCena = () => `<section class="est-grupo"><h3>${num()}Animação 3D do topo (${cenasLista.length} opções)</h3><div class="est-ops">
+        <button type="button" class="est-op" data-cena="nenhuma" aria-pressed="${V.cena === 'nenhuma'}"><span class="est-thumb-cena">${ic('olhoFechado')}</span>Sem animação 3D</button>
+        ${cenasLista.map(id => `<button type="button" class="est-op" data-cena="${id}" aria-pressed="${V.cena === id}">${thumbCena(id)}${esc(window.CENAS_NOMES[id])}</button>`).join('')}</div>
+        <p class="est-nota">Você escolhe uma animação (ou topo limpo sem 3D) com o cliente antes da entrega. Depois de entregue, só o Studio pode trocar.</p></section>`;
+    const secEstilo = () => {
+      const grp = (tit, attr, atual, ops) => `<div style="margin-bottom:12px"><div style="font-size:.78rem;font-weight:700;color:#b5c3da;margin-bottom:6px">${tit}</div>
+        <div class="est-ops">${ops.map(([id, nm, sw]) => `<button type="button" class="est-op" style="min-height:68px;padding:8px 8px" data-estilo="${attr}:${id}" aria-pressed="${atual === id}"><span class="est-swatch ${sw}"></span>${nm}</button>`).join('')}</div></div>`;
+      return `<section class="est-grupo"><h3>${num()}Estilo visual (para cada loja ser única)</h3>
+        <button type="button" class="est-btn est-btn-p est-cheio" data-aleatorio style="margin-bottom:14px">${ic('brilho')}Gerar estilo aleatório</button>
+        ${grp('Apresentação do topo', 'estiloHero', V.estiloHero || 'escuro', [['escuro', 'Escuro elegante', 'sw-escuro'], ['claro', 'Claro editorial', 'sw-claro'], ['vibrante', 'Cor da marca', 'sw-vibrante'], ['central', 'Centralizado', 'sw-central']])}
+        ${grp('Fundo do topo', 'fundoHero', V.fundoHero || 'pontos', [['pontos', 'Pontilhado', 'sw-pontos'], ['grade', 'Grade fina', 'sw-grade'], ['listras', 'Listras sutis', 'sw-listras'], ['liso', 'Brilho limpo', 'sw-liso']])}
+        ${grp('Estilo dos cartões', 'grade', V.grade || 'horizontal', [['horizontal', 'Lateral', 'sw-horizontal'], ['vitrine', 'Vitrine grande', 'sw-vitrine'], ['compacto', 'Lista rápida', 'sw-compacto']])}
+        ${grp('Cantos e formato', 'cantos', V.cantos || 'arredondado', [['arredondado', 'Moderno', 'sw-arredondado'], ['editorial', 'Reto editorial', 'sw-editorial'], ['pilula', 'Arredondado', 'sw-pilula']])}
+        ${grp('Barra do topo', 'topoEstilo', V.topoEstilo || 'claro', [['claro', 'Barra clara', 'sw-topo-claro'], ['escuro', 'Barra escura', 'sw-topo-escuro']])}
+        <p class="est-nota">O botão aleatório sorteia cores, animação 3D, fonte, topo, fundo e cartões de uma vez.</p></section>`;
+    };
     const secCores = () => `<section class="est-grupo"><h3>${num()}Cores</h3>
         <div class="est-paletas">${PALETAS.map(([p, d]) => `<button type="button" class="est-paleta" data-paleta="${p},${d}" aria-pressed="${V.cores.p.toLowerCase() === p && V.cores.d.toLowerCase() === d}" aria-label="Paleta de cores"><i style="background:${p}"></i><i style="background:${d}"></i></button>`).join('')}</div>
         <div class="est-cores">${[['p', 'Principal'], ['d', 'Destaque'], ['escuro', 'Fundo do topo'], ['fundo', 'Fundo da página']].map(([k, nm]) => `<label class="est-cor"><input type="color" data-cor="${k}" value="${esc(V.cores[k])}"><span>${nm}</span></label>`).join('')}</div></section>`;
-    const secLetras = () => `<section class="est-grupo"><h3>${num()}Letras</h3><div class="est-ops">
+    const secLetras = () => `<section class="est-grupo"><h3>${num()}Letras (${Object.keys(FONTES).length} fontes)</h3><div class="est-ops" style="max-height:260px;overflow-y:auto;padding-right:2px">
         ${Object.entries(FONTES).map(([id, f]) => `<button type="button" class="est-op" data-fonte="${id}" aria-pressed="${fonteAtual === id}"><span class="aa" style="font-family:${f.t.replace(/"/g, "'")};font-weight:700">Aa</span>${f.nome}</button>`).join('')}</div></section>`;
     const secTextos = () => `<section class="est-grupo"><h3>${num()}Textos do topo</h3>
         <label class="est-campo"><span>Frase pequena</span><input class="est-entrada" data-t="selo" value="${esc(T.selo)}" maxlength="40"></label>
@@ -128,18 +217,20 @@
         <label class="est-campo"><span>Texto</span><textarea class="est-entrada" data-t="sub" maxlength="180">${esc(T.sub)}</textarea></label></section>`;
 
     if (cliente) {
-      painel.innerHTML = `<div class="est-topo"><span class="est-marca">${esc(V.sigla)}</span><div><b>Personalizar o site</b><small>Experimente e veja na hora</small></div>
+      painel.innerHTML = `<div class="est-topo"><span class="est-marca">${esc(V.sigla)}</span><div><b>Personalizar o site</b><small>Veja na prévia acima em tempo real</small></div>
           <button type="button" class="est-x" data-fechar aria-label="Fechar">${ic('x')}</button></div>
-        <div class="est-corpo">${secNome()}${secCena()}${secCores()}${secLetras()}${secTextos()}</div>
+        ${secPrevia()}
+        <div class="est-corpo">${secNome()}${secCena()}${secEstilo()}${secCores()}${secLetras()}${secTextos()}</div>
         <div class="est-pe" style="grid-template-columns:1fr"><button type="button" class="est-btn est-btn-p" data-fechar>${ic('check')}Ver como ficou</button></div>`;
       return;
     }
     const fila = window.Nuvem ? window.Nuvem.fila().length : 0, us = window.Nuvem && window.Nuvem.usuario;
     painel.innerHTML = `
-    <div class="est-topo"><span class="est-marca">SM</span><div><b>Preparar para o cliente</b><small>Tudo muda na hora, na tela ao lado</small></div>
+    <div class="est-topo"><span class="est-marca">SM</span><div><b>Preparar para o cliente</b><small>Veja na prévia abaixo sem fechar o pincel</small></div>
       <button type="button" class="est-x" data-fechar aria-label="Fechar">${ic('x')}</button></div>
+    ${secPrevia()}
     <div class="est-corpo">
-      ${secNome()}${secPartida()}${secCena()}${secCores()}${secLetras()}${secTextos()}
+      ${secNome()}${secCena()}${secEstilo()}${secCores()}${secLetras()}${secTextos()}
       <section class="est-grupo"><h3>${num()}Guardar para a visita</h3>
         <div class="est-linha"><input class="est-entrada" style="flex:1;min-width:0" data-nome-cliente value="${esc(C.ajustado() ? V.nome : '')}" placeholder="Nome para lembrar"><button type="button" class="est-btn est-btn-p" data-guardar>${ic('salvar')}Guardar</button></div>
         <ul class="est-salvos">${clientes.length ? clientes.map((c, i) => { const v = (c.ajuste && c.ajuste.visual) || {}, cr = v.cores || L.visual.cores; return `<li><span class="mini"><i style="background:${esc(cr.p)}"></i><i style="background:${esc(cr.d)}"></i></span>
@@ -169,6 +260,7 @@
     document.body.classList.toggle('est-aberto', sim);
     $('.est-fab', raiz).setAttribute('aria-expanded', String(sim));
     if (sim) {
+      carregarFontesPainel();
       montar(); $('.est-dica', raiz).hidden = true; try { localStorage.setItem(CH + ':dica', '1'); } catch { /* */ }
       if (!apresentando() && window.Nuvem && navigator.onLine) window.Nuvem.carregar().catch(() => {});
     }
@@ -196,7 +288,11 @@
 
   /* ---------- Mudanças ---------- */
   const V = () => C.visual;
-  function mudar(v, t, refazer) { if (!C.definirVisual(v, t)) aviso('Sem espaço neste aparelho. Use uma foto menor do logo.', 'info'); if (refazer) { const y = $('.est-corpo', painel)?.scrollTop; montar(); const c = $('.est-corpo', painel); if (c) c.scrollTop = y; } }
+  function mudar(v, t, refazer) {
+    if (!C.definirVisual(v, t)) aviso('Sem espaço neste aparelho. Use uma foto menor do logo.', 'info');
+    if (refazer) { const y = $('.est-corpo', painel)?.scrollTop; montar(); const c = $('.est-corpo', painel); if (c) c.scrollTop = y; }
+    else atualizarPrevia();
+  }
   let tDigita;
   painel.addEventListener('input', e => {
     const t = e.target;
@@ -231,11 +327,27 @@
     const b = e.target.closest('button'); if (!b) return;
     const d = b.dataset;
     if (d.fechar !== undefined) abrir(false);
+    else if (d.togglePrevia !== undefined) { previaAberta = !previaAberta; atualizarPrevia(); }
     else if (d.apresentar !== undefined) apresentar(true);
     else if (d.cena) { mudar({ cena: d.cena }, null, true); }
-    else if (d.partida) {
-      if (C.visual.partida && C.visual.partida !== d.partida && !confirm('Trocar o tipo de cardápio? O cardápio volta ao exemplo desse tipo.')) return;
-      C.aplicarPartida(d.partida); montar(); aviso(`Cardápio: ${L.partidas[d.partida].nome}`, 'lista');
+    else if (d.estilo) { const [k, val] = d.estilo.split(':'); mudar({ [k]: val }, null, true); }
+    else if (d.aleatorio !== undefined) {
+      const sort = (arr, atual) => { const f = arr.filter(x => x !== atual); const a = f.length ? f : arr; return a[Math.floor(Math.random() * a.length)]; };
+      const cenasDisp = [...Object.keys(window.CENAS_NOMES || {}), 'nenhuma'];
+      const fontesDisp = Object.values(FONTES);
+      const pal = sort(PALETAS, PALETAS.find(([p]) => p.toLowerCase() === V().cores.p.toLowerCase()));
+      const f = sort(fontesDisp, fontesDisp.find(x => x.t === V().fontes.t));
+      mudar({
+        cores: derivadas(pal[0], pal[1]),
+        cena: sort(cenasDisp, V().cena),
+        fontes: { t: f.t, c: f.c },
+        estiloHero: sort(['escuro', 'claro', 'vibrante', 'central'], V().estiloHero || 'escuro'),
+        fundoHero: sort(['pontos', 'grade', 'listras', 'liso'], V().fundoHero || 'pontos'),
+        grade: sort(['horizontal', 'vitrine', 'compacto'], V().grade || 'horizontal'),
+        cantos: sort(['arredondado', 'editorial', 'pilula'], V().cantos || 'arredondado'),
+        topoEstilo: sort(['claro', 'escuro'], V().topoEstilo || 'claro')
+      }, null, true);
+      aviso('Novo estilo aleatório gerado! Toque de novo para variar.', 'brilho');
     }
     else if (d.paleta) { const [p, dd] = d.paleta.split(','); mudar({ cores: derivadas(p, dd) }, null, true); }
     else if (d.fonte) { const f = FONTES[d.fonte]; mudar({ fontes: { t: f.t, c: f.c } }, null, true); }
