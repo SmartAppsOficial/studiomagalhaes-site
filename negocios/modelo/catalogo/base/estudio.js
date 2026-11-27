@@ -121,9 +121,11 @@
   raiz.innerHTML = `<button type="button" class="est-fab" aria-label="Abrir o painel" aria-expanded="false">${ic('pincel')}</button>
     <div class="est-dica" hidden>Toque aqui para colocar o nome, o logo, as cores e a animação do cliente.</div>
     <button type="button" class="est-sair" aria-label="Sair do modo apresentação" title="Sair do modo apresentação"></button>
+    <div class="est-flut" data-flut hidden></div>
     <aside class="est-painel" aria-label="Painel"></aside>`;
   document.body.appendChild(raiz);
   const painel = $('.est-painel', raiz);
+  const flut = $('[data-flut]', raiz);
   let aviT;
   function aviso(t, icone = 'check') {
     let a = $('.est-aviso'); if (!a) { a = document.createElement('div'); a.className = 'est-aviso est'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
@@ -132,6 +134,93 @@
   const apresentando = () => document.body.classList.contains('est-apresentando');
   let previaAberta = true;
   let rascunho = { responsavel: '', contato: '', plano: PLANOS[0], obs: '' };
+
+  /* ---------- Histórico da sessão para estilos aleatórios + botão flutuante ---------- */
+  const CH_HIST = CH + ':hist:' + L.id;
+  const CH_FLUT = CH + ':flut:' + L.id;
+  let histEstilos = [], histIdx = -1, flutAtivo = false, flutListaAberta = false;
+  try {
+    const salvo = JSON.parse(sessionStorage.getItem(CH_HIST) || 'null');
+    if (salvo && Array.isArray(salvo.lista) && salvo.lista.length) {
+      histEstilos = salvo.lista;
+      histIdx = Math.max(0, Math.min(histEstilos.length - 1, +salvo.idx || 0));
+    }
+    flutAtivo = sessionStorage.getItem(CH_FLUT) === '1';
+  } catch { /* sem sessionStorage */ }
+  const salvarHist = () => { try { sessionStorage.setItem(CH_HIST, JSON.stringify({ lista: histEstilos, idx: histIdx })); } catch { /* */ } };
+  const salvarFlut = () => { try { sessionStorage.setItem(CH_FLUT, flutAtivo ? '1' : '0'); } catch { /* */ } };
+  const snapEstilo = () => {
+    const v = C.visual;
+    return {
+      cores: { ...v.cores },
+      cena: v.cena,
+      fontes: { ...v.fontes },
+      estiloHero: v.estiloHero || 'escuro',
+      fundoHero: v.fundoHero || 'pontos',
+      grade: v.grade || 'horizontal',
+      cantos: v.cantos || 'arredondado',
+      topoEstilo: v.topoEstilo || 'claro'
+    };
+  };
+  function aplicarDoHistorico(i) {
+    if (i < 0 || i >= histEstilos.length) return;
+    histIdx = i;
+    salvarHist();
+    const s = histEstilos[i];
+    mudar({ ...s, cores: { ...s.cores }, fontes: { ...s.fontes } }, null, document.body.classList.contains('est-aberto'));
+    renderFlut();
+    aviso(`Modelo #${i + 1} de ${histEstilos.length}`, 'check');
+  }
+  function gerarAleatorio(origemPainel = false) {
+    if (!histEstilos.length) { histEstilos.push(snapEstilo()); histIdx = 0; }
+    const sort = (arr, atual) => { const f = arr.filter(x => x !== atual); const a = f.length ? f : arr; return a[Math.floor(Math.random() * a.length)]; };
+    const cenasDisp = [...Object.keys(window.CENAS_NOMES || {}), 'nenhuma'];
+    const fontesDisp = Object.values(FONTES);
+    const pal = sort(PALETAS, PALETAS.find(([p]) => p.toLowerCase() === C.visual.cores.p.toLowerCase()));
+    const f = sort(fontesDisp, fontesDisp.find(x => x.t === C.visual.fontes.t));
+    const novo = {
+      cores: derivadas(pal[0], pal[1]),
+      cena: sort(cenasDisp, C.visual.cena),
+      fontes: { t: f.t, c: f.c },
+      estiloHero: sort(['escuro', 'claro', 'vibrante', 'central'], C.visual.estiloHero || 'escuro'),
+      fundoHero: sort(['pontos', 'grade', 'listras', 'liso'], C.visual.fundoHero || 'pontos'),
+      grade: sort(['horizontal', 'vitrine', 'compacto'], C.visual.grade || 'horizontal'),
+      cantos: sort(['arredondado', 'editorial', 'pilula'], C.visual.cantos || 'arredondado'),
+      topoEstilo: sort(['claro', 'escuro'], C.visual.topoEstilo || 'claro')
+    };
+    histEstilos.push(novo);
+    histIdx = histEstilos.length - 1;
+    salvarHist();
+    mudar({ ...novo, cores: { ...novo.cores }, fontes: { ...novo.fontes } }, null, origemPainel);
+    renderFlut();
+    aviso(`Estilo #${histIdx + 1} gerado! Volte nas setas se gostou de algum anterior.`, 'brilho');
+  }
+  const chipsHistorico = () => histEstilos.map((h, i) =>
+    `<button type="button" class="est-hist-chip" data-hist-ir="${i}" aria-current="${i === histIdx}">
+      <span class="est-hist-cor"><i style="background:${esc(h.cores.p)}"></i><i style="background:${esc(h.cores.d)}"></i></span>#${i + 1}</button>`).join('');
+  function renderFlut() {
+    flut.hidden = !flutAtivo;
+    if (!flutAtivo) return;
+    const n = histEstilos.length;
+    flut.innerHTML = `${n > 1 ? `<div class="est-flut-lista"${flutListaAberta ? '' : ' hidden'}>${chipsHistorico()}</div>` : ''}
+      <div class="est-flut-bar">
+        ${n > 1 ? `<button type="button" class="est-flut-btn" data-hist-passo="-1" aria-label="Estilo anterior"${histIdx <= 0 ? ' disabled' : ''}>${ic('esq')}</button>` : ''}
+        <button type="button" class="est-flut-btn p" data-aleatorio>${ic('brilho')}Aleatório${n > 0 ? `<span class="est-flut-cont">${histIdx + 1}/${n}</span>` : ''}</button>
+        ${n > 1 ? `<button type="button" class="est-flut-btn" data-hist-passo="1" aria-label="Próximo estilo"${histIdx >= n - 1 ? ' disabled' : ''}>${ic('dir')}</button>
+        <button type="button" class="est-flut-btn" data-flut-lista aria-label="Ver todos os estilos gerados" title="Ver histórico">${ic('lista')}</button>` : ''}
+        <button type="button" class="est-flut-btn" data-toggle-flut aria-label="Esconder barra" title="Esconder">${ic('x')}</button>
+      </div>`;
+  }
+  flut.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const d = b.dataset;
+    if (d.aleatorio !== undefined) gerarAleatorio(false);
+    else if (d.histPasso) aplicarDoHistorico(histIdx + +d.histPasso);
+    else if (d.histIr !== undefined) aplicarDoHistorico(+d.histIr);
+    else if (d.flutLista !== undefined) { flutListaAberta = !flutListaAberta; renderFlut(); }
+    else if (d.toggleFlut !== undefined) { flutAtivo = false; salvarFlut(); renderFlut(); aviso('Botão Aleatório escondido. Ative de novo no pincel.', 'info'); }
+  });
+  renderFlut();
 
   function htmlPreviaViva() {
     const V = C.visual, T = C.textos;
@@ -198,7 +287,12 @@
       const grp = (tit, attr, atual, ops) => `<div style="margin-bottom:12px"><div style="font-size:.78rem;font-weight:700;color:#b5c3da;margin-bottom:6px">${tit}</div>
         <div class="est-ops">${ops.map(([id, nm, sw]) => `<button type="button" class="est-op" style="min-height:68px;padding:8px 8px" data-estilo="${attr}:${id}" aria-pressed="${atual === id}"><span class="est-swatch ${sw}"></span>${nm}</button>`).join('')}</div></div>`;
       return `<section class="est-grupo"><h3>${num()}Estilo visual (para cada loja ser única)</h3>
-        <button type="button" class="est-btn est-btn-p est-cheio" data-aleatorio style="margin-bottom:14px">${ic('brilho')}Gerar estilo aleatório</button>
+        <button type="button" class="est-btn est-btn-p est-cheio" data-aleatorio style="margin-bottom:8px">${ic('brilho')}Gerar estilo aleatório</button>
+        <button type="button" class="est-btn est-cheio" data-toggle-flut aria-pressed="${flutAtivo}" style="margin-bottom:12px${flutAtivo ? ';border-color:#4fc3c8;background:#15305a' : ''}">${ic(flutAtivo ? 'check' : 'play')}${flutAtivo ? 'Botão Aleatório visível fora do pincel' : 'Mostrar botão Aleatório fora do pincel'}</button>
+        ${histEstilos.length > 1 ? `<div class="est-hist-box"><div class="est-hist-topo"><span>Gerados nesta sessão (${histIdx + 1}/${histEstilos.length})</span>
+          <div class="est-hist-nav"><button type="button" data-hist-passo="-1" aria-label="Anterior"${histIdx <= 0 ? ' disabled' : ''}>${ic('esq')}</button>
+          <button type="button" data-hist-passo="1" aria-label="Próximo"${histIdx >= histEstilos.length - 1 ? ' disabled' : ''}>${ic('dir')}</button></div></div>
+          <div class="est-hist-trilha">${chipsHistorico()}</div></div>` : ''}
         ${grp('Apresentação do topo', 'estiloHero', V.estiloHero || 'escuro', [['escuro', 'Escuro elegante', 'sw-escuro'], ['claro', 'Claro editorial', 'sw-claro'], ['vibrante', 'Cor da marca', 'sw-vibrante'], ['central', 'Centralizado', 'sw-central']])}
         ${grp('Fundo do topo', 'fundoHero', V.fundoHero || 'pontos', [['pontos', 'Pontilhado', 'sw-pontos'], ['grade', 'Grade fina', 'sw-grade'], ['listras', 'Listras sutis', 'sw-listras'], ['liso', 'Brilho limpo', 'sw-liso']])}
         ${grp('Estilo dos cartões', 'grade', V.grade || 'horizontal', [['horizontal', 'Lateral', 'sw-horizontal'], ['vitrine', 'Vitrine grande', 'sw-vitrine'], ['compacto', 'Lista rápida', 'sw-compacto']])}
@@ -331,24 +425,10 @@
     else if (d.apresentar !== undefined) apresentar(true);
     else if (d.cena) { mudar({ cena: d.cena }, null, true); }
     else if (d.estilo) { const [k, val] = d.estilo.split(':'); mudar({ [k]: val }, null, true); }
-    else if (d.aleatorio !== undefined) {
-      const sort = (arr, atual) => { const f = arr.filter(x => x !== atual); const a = f.length ? f : arr; return a[Math.floor(Math.random() * a.length)]; };
-      const cenasDisp = [...Object.keys(window.CENAS_NOMES || {}), 'nenhuma'];
-      const fontesDisp = Object.values(FONTES);
-      const pal = sort(PALETAS, PALETAS.find(([p]) => p.toLowerCase() === V().cores.p.toLowerCase()));
-      const f = sort(fontesDisp, fontesDisp.find(x => x.t === V().fontes.t));
-      mudar({
-        cores: derivadas(pal[0], pal[1]),
-        cena: sort(cenasDisp, V().cena),
-        fontes: { t: f.t, c: f.c },
-        estiloHero: sort(['escuro', 'claro', 'vibrante', 'central'], V().estiloHero || 'escuro'),
-        fundoHero: sort(['pontos', 'grade', 'listras', 'liso'], V().fundoHero || 'pontos'),
-        grade: sort(['horizontal', 'vitrine', 'compacto'], V().grade || 'horizontal'),
-        cantos: sort(['arredondado', 'editorial', 'pilula'], V().cantos || 'arredondado'),
-        topoEstilo: sort(['claro', 'escuro'], V().topoEstilo || 'claro')
-      }, null, true);
-      aviso('Novo estilo aleatório gerado! Toque de novo para variar.', 'brilho');
-    }
+    else if (d.aleatorio !== undefined) { gerarAleatorio(true); }
+    else if (d.toggleFlut !== undefined) { const y = $('.est-corpo', painel)?.scrollTop; flutAtivo = !flutAtivo; salvarFlut(); renderFlut(); montar(); const c = $('.est-corpo', painel); if (c) c.scrollTop = y; aviso(flutAtivo ? 'Botão Aleatório ativado na tela (aparece ao fechar o pincel)' : 'Botão Aleatório escondido da tela', 'brilho'); }
+    else if (d.histPasso) { aplicarDoHistorico(histIdx + +d.histPasso); }
+    else if (d.histIr !== undefined) { aplicarDoHistorico(+d.histIr); }
     else if (d.paleta) { const [p, dd] = d.paleta.split(','); mudar({ cores: derivadas(p, dd) }, null, true); }
     else if (d.fonte) { const f = FONTES[d.fonte]; mudar({ fontes: { t: f.t, c: f.c } }, null, true); }
     else if (d.coresLogo !== undefined) { const c = await coresDaImagem(V().logo); if (c) { mudar({ cores: derivadas(c.p, c.d) }, null, true); aviso('Cores tiradas do logo', 'paleta'); } else aviso('O logo não tem cores fortes. Escolha uma paleta.', 'info'); }

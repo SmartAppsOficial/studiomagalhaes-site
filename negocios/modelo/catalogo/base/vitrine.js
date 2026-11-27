@@ -207,13 +207,17 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
   $('.cats-rolo').addEventListener('click', e => { const b = e.target.closest('[data-rolar]'); if (b) listaCats.scrollBy({ left: +b.dataset.rolar * listaCats.clientWidth * .7, behavior: 'smooth' }); });
 
   /* ---------- Categorias: rolagem e destaque ---------- */
-  let observador, secaoAtiva = '';
-  function centralizarCat(id) {
+  let observador, secaoAtiva = '', timerCat;
+  function centralizarCat(id, suave = false) {
     const btn = $(`.cat[data-cat="${CSS.escape(id)}"]`);
     if (!btn || listaCats.scrollWidth <= listaCats.clientWidth) return;
     const rLista = listaCats.getBoundingClientRect(), rBtn = btn.getBoundingClientRect();
-    const destino = listaCats.scrollLeft + (rBtn.left - rLista.left) - (rLista.width - rBtn.width) / 2;
-    listaCats.scrollTo({ left: Math.max(0, Math.min(listaCats.scrollWidth - listaCats.clientWidth, destino)), behavior: 'smooth' });
+    // durante rolagem natural, só mexe na faixa se o botão saiu da área visível
+    if (!suave && rBtn.left >= rLista.left + 8 && rBtn.right <= rLista.right - 8) return;
+    const destino = Math.max(0, Math.min(listaCats.scrollWidth - listaCats.clientWidth,
+      listaCats.scrollLeft + (rBtn.left - rLista.left) - (rLista.width - rBtn.width) / 2));
+    if (suave) listaCats.scrollTo({ left: destino, behavior: 'smooth' });
+    else listaCats.scrollLeft = destino;
   }
   function observarSecoes() {
     observador?.disconnect();
@@ -225,18 +229,37 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       if (id === secaoAtiva) return;
       secaoAtiva = id;
       $$('.cat').forEach(b => b.setAttribute('aria-current', String(b.dataset.cat === id)));
-      centralizarCat(id);
+      clearTimeout(timerCat);
+      timerCat = setTimeout(() => centralizarCat(id, false), 140);
     }, { rootMargin: '-40% 0px -55% 0px' });
     $$('[data-secao]').forEach(s => observador.observe(s));
   }
 
-  /* ---------- Cena: segue o mouse e o dedo ---------- */
+  /* ---------- Cena: segue o mouse e o giroscópio (só quando o topo está visível) ---------- */
   const hero = $('.hero');
   {
-    const mover = (x, y) => { const c = $('[data-cena]'); if (!c) return; c.style.setProperty('--mx', x.toFixed(3)); c.style.setProperty('--my', y.toFixed(3)); };
-    hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(); mover((e.clientX - r.left) / r.width * 2 - 1, (e.clientY - r.top) / r.height * 2 - 1); });
+    let heroVisivel = true, rafCena = 0, mxP = 0, myP = 0;
+    const aplicarMov = () => {
+      rafCena = 0;
+      if (!heroVisivel) return;
+      const c = $('[data-cena]'); if (!c) return;
+      c.style.setProperty('--mx', mxP.toFixed(3)); c.style.setProperty('--my', myP.toFixed(3));
+    };
+    const mover = (x, y) => { if (!heroVisivel) return; mxP = x; myP = y; if (!rafCena) rafCena = requestAnimationFrame(aplicarMov); };
+    new IntersectionObserver(ent => {
+      heroVisivel = !!ent[0]?.isIntersecting;
+      hero.classList.toggle('pausado', !heroVisivel);
+    }, { threshold: 0.01 }).observe(hero);
+    hero.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const r = hero.getBoundingClientRect();
+      mover((e.clientX - r.left) / r.width * 2 - 1, (e.clientY - r.top) / r.height * 2 - 1);
+    });
     hero.addEventListener('pointerleave', () => mover(0, 0));
-    window.addEventListener('deviceorientation', e => { if (e.gamma == null) return; mover(Math.max(-1, Math.min(1, e.gamma / 30)), Math.max(-1, Math.min(1, (e.beta - 40) / 30))); });
+    window.addEventListener('deviceorientation', e => {
+      if (!heroVisivel || e.gamma == null) return;
+      mover(Math.max(-1, Math.min(1, e.gamma / 30)), Math.max(-1, Math.min(1, (e.beta - 40) / 30)));
+    }, { passive: true });
   }
 
   /* ---------- Folhas ---------- */
@@ -604,6 +627,13 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
   }
   app.addEventListener('click', e => {
     const t = e.target;
+    const ancora = t.closest('a[href="#cardapio"], a[href="#inicio"]');
+    if (ancora) {
+      e.preventDefault();
+      if (ancora.getAttribute('href') === '#inicio') window.scrollTo({ top: 0, behavior: 'smooth' });
+      else { const alv = $('#cardapio'); if (alv) window.scrollTo({ top: Math.max(0, alv.getBoundingClientRect().top + window.scrollY - 120), behavior: 'smooth' }); }
+      return;
+    }
     if (t.closest('[data-repetir-ultimo]')) { repetirUltimoPedido(); return; }
     const car = t.closest('[data-abrir-carrinho],[data-barra]'); if (car) { abrirCarrinho(); return; }
     const cat = t.closest('[data-cat]');
@@ -611,8 +641,9 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       const id = cat.dataset.cat;
       secaoAtiva = id;
       $$('.cat').forEach(b => b.setAttribute('aria-current', String(b.dataset.cat === id)));
-      centralizarCat(id);
-      $(`#cat-${CSS.escape(id)}`)?.scrollIntoView({ behavior: 'smooth' });
+      centralizarCat(id, true);
+      const sec = $(`#cat-${CSS.escape(id)}`);
+      if (sec) window.scrollTo({ top: Math.max(0, sec.getBoundingClientRect().top + window.scrollY - 128), behavior: 'smooth' });
       return;
     }
     const pr = t.closest('[data-produto]');

@@ -17,8 +17,8 @@
   --topo-h: 64px;
 }
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topo-h) + 64px); }
-body { margin: 0; background: var(--fundo); color: var(--tinta); font: 400 16px/1.55 var(--f-c); -webkit-font-smoothing: antialiased; }
+html { scroll-padding-top: calc(var(--topo-h) + 64px); overflow-anchor: none; }
+body { margin: 0; background: var(--fundo); color: var(--tinta); font: 400 16px/1.55 var(--f-c); -webkit-font-smoothing: antialiased; overflow-x: clip; overflow-anchor: none; }
 body.travado { overflow: hidden; }
 img { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; cursor: pointer; }
@@ -55,7 +55,8 @@ p { margin: 0; }
 @media (max-width: 400px) { .topo .status { font-size: .74rem; padding: .35em .65em; } .logo-nome { font-size: 1.05rem; } }
 
 /* Apresentação animada */
-.hero { position: relative; overflow: hidden; background: var(--escuro); color: #fff; isolation: isolate; contain: layout paint; }
+.hero { position: relative; overflow: hidden; background: var(--escuro); color: #fff; isolation: isolate; contain: layout paint; touch-action: pan-y; }
+.hero.pausado .hero-fundo i, .hero.pausado .cena-gira, .hero.pausado .cena-lanche .respira, .hero.pausado .solto > div { animation-play-state: paused; }
 .hero-fundo { position: absolute; inset: -20%; z-index: -1; filter: blur(60px); opacity: .9; }
 .hero-fundo i { position: absolute; border-radius: 50%; mix-blend-mode: screen; animation: flutua 18s ease-in-out infinite alternate; }
 .hero-fundo i:nth-child(1) { width: 46%; height: 60%; left: 50%; top: 10%; background: var(--p); }
@@ -162,7 +163,7 @@ body[data-grade="compacto"] .prod-mais { width: 28px; height: 28px; border-radiu
 .cats { position: sticky; top: var(--topo-h); z-index: 30; background: var(--fundo); border-bottom: 1px solid var(--linha); }
 .cats-in { display: flex; align-items: center; gap: 8px; padding: 10px 0; }
 .cats-rolo { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; }
-.cats-lista { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; flex: 1; scroll-behavior: smooth; }
+.cats-lista { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; flex: 1; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; }
 .cats-seta { position: absolute; top: 50%; translate: 0 -50%; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--linha); background: var(--cartao); color: var(--tinta); display: grid; place-items: center; box-shadow: 0 6px 16px -6px rgba(0,0,0,.35); }
 .cats-seta .ic { width: 20px; height: 20px; stroke-width: 2.4; }
 .cats-seta.esq { left: -4px; }
@@ -185,11 +186,11 @@ body[data-grade="compacto"] .prod-mais { width: 28px; height: 28px; border-radiu
 @media (max-width: 700px) { .busca input { width: 0; padding: 0; } .busca.aberta input { width: 140px; } }
 
 /* Destaques e cardápio */
-.secao { padding: 34px 0 6px; }
+.secao { padding: 34px 0 6px; touch-action: pan-y; }
 .secao-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .secao h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); font-weight: 800; }
 .secao-cab small { color: var(--suave); font-weight: 600; }
-.trilho { display: grid; grid-auto-flow: column; grid-auto-columns: min(78%, 300px); gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: none; }
+.trilho { display: grid; grid-auto-flow: column; grid-auto-columns: min(78%, 300px); gap: 14px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 8px; scrollbar-width: none; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; }
 .trilho::-webkit-scrollbar { display: none; }
 .destaque { scroll-snap-align: start; position: relative; border-radius: var(--raio); overflow: hidden; aspect-ratio: 4 / 4.4; color: #fff; text-align: left; border: 0; padding: 0; background: #000; }
 .destaque img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
