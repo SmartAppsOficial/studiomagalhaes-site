@@ -143,10 +143,16 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
 <div class="aviso" role="status" hidden></div>`;
 
   /* ---------- Marca e apresentação (mudam com o visual) ---------- */
+  const HASH_AMOSTRA = location.hash.startsWith('#amostra=') ? location.hash : '';
   function renderMarca() {
     $('[data-marca]').innerHTML = `<span class="logo-sigla">${marca()}</span><span><span class="logo-nome">${esc(V.nome)}</span><span class="logo-seg">${esc(V.segmento)}</span></span>`;
     const f = $('[data-faixa]');
-    if (f) f.innerHTML = C.ajustado()
+    if (!f) return;
+    if (HASH_AMOSTRA) {
+      f.innerHTML = `Prévia exclusiva para <b>${esc(V.nome)}</b> · Studio Magalhães · <a href="admin.html${esc(HASH_AMOSTRA)}">Testar Área da loja</a>`;
+      return;
+    }
+    f.innerHTML = C.ajustado()
       ? `Prévia do <b>Catálogo digital</b> para ${esc(V.nome)} · produtos e preços de exemplo · <a href="admin.html">ver a área da loja</a>`
       : `Loja de demonstração do <b>Catálogo digital</b> · nome, produtos e preços são exemplos · <a href="admin.html">ver a área da loja</a> · <a href="../">outros modelos</a>`;
   }
@@ -229,7 +235,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
         ${temRetirada() && (temLocal() || temCorreios()) ? `<p style="margin-top:8px">${L.tipo === 'loja' ? 'Retirada na loja.' : 'Retirada no balcão.'}</p>` : ''}</div>
     </div>
     <div class="rodape-base"><span>© ${new Date().getFullYear()} ${esc(V.nome)}</span>
-      <span>Catálogo digital por Studio Magalhães · <a href="admin.html">Área da loja</a></span></div>`;
+      <span>Catálogo digital por Studio Magalhães · <a href="admin.html${esc(HASH_AMOSTRA)}">Área da loja</a></span></div>`;
   }
   function renderBarra() {
     const n = totalItens();
@@ -528,11 +534,33 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
 
   /* ---------- Carrinho e envio ---------- */
   let erroEnvio = '', cupomCod = '', cupomDigitado = '', cupomErro = '';
+  const cuponsUsados = lerLocal(CH + ':cupons-usados', {});
+  const normWhats = w => String(w || '').replace(/\D/g, '');
+  function cupomJaUsado(cod) {
+    if (!cod) return false;
+    const reg = cuponsUsados[cod];
+    const w = normWhats(cliente.whats);
+    if (reg && (reg.aparelho || (w.length >= 10 && Array.isArray(reg.whats) && reg.whats.includes(w)))) return true;
+    if (w.length >= 10) {
+      return C.pedidos().some(p => p.status !== 'cancelado' && String(p.cupom || '').trim().toUpperCase() === cod && normWhats(p.whats) === w);
+    }
+    return false;
+  }
+  function registrarUsoCupom(cod, whats) {
+    if (!cod) return;
+    const reg = cuponsUsados[cod] || { aparelho: false, whats: [] };
+    reg.aparelho = true;
+    const w = normWhats(whats);
+    if (w.length >= 10 && !reg.whats.includes(w)) reg.whats.push(w);
+    cuponsUsados[cod] = reg;
+    gravarLocal(CH + ':cupons-usados', cuponsUsados);
+  }
   function calcularCupom(sub) {
     if (!cupomCod) return { cupom: null, desconto: 0, motivo: '' };
     const lista = D().cupons || [];
     const cp = lista.find(c => c.ativo !== false && String(c.codigo || '').trim().toUpperCase() === cupomCod);
     if (!cp) return { cupom: null, desconto: 0, motivo: 'Cupom inválido ou desativado.' };
+    if (cp.usoUnico !== false && cupomJaUsado(cupomCod)) return { cupom: cp, desconto: 0, motivo: 'Este cupom é de uso único e já foi utilizado.' };
     if (+cp.minimo && sub < +cp.minimo) return { cupom: cp, desconto: 0, motivo: `Válido para pedidos a partir de ${R(cp.minimo)}.` };
     const raw = cp.tipo === 'valor' ? (+cp.valor || 0) : sub * ((+cp.valor || 0) / 100);
     const desconto = Math.min(sub, Math.round(raw * 100) / 100);
@@ -652,7 +680,10 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     }
     cliente[k] = e.target.value; salvarCliente();
   });
-  folhaCar.addEventListener('change', e => { if (e.target.dataset.cli === 'bairro') manterRolagem(renderCarrinho); });
+  folhaCar.addEventListener('change', e => {
+    if (e.target.dataset.cli === 'bairro') manterRolagem(renderCarrinho);
+    if (e.target.dataset.cli === 'whats' && cupomCod) manterRolagem(renderCarrinho);
+  });
 
   function enviar() {
     const l = D().loja, itens = itensValidos(), falta = [];
@@ -672,7 +703,8 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     const taxa = cliente.tipo === 'entrega' && bairro ? +bairro.taxa : (freteOp ? +freteOp.valor : 0);
     const cent = v => Math.round(v * 100) / 100;
     const sub = cent(subtotal());
-    const { desconto } = calcularCupom(sub);
+    const { desconto, motivo: cupomMotivo } = calcularCupom(sub);
+    if (cupomCod && cupomMotivo) { cupomErro = cupomMotivo; erroEnvio = cupomMotivo; manterRolagem(renderCarrinho); $('[data-erro]', folhaCar)?.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     const total = Math.max(0, cent(sub - desconto + taxa));
     const linhasItens = itens.map(it => ({ nome: C.produto(it.produto).nome, qtd: it.qtd, detalhes: C.detalhes(it), total: cent(C.precoItem(it) * it.qtd), produto: it.produto }));
     const pedido = C.registrarPedido({
@@ -698,6 +730,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     if (pedido.obs) m.push(`*Observações:* ${pedido.obs}`);
     const num = String(l.whats || '').replace(/\D/g, ''), n = num && num.length <= 11 ? '55' + num : num;
     window.open(`https://wa.me/${n}?text=${encodeURIComponent(m.join('\n'))}`, '_blank', 'noopener');
+    if (desconto > 0 && cupomCod) registrarUsoCupom(cupomCod, cliente.whats);
     salvarUltimo(itens.map(({ uid, ...it }) => it));
     carrinho = []; cupomCod = ''; cupomDigitado = ''; cliente.obs = ''; cliente.troco = ''; salvarCarrinho(); salvarCliente(); fecharFolhas();
     renderHero();

@@ -4,7 +4,13 @@
    o login e os dados ficam no servidor. */
 (() => {
   'use strict';
-  const C = window.Catalogo, L = C.LOJA, V = C.visual, I = window.ICONES;
+  const C = window.Catalogo, L = C.LOJA, I = window.ICONES;
+  let HASH_AMOSTRA = '';
+  if (location.hash.startsWith('#amostra=')) {
+    const am = C.decodificar(location.hash.slice(9));
+    if (am) { C.aplicarAmostra(am); HASH_AMOSTRA = location.hash; }
+  }
+  const V = C.visual;
   const siglaHTML = () => V.logo ? `<img src="${esc(V.logo)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : esc(V.sigla);
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -83,11 +89,15 @@
         <input class="entrada" type="password" name="senha" ${ehDono ? 'autocomplete="current-password"' : 'inputmode="numeric" autocomplete="off"'} required autofocus></label>
       ${erro ? `<p style="color:#a3271a;margin:0 0 10px">${esc(erro)}</p>` : ''}
       <button class="btn btn-p" style="width:100%">${ic('cadeado')}Entrar</button>
+      ${HASH_AMOSTRA && L.demo ? `<button type="button" class="btn" style="width:100%;margin-top:8px" data-entrar-rapido>${ic('olho')}Entrar direto como Dono (teste)</button>` : ''}
       ${L.demo ? `<div class="dica-demo">Demonstração: senha do dono <b>${esc(L.senhaDemo)}</b>${ativos.length ? ' · PIN dos funcionários de exemplo <b>1111</b>' : ''}</div>` : ''}
-      <p style="margin:16px 0 0;font-size:.85rem"><a href="index.html">Voltar para a loja</a></p>
+      <p style="margin:16px 0 0;font-size:.85rem"><a href="index.html${esc(HASH_AMOSTRA)}">Voltar para a loja</a></p>
     </form></div>`;
     const f = $('[data-entrar]');
-    f.addEventListener('click', e => { const b = e.target.closest('[data-quem]'); if (b) { escolhido = b.dataset.quem; telaEntrar(); } });
+    f.addEventListener('click', e => {
+      const b = e.target.closest('[data-quem]'); if (b) { escolhido = b.dataset.quem; telaEntrar(); return; }
+      if (e.target.closest('[data-entrar-rapido]')) { sessao = { quem: 'dono' }; try { sessionStorage.setItem(SES, JSON.stringify(sessao)); } catch { /* */ } aba = abasPermitidas()[0][0]; montar(); }
+    });
     f.addEventListener('submit', e => {
       e.preventDefault();
       const v = e.target.senha.value, func = equipe().find(x => x.id === escolhido);
@@ -111,12 +121,12 @@
     el.innerHTML = `<div class="app">
       <aside class="lado"><div class="lado-marca"><span class="sigla">${siglaHTML()}</span><div><b>${esc(V.nome)}</b><small>${q.dono ? 'Dono' : esc(q.nome) + ' · funcionário'}</small></div></div>
         ${abasPermitidas().map(([id, icn, n]) => `<button type="button" class="nav-item" data-aba="${id}">${ic(icn)}<span class="txt">${n}</span>${id === 'pedidos' ? '<span class="num" data-novos hidden></span>' : ''}</button>`).join('')}
-        <div class="lado-pe"><a class="nav-item" href="index.html" target="_blank" rel="noopener">${ic('olho')}<span class="txt">Ver minha loja</span></a>
+        <div class="lado-pe"><a class="nav-item" href="index.html${esc(HASH_AMOSTRA)}" target="_blank" rel="noopener">${ic('olho')}<span class="txt">Ver minha loja</span></a>
           <button type="button" class="nav-item" data-sair>${ic('sair')}<span class="txt">Sair</span></button>
           <small>Catálogo digital · Studio Magalhães</small></div></aside>
       <main class="principal" data-principal></main></div>`;
     $('.lado').addEventListener('click', e => {
-      const b = e.target.closest('[data-aba]'); if (b) { aba = b.dataset.aba; history.replaceState(null, '', '#' + aba); render(); window.scrollTo(0, 0); }
+      const b = e.target.closest('[data-aba]'); if (b) { aba = b.dataset.aba; if (!HASH_AMOSTRA) history.replaceState(null, '', '#' + aba); render(); window.scrollTo(0, 0); }
       if (e.target.closest('[data-sair]')) { sessao = null; try { sessionStorage.removeItem(SES); } catch { /* */ } telaEntrar(); }
     });
     render();
@@ -467,13 +477,14 @@
     <div class="cartao"><h2>Formas de pagamento</h2><p class="sub">Só informam o cliente. O pagamento é combinado com ele, fora do site.</p>
       <div class="checks">${todosPags.map(pg => `<label><input type="checkbox" data-pag="${esc(pg)}"${l.pagamentos.includes(pg) ? ' checked' : ''}>${esc(pg)}</label>`).join('')}</div>
       <form data-novo-pag style="display:flex;gap:8px;margin-top:10px"><input class="entrada" name="pag" placeholder="Outra forma de pagamento" maxlength="40" required><button class="btn">${ic('mais')}Adicionar</button></form></div>
-    <div class="cartao"><h2>Cupons de desconto</h2><p class="sub">Crie cupons promocionais para seus clientes (o desconto é concedido pela própria loja). Ligue ou desligue quando quiser.</p>
+    <div class="cartao"><h2>Cupons de desconto</h2><p class="sub">Crie cupons promocionais para seus clientes (o desconto é concedido pela própria loja). Marque <b>1 uso</b> para impedir o mesmo cliente de usar o cupom mais de uma vez.</p>
       ${cupons().map((cp, i) => `<div class="cupom-row" data-cp="${i}">
         <input class="entrada" data-cp-c="codigo" value="${esc(cp.codigo)}" maxlength="24" placeholder="Código (ex.: BEMVINDO10)" aria-label="Código do cupom">
         <select class="entrada" data-cp-c="tipo" aria-label="Tipo de desconto"><option value="pct"${cp.tipo !== 'valor' ? ' selected' : ''}>% off</option><option value="valor"${cp.tipo === 'valor' ? ' selected' : ''}>R$ off</option></select>
         <input class="entrada" data-cp-c="valor" inputmode="decimal" value="${cp.tipo === 'valor' ? preco(cp.valor) : (+cp.valor || 0)}" placeholder="Valor" aria-label="Valor do desconto">
         <input class="entrada" data-cp-c="minimo" inputmode="decimal" value="${preco(cp.minimo || 0)}" placeholder="Mínimo R$" title="Pedido mínimo (0 = sem mínimo)" aria-label="Pedido mínimo">
-        <label class="chave" title="Cupom ativo"><input type="checkbox" data-cp-c="ativo"${cp.ativo !== false ? ' checked' : ''}><span class="trilho"></span></label>
+        <label class="chave" title="Limita a 1 uso por cliente"><input type="checkbox" data-cp-c="usoUnico"${cp.usoUnico !== false ? ' checked' : ''}><span class="trilho"></span><span style="font-size:.78rem">1 uso</span></label>
+        <label class="chave" title="Cupom ativo"><input type="checkbox" data-cp-c="ativo"${cp.ativo !== false ? ' checked' : ''}><span class="trilho"></span><span style="font-size:.78rem">Ativo</span></label>
         <button type="button" class="btn btn-ic btn-perigo" data-tirar-cp="${i}" aria-label="Excluir cupom">${ic('x')}</button></div>`).join('') || '<p class="sub" style="margin-bottom:10px">Nenhum cupom criado ainda.</p>'}
       <button type="button" class="btn btn-peq" data-mais-cp>${ic('mais')}Novo cupom</button></div>
     <div class="cartao"><h2>Contato e endereço</h2>
@@ -739,7 +750,7 @@
     if (g && d.tirarItem) { g.itens.splice(+d.tirarItem, 1); salvar(); opcoes(); return; }
     if (g && d.apagarGrupo !== undefined) { if (confirm(`Excluir a opção "${g.nome}"? Ela sai de todos os produtos.`)) { ds.grupos = ds.grupos.filter(x => x !== g); ds.produtos.forEach(p => { p.grupos = (p.grupos || []).filter(x => x !== g.id); }); salvar('Opção excluída'); opcoes(); } return; }
     // loja
-    if (d.maisCp !== undefined) { cupons().push({ codigo: 'PROMO10', tipo: 'pct', valor: 10, minimo: 0, ativo: true }); salvar('Cupom criado'); loja(); return; }
+    if (d.maisCp !== undefined) { cupons().push({ codigo: 'PROMO10', tipo: 'pct', valor: 10, minimo: 0, usoUnico: true, ativo: true }); salvar('Cupom criado'); loja(); return; }
     if (d.tirarCp !== undefined) { cupons().splice(+d.tirarCp, 1); salvar('Cupom excluído'); loja(); return; }
     if (d.qrImprimir !== undefined) { imprimirPlacaQR(); return; }
     if (d.qrPng !== undefined) { baixarQRPng(); return; }

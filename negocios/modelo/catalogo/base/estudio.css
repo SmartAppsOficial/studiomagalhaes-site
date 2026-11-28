@@ -23,7 +23,7 @@ body.est-apresentando .est-fab, body.est-apresentando .est-fab-plano { opacity: 
 body.est-apresentando .est-fab:hover, body.est-apresentando .est-fab-plano:hover { opacity: 1; }
 body.est-apresentando .est-sair { display: block; }
 body.est-apresentando .demo-faixa a { display: none; }
-body.modo-amostra .est, body.modo-amostra .demo-faixa a[href="admin.html"], body.modo-amostra .demo-faixa a[href="../"] { display: none !important; }
+body.modo-amostra .est, body.modo-amostra .demo-faixa a[href="../"] { display: none !important; }
 .est-fechar { background: linear-gradient(180deg, rgba(79,195,200,.08), transparent); margin: 0 -16px; padding-left: 16px !important; padding-right: 16px !important; }
 
 .est-painel, .est-planos { position: fixed; z-index: 310; top: 0; right: 0; bottom: 0; width: min(410px, 100%); background: #0c1a36; color: #e7edf7; display: flex; flex-direction: column;

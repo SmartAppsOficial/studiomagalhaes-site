@@ -21,8 +21,6 @@
     if (am) {
       C.aplicarAmostra(am);
       document.body.classList.add('modo-amostra');
-      const faixa = $('[data-faixa]');
-      if (faixa) faixa.innerHTML = `Prévia exclusiva para <b>${esc(C.visual.nome)}</b> · preparada pelo <b>Studio Magalhães</b> · modelo demonstrativo (pedidos não enviados)`;
       return;
     }
   }
@@ -652,13 +650,13 @@
     else if (d.amostraWhats !== undefined) {
       const url = gerarLinkAmostra(), v = V();
       const num = String(rascunho.contato || C.dados.loja.whats || '').replace(/\D/g, ''), n = num && num.length <= 11 ? '55' + num : num;
-      const msg = `Olá! Preparei uma prévia exclusiva do Catálogo digital para *${v.nome}* (${L.ramo}), feita pelo Studio Magalhães.\n\nVocê pode navegar e testar direto pelo link:\n${url}\n\nMe diga o que achou!`;
+      const msg = `Olá! Preparei uma prévia exclusiva do Catálogo digital para *${v.nome}* (${L.ramo}), feita pelo Studio Magalhães.\n\nVocê pode testar a loja e também a *Área da loja* (painel de produtos, pedidos e cupons) direto pelo link:\n${url}\n\nMe diga o que achou!`;
       window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
     }
     else if (d.amostraEmail !== undefined) {
       const url = gerarLinkAmostra(), v = V();
       const assunto = `Prévia exclusiva do Catálogo digital · ${v.nome} (Studio Magalhães)`;
-      const corpo = `Olá!\n\nPreparei uma prévia navegável do Catálogo digital personalizada para ${v.nome} (${L.ramo}).\n\nAcesse a amostra por este link:\n${url}\n\nSe quiser ajustar cores, animação ou saber os detalhes do plano, é só responder por aqui!\n\nAbraço,\nStudio Magalhães`;
+      const corpo = `Olá!\n\nPreparei uma prévia navegável do Catálogo digital personalizada para ${v.nome} (${L.ramo}).\n\nAcesse a amostra por este link (você também pode testar a Área da loja no topo da página):\n${url}\n\nSe quiser ajustar cores, animação ou saber os detalhes do plano, é só responder por aqui!\n\nAbraço,\nStudio Magalhães`;
       window.location.href = `mailto:?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
     }
   });
