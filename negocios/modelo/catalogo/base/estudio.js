@@ -285,7 +285,7 @@
             <div class="est-mini-tit">${esc(T.titulo)}</div>
             <span class="est-mini-cta">${esc(T.botao || 'Ver catálogo')}</span>
           </div>
-          ${cena ? `<div class="est-mini-cena">${cena.principal}</div>` : ''}
+          ${cena ? `<div class="est-mini-cena">${cena.miniatura || cena.principal}</div>` : ''}
         </div>
         <div class="est-mini-cards">
           ${prods.map(p => `<div class="est-mini-card"><div><span></span><span></span></div><img src="${esc(p.foto)}" alt=""></div>`).join('')}
@@ -334,7 +334,7 @@
 
     const cenasLista = (L.cenas && L.cenas.length ? L.cenas : Object.keys(window.CENAS_NOMES || {})).filter(id => (window.CENAS_NOMES || {})[id]);
     const thumbCena = id => {
-      try { const c = window.CENAS && window.CENAS[id] && window.CENAS[id](); return c && c.principal ? `<span class="est-thumb-cena">${c.principal}</span>` : ic('brilho'); }
+      try { const c = window.CENAS && window.CENAS[id] && window.CENAS[id](); return c && c.principal ? `<span class="est-thumb-cena">${c.miniatura || c.principal}</span>` : ic('brilho'); }
       catch { return ic('brilho'); }
     };
     const grpEstilo = (tit, attr, atual, ops) => `<div style="margin-bottom:12px"><div style="font-size:.78rem;font-weight:700;color:#b5c3da;margin-bottom:6px">${tit}</div>

@@ -1,6 +1,6 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
 // Guarda o site modelo, os 14 ramos do catálogo e os 10 ramos de serviços para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-06b7cb2ec2';
+const VERSAO = 'sm-modelo-fa06b2ef9e';
 const ARQUIVOS = [
   "./",
   "catalogo/",
@@ -218,6 +218,8 @@ const ARQUIVOS = [
   "catalogo/joalheria/fotos/solitario.jpg",
   "catalogo/joalheria/index.html",
   "catalogo/joalheria/loja.js",
+  "catalogo/joalheria/modelos/CREDITOS.txt",
+  "catalogo/joalheria/modelos/anel-solitario.glb",
   "catalogo/lanchonete/admin.html",
   "catalogo/lanchonete/cenas.js",
   "catalogo/lanchonete/fotos/batata.jpg",

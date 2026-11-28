@@ -105,6 +105,10 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 28/11/2026, Claude do Paulo (negócios: anel 3D de verdade na joalheria)
+- Animação nova **"Anel 3D de verdade"** (`anel3d`) no ramo de joalheria do Catálogo digital: modelo `catalogo/joalheria/modelos/anel-solitario.glb` ("The Ring: 1 carat", de Evan, **CC BY 4.0**, texturas reduzidas de 4 MB para 530 KB), mostrado com o model-viewer do Google (unpkg, versão 3.5.0). Gira sozinho e com o dedo; sem internet mostra o desenho "Solitário de luxo".
+- O crédito do autor aparece no rodapé da loja quando essa animação está em uso (`CENAS_CREDITOS`), como a licença pede. Não remover.
+
 ### 28/11/2026, Claude do Paulo (negócios: editar cliente fechado no pincel)
 - Na área "Clientes fechados" (`negocios/clientes/`), o botão da ficha virou **"Abrir e editar no pincel"**: abre o modelo do cliente no app de modelos em modo "Editando o cliente fechado", e o botão **"Salvar alterações no cliente"** grava o visual e o catálogo de volta na ficha (`fechamentos`, só com o login do Paulo). Cache `sm-clientes-4`.
 - No motor do Catálogo digital (`negocios/modelo/catalogo/base/`): opção nova no pincel, **Visual → Detalhe dos títulos → "Estrela e letras espaçadas"** (usada na Jansen Joias), que também vai no link de amostra; e `previaCliente` para lojas de clientes mostrarem "Prévia para <loja>" na faixa.

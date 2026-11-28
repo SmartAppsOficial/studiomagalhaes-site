@@ -248,7 +248,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
         ${temRetirada() && (temLocal() || temCorreios()) ? `<p style="margin-top:8px">${L.tipo === 'loja' ? 'Retirada na loja.' : 'Retirada no balcão.'}</p>` : ''}</div>
     </div>
     <div class="rodape-base"><span>© ${new Date().getFullYear()} ${esc(V.nome)}</span>
-      <span>Catálogo digital por Studio Magalhães · <a href="admin.html${esc(HASH_AMOSTRA)}">Área da loja</a></span></div>`;
+      <span>Catálogo digital por Studio Magalhães · <a href="admin.html${esc(HASH_AMOSTRA)}">Área da loja</a></span>${(window.CENAS_CREDITOS || {})[V.cena] ? `<span class="credito-3d">${window.CENAS_CREDITOS[V.cena]}</span>` : ''}</div>`;
   }
   function renderBarra() {
     const n = totalItens();

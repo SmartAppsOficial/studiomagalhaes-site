@@ -378,3 +378,10 @@ body[data-detalhe="estrela"] .secao-cab h2::after { margin-left: .5em; width: .5
   body[data-detalhe="estrela"] .logo-seg { display: none; }
   body[data-detalhe="estrela"] .secao-cab h2 { letter-spacing: .02em; font-size: 1.3rem; }
 }
+
+/* Animação com modelo 3D de verdade (model-viewer): ocupa a área da cena; sem o 3D, aparece o desenho de reserva. */
+.cena-principal model-viewer { width: 100%; height: 100%; background: transparent; --poster-color: transparent; --progress-bar-color: transparent; }
+.cena-principal model-viewer [slot="poster"] { width: 100%; height: 100%; }
+.cena-principal model-viewer [slot="poster"] svg { width: 100%; height: 100%; }
+.rodape-base .credito-3d { display: block; width: 100%; margin-top: 6px; font-size: .7rem; opacity: .6; }
+.rodape-base .credito-3d a { color: inherit; }

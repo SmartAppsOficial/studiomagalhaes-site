@@ -1,0 +1,6 @@
+anel-solitario.glb
+"The Ring: 1 carat" por Evan (https://sketchfab.com/Evanz)
+Fonte: https://sketchfab.com/3d-models/the-ring-1-carat-378f6df2c4f444399b83db2037258470
+Licença: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Alteração: texturas reduzidas para 1024 px (PNG/JPEG) para abrir rápido no celular. A geometria não foi mudada.
+O crédito aparece no rodapé da loja quando esta animação 3D está em uso.

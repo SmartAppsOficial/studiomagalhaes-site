@@ -7,7 +7,32 @@
   const gemaMini = (cor = 'var(--p)') => `<svg viewBox="0 0 50 50"><polygon points="15,8 35,8 45,20 25,44 5,20" style="fill:${cor}"/><polygon points="15,8 35,8 32,20 18,20" fill="#fff" opacity=".4"/><polygon points="18,20 32,20 25,44" fill="#000" opacity=".16"/></svg>`;
   const soltosJoia = () => K.soltosPadrao(brilho(), gemaMini('var(--p)'), brilho('#fff'), gemaMini('var(--d)'));
 
+  // Pasta deste ramo (para achar modelos/*.glb mesmo quando a página está em outra pasta, ex.: lojas de clientes)
+  const PASTA_RAMO = ((document.currentScript && document.currentScript.src) || '').replace(/[^/]*$/, '');
+  const MV = 'https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js';
+  function carregarModelViewer() {
+    if (window.customElements && customElements.get('model-viewer')) return;
+    if (document.querySelector('script[data-model-viewer]')) return;
+    const sc = document.createElement('script'); sc.type = 'module'; sc.src = MV; sc.dataset.modelViewer = '1';
+    document.head.appendChild(sc);
+  }
+
   window.CENAS = {
+    /* Anel 3D de verdade ("The Ring: 1 carat", de Evan, CC BY 4.0, ver modelos/CREDITOS.txt).
+       Gira sozinho e com o dedo/mouse. Sem internet ou sem WebGL, mostra o desenho do Solitário de luxo. */
+    anel3d() {
+      const reserva = window.CENAS.solitarioLuxo();
+      carregarModelViewer();
+      return {
+        principal: '<model-viewer src="' + PASTA_RAMO + 'modelos/anel-solitario.glb" alt="Anel solitário de ouro com diamante em 3D"' +
+          ' auto-rotate auto-rotate-delay="0" rotation-per-second="18deg" camera-controls disable-zoom disable-pan interaction-prompt="none"' +
+          ' touch-action="pan-y" orientation="0deg -35deg 0deg" camera-orbit="30deg 70deg 105%" field-of-view="28deg" environment-image="neutral" exposure="1.15"' +
+          ' shadow-intensity="0.9" shadow-softness="1" loading="eager" reveal="auto">' +
+          '<div slot="poster">' + reserva.principal + '</div></model-viewer>',
+        miniatura: reserva.principal,
+        soltos: reserva.soltos
+      };
+    },
     diamante() {
       return {
         principal: S(SM(132, 14, 368) +
@@ -199,6 +224,7 @@
     anel: 'Anel solitário de luxo',
     aliancas: 'Par de alianças 18k',
     esmeralda: 'Gema esmeralda lapidada',
+    anel3d: 'Anel 3D de verdade (gira com o dedo)',
     solitarioLuxo: 'Solitário de luxo com brilho',
     rubi: 'Gema rubi lapidação gota',
     colar: 'Colar com pingente de gema',
@@ -208,7 +234,10 @@
     estojo: 'Estojo de veludo aberto'
   };
   window.CENAS_ICONES = {
-    diamante: 'cat-joia', solitarioLuxo: 'cat-anel', anel: 'cat-anel', aliancas: 'cat-anel', esmeralda: 'cat-joia', rubi: 'cat-joia',
+    diamante: 'cat-joia', anel3d: 'cat-anel', solitarioLuxo: 'cat-anel', anel: 'cat-anel', aliancas: 'cat-anel', esmeralda: 'cat-joia', rubi: 'cat-joia',
     colar: 'cat-estrela', safira: 'cat-joia', brincos: 'cat-acessorio', cristal: 'cat-joia', estojo: 'cat-presente'
   };
+  window.CENAS_CREDITOS = Object.assign(window.CENAS_CREDITOS || {}, {
+    anel3d: 'Anel 3D: <a href="https://sketchfab.com/3d-models/the-ring-1-carat-378f6df2c4f444399b83db2037258470" target="_blank" rel="noopener">"The Ring: 1 carat"</a> por Evan, <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br" target="_blank" rel="noopener">CC BY 4.0</a> (texturas reduzidas)'
+  });
 })();
