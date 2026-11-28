@@ -13,6 +13,33 @@ window.Catalogo = (() => {
   let dados = ler(chave + ':dados', null) || copia(LOJA.dados);
   const ouvintes = [];
 
+  const FONTES_CAT = {
+    marcante:    { nome: 'Marcante',    t: "'Bricolage Grotesque', system-ui, sans-serif", c: "'DM Sans', system-ui, sans-serif" },
+    moderna:     { nome: 'Moderna',     t: "'Montserrat', system-ui, sans-serif",          c: "'Inter', system-ui, sans-serif" },
+    acolhedora:  { nome: 'Acolhedora',  t: "'Fraunces', Georgia, serif",                   c: "'Nunito Sans', system-ui, sans-serif" },
+    elegante:    { nome: 'Elegante',    t: "'Playfair Display', Georgia, serif",           c: "'Source Sans 3', system-ui, sans-serif" },
+    geometrica:  { nome: 'Geométrica',  t: "'Outfit', system-ui, sans-serif",              c: "'Plus Jakarta Sans', system-ui, sans-serif", g: ['Outfit', 'Plus Jakarta Sans'] },
+    minimalista: { nome: 'Minimalista', t: "'Space Grotesk', system-ui, sans-serif",       c: "'Inter', system-ui, sans-serif",             g: ['Space Grotesk'] },
+    impacto:     { nome: 'Impacto',     t: "'Syne', system-ui, sans-serif",                c: "'DM Sans', system-ui, sans-serif",           g: ['Syne'] },
+    forte:       { nome: 'Forte',       t: "'Bebas Neue', system-ui, sans-serif",          c: "'DM Sans', system-ui, sans-serif",           g: ['Bebas Neue'] },
+    urbana:      { nome: 'Urbana',      t: "'Anton', system-ui, sans-serif",               c: "'Inter', system-ui, sans-serif",             g: ['Anton'] },
+    luxo:        { nome: 'Luxo',        t: "'Cormorant Garamond', Georgia, serif",         c: "'Lato', system-ui, sans-serif",              g: ['Cormorant Garamond', 'Lato'] },
+    boutique:    { nome: 'Boutique',    t: "'Cinzel', Georgia, serif",                     c: "'Montserrat', system-ui, sans-serif",        g: ['Cinzel'] },
+    editorial:   { nome: 'Editorial',   t: "'DM Serif Display', Georgia, serif",           c: "'DM Sans', system-ui, sans-serif",           g: ['DM Serif Display'] },
+    artesanal:   { nome: 'Artesanal',   t: "'Abril Fatface', Georgia, serif",              c: "'Poppins', system-ui, sans-serif",           g: ['Abril Fatface', 'Poppins'] },
+    jovem:       { nome: 'Jovem',       t: "'Poppins', system-ui, sans-serif",             c: "'Nunito', system-ui, sans-serif",            g: ['Poppins', 'Nunito'] },
+    suave:       { nome: 'Suave',       t: "'Quicksand', system-ui, sans-serif",           c: "'Nunito', system-ui, sans-serif",            g: ['Quicksand', 'Nunito'] },
+    clean:       { nome: 'Clean',       t: "'Sora', system-ui, sans-serif",                c: "'Inter', system-ui, sans-serif",             g: ['Sora'] },
+    tech:        { nome: 'Tech',        t: "'Exo 2', system-ui, sans-serif",               c: "'Inter', system-ui, sans-serif",             g: ['Exo 2'] },
+    classica:    { nome: 'Clássica',    t: "'Merriweather', Georgia, serif",               c: "'Open Sans', system-ui, sans-serif",         g: ['Merriweather', 'Open Sans'] },
+    sofisticada: { nome: 'Sofisticada', t: "'Lora', Georgia, serif",                       c: "'Work Sans', system-ui, sans-serif",         g: ['Lora', 'Work Sans'] },
+    gourmet:     { nome: 'Gourmet',     t: "'Libre Baskerville', Georgia, serif",          c: "'Lato', system-ui, sans-serif",              g: ['Libre Baskerville', 'Lato'] },
+    delicada:    { nome: 'Delicada',    t: "'Bodoni Moda', Georgia, serif",                c: "'Montserrat', system-ui, sans-serif",        g: ['Bodoni Moda'] },
+    bold:        { nome: 'Condensada',  t: "'Oswald', system-ui, sans-serif",              c: "'Open Sans', system-ui, sans-serif",         g: ['Oswald', 'Open Sans'] },
+    retro:       { nome: 'Retrô',       t: "'Righteous', system-ui, sans-serif",           c: "'Nunito', system-ui, sans-serif",            g: ['Righteous', 'Nunito'] },
+    manuscrita:  { nome: 'Manuscrita',  t: "'Pacifico', cursive",                          c: "'Quicksand', system-ui, sans-serif",         g: ['Pacifico', 'Quicksand'] }
+  };
+
   /* ---------- Visual (nome, cores, logo, fonte, textos, animação) ----------
      Na demonstração, o Studio ajusta o visual pelo painel antes de visitar a loja.
      O que não foi mudado vem do modelo (LOJA.visual e LOJA.textos). */
@@ -29,13 +56,46 @@ window.Catalogo = (() => {
     return ok;
   }
   function limparVisual() { ajusteVisual = {}; try { localStorage.removeItem(chave + ':visual'); } catch { /* */ } ouvintes.forEach(f => f('visual')); }
-  /** Aplica uma prévia de amostra recebida por link (#amostra=...) só na memória, sem mexer nos dados salvos nem permitir envio real ao WhatsApp. */
-  function aplicarAmostra(am) {
-    if (!am || typeof am !== 'object') return false;
-    ajusteVisual = { visual: am.visual || {}, textos: am.textos || {} };
+  /** Expande formato compacto (v2) ou legado de amostra para { visual, textos }. */
+  function expandirAmostra(am) {
+    if (!am || typeof am !== 'object') return null;
+    if (am.visual || am.textos) return { visual: am.visual || {}, textos: am.textos || {} };
+    const v = {};
+    if (am.n) v.nome = am.n;
+    if (am.s) v.segmento = am.s;
+    if (am.sg) v.sigla = am.sg;
+    if (Array.isArray(am.c) && am.c.length >= 2) v.cores = { p: am.c[0], d: am.c[1], escuro: am.c[2] || LOJA.visual.cores.escuro, fundo: am.c[3] || LOJA.visual.cores.fundo };
+    if (typeof am.f === 'string' && FONTES_CAT[am.f]) v.fontes = { t: FONTES_CAT[am.f].t, c: FONTES_CAT[am.f].c };
+    else if (Array.isArray(am.f) && am.f.length === 2) v.fontes = { t: am.f[0], c: am.f[1] };
+    if (am.cn) v.cena = am.cn;
+    if (am.eh) v.estiloHero = am.eh;
+    if (am.fh) v.fundoHero = am.fh;
+    if (am.g) v.grade = am.g;
+    if (am.ct) v.cantos = am.ct;
+    if (am.tp) v.topoEstilo = am.tp;
+    if (am.em) v.entregaModo = am.em;
+    if (am.cp) v.cepOrigem = am.cp;
+    if (am.df) v.demoFechada = true;
+    if (am.lg) v.logo = am.lg;
+    const t = {};
+    if (am.tx && typeof am.tx === 'object') {
+      if (am.tx.s) t.selo = am.tx.s;
+      if (am.tx.t) t.titulo = am.tx.t;
+      if (am.tx.b) t.sub = am.tx.b;
+      if (am.tx.bt) t.botao = am.tx.bt;
+    }
+    return { visual: v, textos: t };
+  }
+  /** Aplica uma prévia de amostra recebida por link (?amostra=... ou #amostra=...) só na memória, sem mexer nos dados salvos nem permitir envio real ao WhatsApp. */
+  function aplicarAmostra(am, silencioso = false) {
+    const exp = expandirAmostra(am);
+    if (!exp) return false;
+    ajusteVisual = exp;
     dados.loja.whats = '';
-    ouvintes.forEach(f => f('visual'));
-    ouvintes.forEach(f => f('dados'));
+    if (!silencioso) {
+      ouvintes.forEach(f => f('visual'));
+      ouvintes.forEach(f => f('dados'));
+    }
     return true;
   }
   const ajustado = () => !!(ajusteVisual.visual && ajusteVisual.visual.nome);
@@ -168,15 +228,27 @@ window.Catalogo = (() => {
     ouvintes.forEach(f => f('visual')); ouvintes.forEach(f => f('dados'));
     return true;
   }
-  const codificar = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '.').replace(/=+$/, '');
+  const codificar = o => 'v2-' + btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/=+$/, '').replace(/\+/g, '-1').replace(/\//g, '-2');
   const decodificar = t => {
     try {
       const limpo = String(t || '').trim().split(/[\s&#]/)[0];
-      let s = limpo.replace(/-/g, '+').replace(/[_.]/g, '/');
+      let s = limpo.startsWith('v2-')
+        ? limpo.slice(3).replace(/-1/g, '+').replace(/-2/g, '/')
+        : limpo.replace(/-/g, '+').replace(/[_.]/g, '/');
       while (s.length % 4) s += '=';
       return JSON.parse(decodeURIComponent(escape(atob(s))));
     } catch { return null; }
   };
+
+  /* Aplica a amostra imediatamente no boot (antes de vitrine.js e admin.js), evitando qualquer flash do modelo padrão */
+  const rawAmostraBoot = new URLSearchParams(location.search).get('amostra')
+    || (location.hash.startsWith('#amostra=') ? location.hash.slice(9) : '');
+  const modoAmostra = !!(rawAmostraBoot || location.hash.startsWith('#amostra') || /[?&]amostra\b/.test(location.search));
+  const linkParamAmostra = rawAmostraBoot ? `?amostra=${rawAmostraBoot}` : (modoAmostra ? '?amostra=1' : '');
+  if (rawAmostraBoot) {
+    const amBoot = decodificar(rawAmostraBoot);
+    if (amBoot) aplicarAmostra(amBoot, true);
+  }
 
   /* ---------- Pedidos ---------- */
   const pedidos = () => ler(chave + ':pedidos', []);
@@ -192,7 +264,7 @@ window.Catalogo = (() => {
   }
 
   return {
-    LOJA, get dados() { return dados }, salvar, restaurar,
+    LOJA, FONTES: FONTES_CAT, modoAmostra, linkParamAmostra, get dados() { return dados }, salvar, restaurar,
     get visual() { return visual(); }, get textos() { return textos(); }, definirVisual, limparVisual, aplicarAmostra, ajustado, aplicarPartida,
     clientes, guardarCliente, abrirCliente, apagarCliente, configAtual, aplicarConfig, codificar, decodificar,
     situacao, DIAS, hora, produto, grupo, categoria, precoItem, detalhes, precoMinimo,

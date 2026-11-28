@@ -143,8 +143,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
 <div class="aviso" role="status" hidden></div>`;
 
   /* ---------- Marca e apresentação (mudam com o visual) ---------- */
-  const rawAm = location.hash.startsWith('#amostra=') ? location.hash.slice(9) : (new URLSearchParams(location.search).get('amostra') || '');
-  const HASH_AMOSTRA = rawAm ? `#amostra=${rawAm}` : (location.hash.startsWith('#amostra') ? location.hash : '');
+  const HASH_AMOSTRA = C.linkParamAmostra || '';
   function renderMarca() {
     $('[data-marca]').innerHTML = `<span class="logo-sigla">${marca()}</span><span><span class="logo-nome">${esc(V.nome)}</span><span class="logo-seg">${esc(V.segmento)}</span></span>`;
     const f = $('[data-faixa]');

@@ -12,16 +12,13 @@
   const esc = C.esc;
   const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${I[n] || ''}</svg>`;
   const CH = 'sm-catalogo:estudio';
-  const PASTA = location.pathname.split('/').filter(Boolean).slice(-2, -1)[0] || L.id; // ex.: "lanchonete"
+  const partesPath = location.pathname.split('/').filter(Boolean);
+  const ultPath = partesPath[partesPath.length - 1] || '';
+  const PASTA = (ultPath.endsWith('.html') ? partesPath[partesPath.length - 2] : ultPath) || L.id; // ex.: "lanchonete"
   const URL_PUB = 'https://studiomagalhaes.com.br/negocios/modelo/catalogo/';
 
-  /* ---------- Modo amostra recebida por link (#amostra=... ou ?amostra=...) para cliente remoto ---------- */
-  const rawAmostra = location.hash.startsWith('#amostra=')
-    ? location.hash.slice(9)
-    : (new URLSearchParams(location.search).get('amostra') || '');
-  if (rawAmostra || location.hash.startsWith('#amostra') || /[?&]amostra\b/.test(location.search)) {
-    const am = rawAmostra ? C.decodificar(rawAmostra) : null;
-    if (am) C.aplicarAmostra(am);
+  /* ---------- Modo amostra recebida por link (?amostra=... ou #amostra=...) para cliente remoto ---------- */
+  if (C.modoAmostra) {
     document.body.classList.add('modo-amostra');
     // NUNCA monta o pincel nem Valores em link de amostra (mesmo se o link vier truncado ou no aparelho do Studio)
     return;
@@ -477,26 +474,38 @@
     return { p, mensal, criacao: p.criacao, linhas, extrasTxt, planoLinha };
   }
   function gerarLinkAmostra() {
-    const v = C.visual, t = C.textos, lv = L.visual, lt = L.textos;
-    const vl = { nome: v.nome };
-    if (v.segmento !== lv.segmento) vl.segmento = v.segmento;
-    if (v.sigla !== lv.sigla) vl.sigla = v.sigla;
-    if (JSON.stringify(v.cores) !== JSON.stringify(lv.cores)) vl.cores = v.cores;
-    if (JSON.stringify(v.fontes) !== JSON.stringify(lv.fontes)) vl.fontes = v.fontes;
-    if (v.cena !== lv.cena) vl.cena = v.cena;
-    for (const k of ['estiloHero', 'fundoHero', 'grade', 'cantos', 'topoEstilo', 'entregaModo', 'cepOrigem']) {
-      if (v[k] && v[k] !== lv[k]) vl[k] = v[k];
-    }
-    if (v.demoFechada) vl.demoFechada = true;
-    if (v.logo && /^https?:\/\//i.test(v.logo)) vl.logo = v.logo;
+    const v = C.visual, t = C.textos, lt = L.textos;
+    const fonteId = Object.entries(FONTES).find(([, f]) => f.t === v.fontes.t)?.[0];
+    const p = {
+      n: v.nome,
+      s: v.segmento,
+      sg: v.sigla,
+      c: [v.cores.p, v.cores.d, v.cores.escuro, v.cores.fundo],
+      f: fonteId || [v.fontes.t, v.fontes.c],
+      cn: v.cena,
+      eh: v.estiloHero || 'escuro',
+      fh: v.fundoHero || 'pontos',
+      g: v.grade || 'horizontal',
+      ct: v.cantos || 'arredondado',
+      tp: v.topoEstilo || 'claro',
+      em: v.entregaModo || 'entregadores'
+    };
+    if (v.cepOrigem) p.cp = v.cepOrigem;
+    if (v.demoFechada) p.df = 1;
+    if (v.logo && /^https?:\/\//i.test(v.logo)) p.lg = v.logo;
     const tx = {};
-    for (const k of ['selo', 'titulo', 'sub', 'botao']) {
-      if (t[k] && t[k] !== lt[k]) tx[k] = t[k];
+    if (t.selo && t.selo !== lt.selo) tx.s = t.selo;
+    if (t.titulo && t.titulo !== lt.titulo) tx.t = t.titulo;
+    if (t.sub && t.sub !== lt.sub) tx.b = t.sub;
+    if (t.botao && t.botao !== lt.botao) tx.bt = t.botao;
+    if (Object.keys(tx).length) p.tx = tx;
+    const cod = C.codificar(p);
+    let base = `${URL_PUB}${PASTA}/`;
+    if (/^https?:\/\/[^/]*studiomagalhaes\.com\.br/i.test(location.origin)) {
+      const cleanPath = location.pathname.replace(/index\.html$/i, '');
+      base = `${location.origin}${cleanPath.endsWith('/') ? cleanPath : cleanPath + '/'}`;
     }
-    const payload = Object.keys(tx).length ? { visual: vl, textos: tx } : { visual: vl };
-    const cod = C.codificar(payload);
-    const base = /^https?:\/\/[^/]*studiomagalhaes\.com\.br/i.test(location.origin) ? `${location.origin}${location.pathname}` : `${URL_PUB}${PASTA}/`;
-    return `${base}#amostra=${cod}`;
+    return `${base}?amostra=${cod}`;
   }
   function montarPlanos() {
     const c = calcProposta(), l = C.dados.loja, v = C.visual;

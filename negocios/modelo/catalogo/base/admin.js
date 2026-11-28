@@ -5,12 +5,7 @@
 (() => {
   'use strict';
   const C = window.Catalogo, L = C.LOJA, I = window.ICONES;
-  const rawAm = location.hash.startsWith('#amostra=') ? location.hash.slice(9) : (new URLSearchParams(location.search).get('amostra') || '');
-  let HASH_AMOSTRA = rawAm ? `#amostra=${rawAm}` : (location.hash.startsWith('#amostra') ? location.hash : '');
-  if (rawAm) {
-    const am = C.decodificar(rawAm);
-    if (am) C.aplicarAmostra(am);
-  }
+  const HASH_AMOSTRA = C.linkParamAmostra || '';
   const V = C.visual;
   const siglaHTML = () => V.logo ? `<img src="${esc(V.logo)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : esc(V.sigla);
   const $ = (s, el = document) => el.querySelector(s);
