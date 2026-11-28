@@ -1,8 +1,9 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
-// Guarda o site modelo inteiro no aparelho para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-b213feab87';
+// Guarda o site modelo e os 14 ramos do catálogo no aparelho para abrir mesmo sem internet.
+const VERSAO = 'sm-modelo-f9814fb39f';
 const ARQUIVOS = [
   "./",
+  "catalogo/",
   "assets/css/modelo.css",
   "assets/fontes/bricolage-grotesque.woff2",
   "assets/fontes/dm-sans.woff2",
@@ -239,6 +240,7 @@ const ARQUIVOS = [
   "catalogo/lanchonete/fotos/xburger.jpg",
   "catalogo/lanchonete/index.html",
   "catalogo/lanchonete/loja.js",
+  "catalogo/manifest.webmanifest",
   "catalogo/mercado/admin.html",
   "catalogo/mercado/cenas.js",
   "catalogo/mercado/fotos/agua-suco.jpg",
@@ -339,8 +341,18 @@ const ARQUIVOS = [
   "manifest.webmanifest"
 ];
 
+async function guardarEmLotes(cache) {
+  const faltou = [];
+  for (let i = 0; i < ARQUIVOS.length; i += 12) {
+    const lote = ARQUIVOS.slice(i, i + 12);
+    const res = await Promise.allSettled(lote.map(u => cache.add(u)));
+    res.forEach((r, idx) => { if (r.status === 'rejected') faltou.push(lote[idx]); });
+  }
+  if (faltou.length) await Promise.allSettled(faltou.map(u => cache.add(u)));
+}
+
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSAO).then(guardarEmLotes).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
@@ -348,7 +360,28 @@ self.addEventListener('activate', e => {
     .then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
-  e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(r => r || fetch(e.request).catch(() =>
-    e.request.mode === 'navigate' ? caches.match('./') : Response.error())));
+  if (e.request.method !== 'GET') return;
+  const u = new URL(e.request.url);
+  if (u.origin !== location.origin) return;
+  e.respondWith((async () => {
+    const c = await caches.open(VERSAO);
+    let r = await c.match(e.request, { ignoreSearch: true });
+    if (!r && u.pathname.endsWith('/')) {
+      r = await c.match(new URL('index.html', u.href).href, { ignoreSearch: true });
+    }
+    if (r) return r;
+    try {
+      const rede = await fetch(e.request);
+      if (rede && rede.ok) c.put(e.request, rede.clone()).catch(() => {});
+      return rede;
+    } catch {
+      if (e.request.mode === 'navigate') {
+        if (u.pathname.includes('/catalogo/')) {
+          return (await c.match('catalogo/index.html')) || (await c.match('./')) || Response.error();
+        }
+        return (await c.match('./')) || Response.error();
+      }
+      return Response.error();
+    }
+  })());
 });

@@ -6,7 +6,13 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#0c1a36">
   <title>Catálogo digital · modelos</title>
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="../assets/icones/icone-192.png">
+  <link rel="apple-touch-icon" href="../assets/icones/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Catálogo digital">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="../assets/js/firebase-config.js"></script>
   <script src="../assets/js/acesso.js"></script>
   <style>
@@ -23,6 +29,12 @@
     .marca b { font: 700 1rem/1.1 'Montserrat', sans-serif; display: block; }
     .marca small { color: #8ea2c4; }
     .voltar { text-decoration: none; font-weight: 600; font-size: .9rem; border: 1px solid rgba(255,255,255,.16); padding: 9px 14px; border-radius: 12px; }
+    .topo-acoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn-instalar { appearance: none; border: 0; background: var(--ciano); color: var(--marinho); font: 700 .88rem/1 'Inter', system-ui, sans-serif; padding: 10px 14px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+    .btn-instalar svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .dica-instalar { margin: 0 0 18px; padding: 12px 15px; border-radius: 14px; background: rgba(79,195,200,.12); border: 1px solid rgba(79,195,200,.32); color: #dcebf7; font-size: .88rem; line-height: 1.5; }
+    .dica-instalar b { color: #fff; }
+    .sw-status { display: inline-block; margin-left: 10px; color: #7cd4c8; }
     h1 { font: 800 clamp(2rem, 5vw, 3.2rem)/1.05 'Montserrat', sans-serif; letter-spacing: -.02em; margin: 34px 0 12px; }
     h1 span { color: var(--ciano); }
     .intro { color: #b5c3da; max-width: 46em; font-size: 1.05rem; }
@@ -49,13 +61,18 @@
 </head>
 <body>
   <div class="caixa">
-    <header><a class="marca" href="../"><img src="../assets/icones/icone-192.png" alt=""><span><b>Studio Magalhães</b><small>Site modelo</small></span></a>
-      <a class="voltar" href="../">← Voltar ao site modelo</a></header>
+    <header><a class="marca" href="../"><img src="../assets/icones/icone-192.png" alt=""><span><b>Studio Magalhães</b><small>Catálogo digital</small></span></a>
+      <div class="topo-acoes">
+        <button type="button" class="btn-instalar" id="btn-instalar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Instalar app</button>
+        <a class="voltar" href="../">← Site modelo</a>
+      </div>
+    </header>
+    <div class="dica-instalar" id="dica-instalar" hidden></div>
     <h1>Catálogo digital <span>pronto por ramo</span></h1>
     <p class="intro">Um modelo para cada tipo de loja, com apresentação animada, categorias, cardápio ou catálogo e carrinho que envia o pedido pronto para o WhatsApp. A loja recebe tudo com o nome, o logo e as cores dela, e cuida dos produtos, fotos e preços numa área com senha.</p>
     <ul class="pontos"><li>Pedido pronto no WhatsApp</li><li>Área da loja com senha</li><li>Produtos, fotos e preços pela própria loja</li><li>Horário, entrega e taxa por bairro</li><li>Funciona no celular</li></ul>
     <div class="grade" id="grade"></div>
-    <footer>Lojas de demonstração: nomes, produtos e preços são exemplos.</footer>
+    <footer>Lojas de demonstração: nomes, produtos e preços são exemplos.<span class="sw-status" id="sw-status"></span></footer>
   </div>
   <script>
     // 14 ramos independentes do Catálogo digital (cada um com 10 animações 3D no painel do Studio).
@@ -80,6 +97,50 @@
         <div class="corpo"><b>${m.nome}</b><p>${m.desc}</p><div class="acoes"><a class="btn btn-p" href="${m.pasta}/">Abrir a loja</a><a class="btn" href="${m.pasta}/admin.html">Área da loja</a></div></div></article>` : `
       <article class="modelo breve" style="--c1:${m.c1};--c2:${m.c2}"><span class="selo">Em breve</span><div class="capa"></div>
         <div class="corpo"><b>${m.nome}</b><p>${m.desc}</p></div></article>`).join('');
+
+    /* ---------- App instalável (PWA) e uso sem internet ---------- */
+    (() => {
+      const btn = document.getElementById('btn-instalar');
+      const dica = document.getElementById('dica-instalar');
+      const status = document.getElementById('sw-status');
+      const jaApp = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+      if (jaApp && btn) btn.hidden = true;
+
+      let pedidoInstalar = null;
+      window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        pedidoInstalar = e;
+        if (btn && !jaApp) btn.hidden = false;
+      });
+      window.addEventListener('appinstalled', () => {
+        pedidoInstalar = null;
+        if (btn) btn.hidden = true;
+        if (dica) { dica.hidden = false; dica.innerHTML = '✓ <b>App instalado!</b> Agora o Catálogo digital aparece como aplicativo na tela inicial do aparelho.'; }
+      });
+
+      if (btn) btn.addEventListener('click', async () => {
+        if (pedidoInstalar) {
+          try {
+            await pedidoInstalar.prompt();
+            const r = await pedidoInstalar.userChoice.catch(() => null);
+            if (r && r.outcome === 'accepted') pedidoInstalar = null;
+            return;
+          } catch { /* fallback para instruções */ }
+        }
+        const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        dica.hidden = false;
+        dica.innerHTML = ios
+          ? '<b>Para instalar no iPhone/iPad (Safari):</b> toque no botão <b>Compartilhar</b> (quadrado com seta para cima) e escolha <b>Adicionar à Tela de Início</b>.'
+          : '<b>Para instalar neste aparelho:</b> abra o menu do navegador (<b>⋮</b> no Chrome/Edge) e toque em <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>. Se acabou de abrir o site, aguarde alguns segundos e recarregue a página para o botão automático aparecer.';
+      });
+
+      if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => {});
+        navigator.serviceWorker.ready.then(() => {
+          if (status) status.textContent = '✓ Pronto para abrir sem internet';
+        });
+      }
+    })();
   </script>
 </body>
 </html>

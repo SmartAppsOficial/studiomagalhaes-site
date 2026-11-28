@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Catálogo digital · Studio Magalhães",
+  "short_name": "Catálogo digital",
+  "description": "Catálogo digital com 14 ramos prontos, animações 3D, personalização ao vivo e painel de propostas.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0c1a36",
+  "theme_color": "#0c1a36",
+  "icons": [
+    { "src": "../assets/icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../assets/icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../assets/icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
