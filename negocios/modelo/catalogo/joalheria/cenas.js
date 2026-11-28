@@ -25,6 +25,51 @@
       };
     },
 
+    /* Solitário de luxo: aro com espessura, garras, brilhante lapidado com 14 facetas,
+       reflexo que corre no ouro, halo girando e cintilância (estrela de 4 pontas). */
+    solitarioLuxo() {
+      const e4 = (x, y, r, cor, d = 0, dur = 2.6) => { const q = r * .14;
+        return '<path d="M' + x + ' ' + (y - r) + 'Q' + (x + q) + ' ' + (y - q) + ' ' + (x + r) + ' ' + y + 'Q' + (x + q) + ' ' + (y + q) + ' ' + x + ' ' + (y + r) + 'Q' + (x - q) + ' ' + (y + q) + ' ' + (x - r) + ' ' + y + 'Q' + (x - q) + ' ' + (y - q) + ' ' + x + ' ' + (y - r) + 'Z" style="fill:' + cor + '">' +
+          '<animate attributeName="opacity" values=".15;1;.15" dur="' + dur + 's" begin="' + d + 's" repeatCount="indefinite"/></path>'; };
+      const raios = Array.from({ length: 16 }, (_, i) => '<polygon points="200,200 ' + (200 + 190 * Math.cos((i * 22.5 - 3) * Math.PI / 180)).toFixed(1) + ',' + (200 + 190 * Math.sin((i * 22.5 - 3) * Math.PI / 180)).toFixed(1) + ' ' + (200 + 190 * Math.cos((i * 22.5 + 3) * Math.PI / 180)).toFixed(1) + ',' + (200 + 190 * Math.sin((i * 22.5 + 3) * Math.PI / 180)).toFixed(1) + '"/>').join('');
+      const g = 118, cu = 190; // altura da cintura e da ponta (culet) do brilhante
+      const pav = [[140, 158, '#dff1fb'], [158, 179, '#a9d5ee'], [179, 200, '#ffffff'], [200, 221, '#bfe3f5'], [221, 242, '#f2faff'], [242, 260, '#9ccfe9']]
+        .map(([a, b, c]) => '<polygon points="' + a + ',' + g + ' ' + b + ',' + g + ' 200,' + cu + '" fill="' + c + '"/>').join('');
+      const defs = '<radialGradient id="jx-halo" cx=".5" cy=".42" r=".55"><stop offset="0" style="stop-color:var(--d);stop-opacity:.5"/><stop offset="1" style="stop-color:var(--d);stop-opacity:0"/></radialGradient>' +
+        '<linearGradient id="jx-ouro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1c9"/><stop offset=".35" stop-color="#e8c27a"/><stop offset=".7" stop-color="#b9893f"/><stop offset="1" stop-color="#7d5722"/></linearGradient>' +
+        '<linearGradient id="jx-ouro-fundo" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a7031"/><stop offset="1" stop-color="#5e3f17"/></linearGradient>' +
+        '<linearGradient id="jx-reflexo" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="160" y2="160"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>' +
+        '<animateTransform attributeName="gradientTransform" type="translate" values="-260 -260;400 400" dur="4.2s" repeatCount="indefinite"/></linearGradient>';
+      return {
+        principal: S(
+          '<circle cx="200" cy="200" r="190" fill="url(#jx-halo)"/>' +
+          '<g class="cena-gira" style="fill:var(--d)" opacity=".13">' + raios + '</g>' +
+          SM(120, 13, 376) +
+          C(4, 0, '<circle cx="194" cy="258" r="104" fill="none" stroke="url(#jx-ouro-fundo)" stroke-width="26"/>') +
+          C(8, .2, '<circle cx="200" cy="262" r="104" fill="none" stroke="url(#jx-ouro)" stroke-width="24"/>' +
+            '<circle cx="200" cy="262" r="92" fill="none" stroke="#fff3d1" stroke-width="2.5" opacity=".7"/>' +
+            '<circle cx="200" cy="262" r="116" fill="none" stroke="#6e4a1b" stroke-width="1.5" opacity=".5"/>' +
+            '<circle cx="200" cy="262" r="104" fill="none" stroke="url(#jx-reflexo)" stroke-width="20"/>') +
+          C(12, .4, '<path d="M168 150 L186 118 H214 L232 150 Q200 166 168 150Z" fill="url(#jx-ouro)"/>' +
+            '<path d="M176 150 Q200 160 224 150" stroke="#7d5722" stroke-width="2" fill="none" opacity=".6"/>' + pav +
+            '<polygon points="140,118 172,82 170,118" fill="#e4f4fc"/><polygon points="170,118 172,82 200,100" fill="#ffffff"/>' +
+            '<polygon points="200,100 172,82 228,82" fill="#f6fcff"/><polygon points="200,100 228,82 230,118" fill="#cbe8f7"/>' +
+            '<polygon points="230,118 228,82 260,118" fill="#eef8fe"/><polygon points="170,118 200,100 230,118" fill="#b5ddf2"/>' +
+            '<polygon points="179,118 200,118 200,190" style="fill:var(--d)" opacity=".22"/>' +
+            '<path d="M140 118H260M172 82H228M140 118L200 190L260 118M170 118L200 190M230 118L200 190M172 82L170 118L200 100L230 118L228 82" stroke="#fff" stroke-width="1.6" opacity=".85" fill="none"/>' +
+            '<path d="M136 118 L146 104 M264 118 L254 104 M150 132 L158 116 M250 132 L242 116" stroke="url(#jx-ouro)" stroke-width="7" stroke-linecap="round"/>') +
+          C(18, .7, e4(186, 92, 13, '#fff', 0, 2.2) + e4(248, 104, 9, '#fff', .9, 2.8) + e4(96, 96, 16, 'var(--d)', .4, 3.2) +
+            e4(318, 176, 12, 'var(--d)', 1.6, 3) + e4(300, 330, 8, '#fff', 1.1, 2.5) + e4(86, 300, 10, 'var(--d)', 2, 3.4)),
+          defs),
+        soltos: [
+          { x: 6, y: 16, t: 40, p: 1.5, s: '<svg viewBox="0 0 40 40"><path d="M20 1Q23 17 39 20Q23 23 20 39Q17 23 1 20Q17 17 20 1Z" style="fill:var(--d)"/></svg>' },
+          { x: 86, y: 10, t: 44, p: -1.3, s: gemaMini('#ffffff') },
+          { x: 90, y: 72, t: 36, p: 1.6, s: '<svg viewBox="0 0 40 40"><path d="M20 1Q23 17 39 20Q23 23 20 39Q17 23 1 20Q17 17 20 1Z" fill="#fff"/></svg>' },
+          { x: 4, y: 76, t: 38, p: -1.4, s: gemaMini('var(--d)') }
+        ]
+      };
+    },
+
     anel() {
       return {
         principal: S(SM(136, 15, 368) +
@@ -154,6 +199,7 @@
     anel: 'Anel solitário de luxo',
     aliancas: 'Par de alianças 18k',
     esmeralda: 'Gema esmeralda lapidada',
+    solitarioLuxo: 'Solitário de luxo com brilho',
     rubi: 'Gema rubi lapidação gota',
     colar: 'Colar com pingente de gema',
     safira: 'Safira azul lapidada',
@@ -162,7 +208,7 @@
     estojo: 'Estojo de veludo aberto'
   };
   window.CENAS_ICONES = {
-    diamante: 'cat-joia', anel: 'cat-anel', aliancas: 'cat-anel', esmeralda: 'cat-joia', rubi: 'cat-joia',
+    diamante: 'cat-joia', solitarioLuxo: 'cat-anel', anel: 'cat-anel', aliancas: 'cat-anel', esmeralda: 'cat-joia', rubi: 'cat-joia',
     colar: 'cat-estrela', safira: 'cat-joia', brincos: 'cat-acessorio', cristal: 'cat-joia', estojo: 'cat-presente'
   };
 })();
