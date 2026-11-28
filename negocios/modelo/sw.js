@@ -1,9 +1,10 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
-// Guarda o site modelo e os 14 ramos do catálogo no aparelho para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-9a23879ee5';
+// Guarda o site modelo, os 14 ramos do catálogo e os 10 ramos de serviços para abrir mesmo sem internet.
+const VERSAO = 'sm-modelo-2c5978ad3c';
 const ARQUIVOS = [
   "./",
   "catalogo/",
+  "servicos/",
   "assets/css/modelo.css",
   "assets/fontes/bricolage-grotesque.woff2",
   "assets/fontes/dm-sans.woff2",
@@ -338,7 +339,77 @@ const ARQUIVOS = [
   "catalogo/roupas/index.html",
   "catalogo/roupas/loja.js",
   "index.html",
-  "manifest.webmanifest"
+  "manifest.webmanifest",
+  "servicos/academia/admin.html",
+  "servicos/academia/cenas.js",
+  "servicos/academia/fotos/personal.jpg",
+  "servicos/academia/fotos/treino.jpg",
+  "servicos/academia/index.html",
+  "servicos/academia/negocio.js",
+  "servicos/arquitetura/admin.html",
+  "servicos/arquitetura/cenas.js",
+  "servicos/arquitetura/fotos/interiores.jpg",
+  "servicos/arquitetura/fotos/projeto.jpg",
+  "servicos/arquitetura/index.html",
+  "servicos/arquitetura/negocio.js",
+  "servicos/assistencia/admin.html",
+  "servicos/assistencia/cenas.js",
+  "servicos/assistencia/fotos/arcond.jpg",
+  "servicos/assistencia/fotos/eletronicos.jpg",
+  "servicos/assistencia/index.html",
+  "servicos/assistencia/negocio.js",
+  "servicos/autoescola/admin.html",
+  "servicos/autoescola/cenas.js",
+  "servicos/autoescola/fotos/carro.jpg",
+  "servicos/autoescola/fotos/moto.jpg",
+  "servicos/autoescola/index.html",
+  "servicos/autoescola/negocio.js",
+  "servicos/barbearia/admin.html",
+  "servicos/barbearia/cenas.js",
+  "servicos/barbearia/fotos/barba.jpg",
+  "servicos/barbearia/fotos/corte.jpg",
+  "servicos/barbearia/index.html",
+  "servicos/barbearia/negocio.js",
+  "servicos/base/admin.js",
+  "servicos/base/dados.js",
+  "servicos/base/estudio.js",
+  "servicos/base/icones-serv.js",
+  "servicos/base/vitrine.css",
+  "servicos/base/vitrine.js",
+  "servicos/clinica/admin.html",
+  "servicos/clinica/cenas.js",
+  "servicos/clinica/fotos/consulta.jpg",
+  "servicos/clinica/fotos/odonto.jpg",
+  "servicos/clinica/fotos/online.jpg",
+  "servicos/clinica/index.html",
+  "servicos/clinica/negocio.js",
+  "servicos/escritorio/admin.html",
+  "servicos/escritorio/cenas.js",
+  "servicos/escritorio/fotos/contabil.jpg",
+  "servicos/escritorio/fotos/reuniao.jpg",
+  "servicos/escritorio/index.html",
+  "servicos/escritorio/negocio.js",
+  "servicos/fotografia/admin.html",
+  "servicos/fotografia/cenas.js",
+  "servicos/fotografia/fotos/estudio.jpg",
+  "servicos/fotografia/fotos/evento.jpg",
+  "servicos/fotografia/index.html",
+  "servicos/fotografia/negocio.js",
+  "servicos/index.html",
+  "servicos/manifest.webmanifest",
+  "servicos/oficina/admin.html",
+  "servicos/oficina/cenas.js",
+  "servicos/oficina/fotos/mecanica.jpg",
+  "servicos/oficina/fotos/polimento.jpg",
+  "servicos/oficina/index.html",
+  "servicos/oficina/negocio.js",
+  "servicos/salao/admin.html",
+  "servicos/salao/cenas.js",
+  "servicos/salao/fotos/cabelo.jpg",
+  "servicos/salao/fotos/estetica.jpg",
+  "servicos/salao/fotos/unhas.jpg",
+  "servicos/salao/index.html",
+  "servicos/salao/negocio.js"
 ];
 
 async function guardarEmLotes(cache) {
@@ -383,6 +454,9 @@ self.addEventListener('fetch', e => {
         const emCache = await buscarCache();
         if (emCache) return emCache;
         if (e.request.mode === 'navigate') {
+          if (u.pathname.includes('/servicos/')) {
+            return (await c.match('servicos/index.html')) || (await c.match('./')) || Response.error();
+          }
           if (u.pathname.includes('/catalogo/')) {
             return (await c.match('catalogo/index.html')) || (await c.match('./')) || Response.error();
           }

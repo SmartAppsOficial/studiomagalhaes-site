@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0c1a36">
+  <title>Site de Serviços · modelos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="../assets/icones/icone-192.png">
+  <link rel="apple-touch-icon" href="../assets/icones/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Serviços SM">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="../assets/js/firebase-config.js"></script>
+  <script src="../assets/js/acesso.js"></script>
+  <style>
+    @font-face { font-family: 'Montserrat'; src: url(../assets/fontes/montserrat.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url(../assets/fontes/inter.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+    :root { --marinho: #0c1a36; --marinho2: #132548; --ciano: #4fc3c8; --azul: #3d7cc0; --ouro: #f2c46d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; background: radial-gradient(900px 500px at 10% -10%, rgba(79,195,200,.18), transparent), radial-gradient(800px 600px at 100% 100%, rgba(61,124,192,.2), transparent), var(--marinho); color: #e7edf7; font: 400 16px/1.55 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    .caixa { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 0; flex-wrap: wrap; }
+    .marca { display: flex; gap: 10px; align-items: center; text-decoration: none; }
+    .marca img { width: 38px; height: 38px; border-radius: 11px; }
+    .marca b { font: 700 1rem/1.1 'Montserrat', sans-serif; display: block; }
+    .marca small { color: #8ea2c4; }
+    .topo-acoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .voltar { text-decoration: none; font-weight: 600; font-size: .88rem; border: 1px solid rgba(255,255,255,.16); padding: 9px 13px; border-radius: 12px; }
+    .voltar.ativo { background: rgba(79,195,200,.16); border-color: var(--ciano); color: #fff; }
+    .btn-instalar { appearance: none; border: 0; background: var(--ciano); color: var(--marinho); font: 700 .88rem/1 'Inter', system-ui, sans-serif; padding: 10px 14px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+    .btn-instalar svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .dica-instalar { margin: 0 0 18px; padding: 12px 15px; border-radius: 14px; background: rgba(79,195,200,.12); border: 1px solid rgba(79,195,200,.32); color: #dcebf7; font-size: .88rem; line-height: 1.5; }
+    h1 { font: 800 clamp(2rem, 5vw, 3.2rem)/1.05 'Montserrat', sans-serif; letter-spacing: -.02em; margin: 28px 0 12px; }
+    h1 span { color: var(--ciano); }
+    .intro { color: #b5c3da; max-width: 46em; font-size: 1.05rem; }
+    .pontos { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 34px; padding: 0; list-style: none; }
+    .pontos li { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 99px; padding: 7px 13px; font-size: .88rem; }
+    .grade { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); padding-bottom: 60px; }
+    .modelo { position: relative; border-radius: 20px; overflow: hidden; background: var(--marinho2); border: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; min-height: 230px; }
+    .modelo .capa { height: 130px; background: var(--c1); position: relative; overflow: hidden; }
+    .modelo .capa::before, .modelo .capa::after { content: ''; position: absolute; border-radius: 50%; filter: blur(18px); }
+    .modelo .capa::before { width: 160px; height: 160px; right: -30px; top: -40px; background: var(--c2); opacity: .8; }
+    .modelo .capa::after { width: 120px; height: 120px; left: -20px; bottom: -60px; background: var(--c2); opacity: .45; }
+    .modelo .capa img { position: absolute; right: 14px; bottom: -26px; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(255,255,255,.85); box-shadow: 0 14px 30px -10px rgba(0,0,0,.6); z-index: 1; }
+    .modelo .corpo { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .modelo b { font: 700 1.08rem/1.25 'Montserrat', sans-serif; }
+    .modelo p { color: #8ea2c4; font-size: .88rem; margin: 0; }
+    .modelo .acoes { margin-top: auto; padding-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 700; font-size: .88rem; padding: 9px 13px; border-radius: 11px; border: 1px solid rgba(255,255,255,.16); }
+    .btn-p { background: var(--ciano); color: var(--marinho); border-color: var(--ciano); }
+    .selo { position: absolute; top: 12px; left: 12px; z-index: 2; background: var(--ciano); color: var(--marinho); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 5px 9px; border-radius: 8px; }
+    footer { color: #6f84a8; font-size: .82rem; padding: 0 0 30px; }
+    .sw-status { display: inline-block; margin-left: 10px; color: #7cd4c8; }
+  </style>
+</head>
+<body>
+  <div class="caixa">
+    <header><a class="marca" href="../"><img src="../assets/icones/icone-192.png" alt=""><span><b>Studio Magalhães</b><small>Site de Serviços</small></span></a>
+      <div class="topo-acoes">
+        <a class="voltar" href="../catalogo/">Comércio e comida (14)</a>
+        <a class="voltar ativo" href="./">Serviços (10)</a>
+        <button type="button" class="btn-instalar" id="btn-instalar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Instalar app</button>
+      </div>
+    </header>
+    <div class="dica-instalar" id="dica-instalar" hidden></div>
+    <h1>Site de Serviços <span>pronto por ramo</span></h1>
+    <p class="intro">10 modelos feitos para prestadores de serviço e profissionais: topo com animação 3D, lista de serviços com duração e valor (fixo ou sob orçamento), equipe, portfólio, depoimentos, FAQ e agendamento ou orçamento pronto no WhatsApp — com Área do negócio inclusa.</p>
+    <ul class="pontos"><li>Agendamento ou orçamento no WhatsApp</li><li>Presencial, a domicílio ou 100% online</li><li>Área do negócio com agenda e lembrete</li><li>Mercado Pago e InfinitePay opcionais</li><li>10 animações 3D por ramo</li></ul>
+    <div class="grade" id="grade"></div>
+    <footer>Negócios de demonstração: nomes, serviços e valores são exemplos.<span class="sw-status" id="sw-status"></span></footer>
+  </div>
+  <script>
+    const MODELOS = [
+      { pasta: 'barbearia', nome: 'Barbearia', desc: 'Agendamento por barbeiro, corte + barba, duração, planos mensais e cupom de 1ª visita.', c1: '#1c1714', c2: '#b87a3b', foto: 'barbearia/fotos/corte.jpg' },
+      { pasta: 'salao', nome: 'Salão de beleza e estética', desc: 'Cabelo, unhas, sobrancelha e estética com escolha de profissional e galeria.', c1: '#26151d', c2: '#c45b82', foto: 'salao/fotos/cabelo.jpg' },
+      { pasta: 'clinica', nome: 'Clínica e saúde', desc: 'Médico, odonto, psicologia e nutrição: convênios, corpo clínico, presencial ou teleconsulta.', c1: '#0f2229', c2: '#168791', foto: 'clinica/fotos/consulta.jpg' },
+      { pasta: 'oficina', nome: 'Oficina mecânica e estética', desc: 'Orçamento com modelo/ano do veículo, revisões, diagnóstico e vitrificação.', c1: '#151821', c2: '#d94b2b', foto: 'oficina/fotos/mecanica.jpg' },
+      { pasta: 'academia', nome: 'Academia, estúdio e personal', desc: 'Planos mensais, modalidades, personal trainer e agendamento de aula experimental.', c1: '#121a14', c2: '#22a655', foto: 'academia/fotos/treino.jpg' },
+      { pasta: 'escritorio', nome: 'Escritório (advocacia e contábil)', desc: 'Áreas de atuação, consulta presencial ou online, perfil dos sócios e atendimento sigiloso.', c1: '#121926', c2: '#b38b47', foto: 'escritorio/fotos/reuniao.jpg' },
+      { pasta: 'arquitetura', nome: 'Arquitetura, engenharia e reformas', desc: 'Portfólio de projetos, tipo de obra/m², etapas e orçamento personalizado.', c1: '#1e1b18', c2: '#8c6849', foto: 'arquitetura/fotos/interiores.jpg' },
+      { pasta: 'assistencia', nome: 'Assistência técnica e manutenção', desc: 'Celulares, notebooks e ar-condicionado: balcão ou visita técnica com garantia.', c1: '#101b2b', c2: '#2563eb', foto: 'assistencia/fotos/eletronicos.jpg' },
+      { pasta: 'autoescola', nome: 'Autoescola e cursos', desc: 'Categorias A/B/AB, reciclagem, aulas práticas e simulação rápida de matrícula.', c1: '#141e2e', c2: '#e08b16', foto: 'autoescola/fotos/carro.jpg' },
+      { pasta: 'fotografia', nome: 'Fotografia e eventos', desc: 'Portfólio em tela cheia, pacotes de ensaios e casamentos com orçamento por data.', c1: '#19141d', c2: '#a65c87', foto: 'fotografia/fotos/estudio.jpg' }
+    ];
+    document.getElementById('grade').innerHTML = MODELOS.map(m => `
+      <article class="modelo" style="--c1:${m.c1};--c2:${m.c2}"><span class="selo">Pronto</span><div class="capa"><img src="${m.foto}" alt=""></div>
+        <div class="corpo"><b>${m.nome}</b><p>${m.desc}</p><div class="acoes"><a class="btn btn-p" href="${m.pasta}/">Abrir o site</a><a class="btn" href="${m.pasta}/admin.html">Área do negócio</a></div></div></article>`).join('');
+
+    (() => {
+      const btn = document.getElementById('btn-instalar'), dica = document.getElementById('dica-instalar'), status = document.getElementById('sw-status');
+      const jaApp = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+      if (jaApp && btn) btn.hidden = true;
+      let pedido = null;
+      window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedido = e; if (btn && !jaApp) btn.hidden = false; });
+      window.addEventListener('appinstalled', () => { pedido = null; if (btn) btn.hidden = true; dica.hidden = false; dica.innerHTML = '✓ <b>App instalado!</b>'; });
+      if (btn) btn.addEventListener('click', async () => {
+        if (pedido) { try { await pedido.prompt(); const r = await pedido.userChoice.catch(() => null); if (r && r.outcome === 'accepted') pedido = null; return; } catch {} }
+        dica.hidden = false;
+        dica.innerHTML = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+          ? '<b>No iPhone/iPad:</b> toque em <b>Compartilhar</b> e escolha <b>Adicionar à Tela de Início</b>.'
+          : '<b>Neste aparelho:</b> abra o menu <b>⋮</b> do navegador e toque em <b>Instalar aplicativo</b>.';
+      });
+      if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => {});
+        navigator.serviceWorker.ready.then(() => { if (status) status.textContent = '✓ Pronto para abrir sem internet'; });
+      }
+    })();
+  </script>
+</body>
+</html>
