@@ -576,7 +576,7 @@
       `Funcionários com acesso (${eq.length}/${LIMITE_EQUIPE}) e entregadores para envio de rota (${ent.length}/${LIMITE_ENTREGADORES}).`, botaoTopo) + `
     <div class="filtros" data-sub-equipe style="margin-bottom:14px">
       <button type="button" data-sub-eq="funcionarios" aria-pressed="${!ehEnt}">${ic('grupo')} Funcionários (${eq.length}/${LIMITE_EQUIPE})</button>
-      <button type="button" data-sub-eq="entregadores" aria-pressed="${ehEnt}">${ic('entrega')} Entregadores / Motoboys (${ent.length}/${LIMITE_ENTREGADORES})</button>
+      <button type="button" data-sub-eq="entregadores" aria-pressed="${ehEnt}">${ic('entrega')} Entregadores (${ent.length}/${LIMITE_ENTREGADORES})</button>
     </div>
     ${!ehEnt ? `
       ${noLimFunc ? `<div class="nota-studio" style="margin:0 0 14px">${ic('info')}<div><b>Limite do plano atingido (${LIMITE_EQUIPE} funcionários).</b> Para liberar mais acessos na sua equipe, fale com o <b>Studio Magalhães</b> (+ R$ 10,00/mês por funcionário extra).</div></div>` : ''}
@@ -593,8 +593,8 @@
       ${eq.length ? '' : '<p class="vazio">Nenhum funcionário ainda. Toque em “Adicionar funcionário”.</p>'}
       <div class="nota-studio">${ic('info')}<div>Seu plano inclui o dono + <b>até ${LIMITE_EQUIPE} funcionários</b> (extras: + R$ 10,00/mês cada). Dê a cada pessoa só o que ela precisa: <b>atendente</b> vê pedidos e muda situação; <b>cozinha</b> vê pedidos e marca esgotados. Cada mudança mostra quem fez.</div></div>`
     : `
-      ${noLimEnt ? `<div class="nota-studio" style="margin:0 0 14px">${ic('info')}<div><b>Limite do plano atingido (${LIMITE_ENTREGADORES} entregadores).</b> Para cadastrar mais motoboys, fale com o <b>Studio Magalhães</b> (+ R$ 10,00/mês por entregador extra).</div></div>` : ''}
-      <div class="cartao"><h2>Entregadores (motoboys)</h2><p class="sub">Cadastre até ${LIMITE_ENTREGADORES} entregadores incluídos no plano. Em cada pedido de entrega, escolha quem vai levar e toque em <b>Enviar rota</b> para mandar o endereço e o link do Google Maps direto no WhatsApp dele.</p>
+      ${noLimEnt ? `<div class="nota-studio" style="margin:0 0 14px">${ic('info')}<div><b>Limite do plano atingido (${LIMITE_ENTREGADORES} entregadores).</b> Para cadastrar mais entregadores, fale com o <b>Studio Magalhães</b> (+ R$ 10,00/mês por entregador extra).</div></div>` : ''}
+      <div class="cartao"><h2>Entregadores</h2><p class="sub">Cadastre até ${LIMITE_ENTREGADORES} entregadores incluídos no plano. Em cada pedido de entrega, escolha quem vai levar e toque em <b>Enviar rota</b> para mandar o endereço e o link do Google Maps direto no WhatsApp dele.</p>
         ${ent.map((en, i) => `<div class="entreg-row" data-en="${i}">
           <input class="entrada" data-en-c="nome" value="${esc(en.nome)}" maxlength="40" placeholder="Nome do entregador" aria-label="Nome do entregador">
           <input class="entrada" data-en-c="whats" inputmode="tel" value="${esc(en.whats)}" maxlength="24" placeholder="(21) 99999-9999" aria-label="WhatsApp do entregador">
@@ -657,10 +657,10 @@
         <li><b>QR Code de mesa:</b> preencha o número da mesa (ex.: <b>04</b>) para que os pedidos feitos por aquele QR Code já cheguem marcados com <b>Mesa 04</b>.</li></ul>`)}
       ${sec('Horário, feriados e loja fechada', `<p>Em Funcionamento, ajuste o horário de cada dia. Para feriados ou imprevistos, ligue "Fechar a loja agora" e escreva o aviso. O site para de aceitar pedidos até você desligar.</p>`)}
       ${sec('Entrega, taxa por bairro e pedido mínimo', `<p>Cadastre os bairros que você atende e a taxa de cada um. O cliente escolhe o bairro e o site soma a taxa sozinho. Com pedido mínimo, o site só deixa enviar quando o valor for atingido.</p>`)}
-      ${sec('Equipe e entregadores (motoboys)', `<p>Na aba <b>Equipe</b> você encontra duas abas no topo: <b>Funcionários</b> e <b>Entregadores / Motoboys</b>.</p>
+      ${sec('Equipe e entregadores', `<p>Na aba <b>Equipe</b> você encontra duas abas no topo: <b>Funcionários</b> e <b>Entregadores</b>.</p>
         <ul><li><b>Dono:</b> entra com a senha dele e vê tudo, inclusive a aba Equipe.</li>
         <li><b>Funcionários (até ${LIMITE_EQUIPE} incluídos · extras + R$ 10/mês):</b> cada um entra pelo nome e PIN, só vendo o que o dono liberou (atalhos Atendente, Cozinha e Gerente). Cada mudança de situação mostra quem fez.</li>
-        <li><b>Entregadores (até ${LIMITE_ENTREGADORES} incluídos · extras + R$ 10/mês):</b> cadastre nome e WhatsApp dos motoboys. Em cada pedido de entrega, escolha o entregador e clique em <b>Enviar rota</b> para mandar endereço, link do Google Maps e valor a cobrar no WhatsApp dele.</li></ul>`)}
+        <li><b>Entregadores (até ${LIMITE_ENTREGADORES} incluídos · extras + R$ 10/mês):</b> cadastre nome e WhatsApp dos entregadores. Em cada pedido de entrega, escolha o entregador e clique em <b>Enviar rota</b> para mandar endereço, link do Google Maps e valor a cobrar no WhatsApp dele.</li></ul>`)}
       ${sec('O que é com o Studio Magalhães', `<ul><li><b>Visual:</b> cores, logo, fontes, nome e textos da apresentação são mudados pelo Studio, como atualização avulsa.</li>
         <li><b>Erros:</b> se algo não funcionar, avise o Studio. Correção de erros é sempre gratuita.</li>
         <li>O Studio fornece o site. Entregadores, pagamentos e atendimento são da loja.</li></ul>`)}

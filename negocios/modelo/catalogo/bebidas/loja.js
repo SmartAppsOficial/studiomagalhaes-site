@@ -54,7 +54,7 @@ window.LOJA = {
       { id: 'f-felipe', nome: 'Felipe · câmara fria (exemplo)', pin: '1111', ativo: true, permissoes: { pedidos: true, esgotado: true } }
     ],
     entregadores: [
-      { id: 'e-carlos', nome: 'Carlos · motoboy (exemplo)', whats: '(21) 99999-1234', ativo: true }
+      { id: 'e-carlos', nome: 'Carlos · entregador (exemplo)', whats: '(21) 99999-1234', ativo: true }
     ],
     cupons: [
       { codigo: 'GELADA10', tipo: 'valor', valor: 10, minimo: 90, ativo: true }

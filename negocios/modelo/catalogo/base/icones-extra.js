@@ -47,8 +47,10 @@ Object.assign(window.ICONES = window.ICONES || {}, {
   'cat-pet': '<circle cx="8" cy="8.5" r="2"/><circle cx="16" cy="8.5" r="2"/><circle cx="5.5" cy="13" r="1.8"/><circle cx="18.5" cy="13" r="1.8"/><path d="M12 12.5c-2.8 0-4.8 2.2-4.8 4.4 0 1.4 1.1 2.1 2.5 2.1 1 0 1.6-.4 2.3-.4s1.3.4 2.3.4c1.4 0 2.5-.7 2.5-2.1 0-2.2-2-4.4-4.8-4.4z"/>',
   'cat-celular': '<rect x="6.5" y="2.5" width="11" height="19" rx="2.4"/><path d="M10.5 18h3"/>',
   'cat-cosmetico': '<path d="M9 10h6v10H9z"/><path d="M10 10V6l4-2v6"/>',
-  'cat-mercado': '<path d="M3 5h2.5l2.2 10.5h10.8l2-7.5H6.3"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>'
+  'cat-mercado': '<path d="M3 5h2.5l2.2 10.5h10.8l2-7.5H6.3"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>',
+  'cat-joia': '<path d="M6.5 4.5h11l3.5 5-9 10.5L3 9.5z"/><path d="M3 9.5h18M9.5 4.5L7.5 9.5 12 20l4.5-10.5-2-5"/>',
+  'cat-anel': '<circle cx="12" cy="14" r="6.2"/><path d="M9.5 7.8L8 4.5h8l-1.5 3.3"/>'
 });
 /* Lista de ícones que a loja pode escolher para as categorias. */
 window.ICONES_CATEGORIA = ['cat-pizza', 'cat-burger', 'cat-fritas', 'cat-refri', 'cat-garrafa', 'cat-combo', 'cat-doce', 'cat-sorvete', 'cat-cafe',
-  'cat-prato', 'cat-frango', 'cat-hotdog', 'cat-salada', 'cat-pao', 'cat-bolo', 'cat-mercado', 'cat-roupa', 'cat-vestido', 'cat-acessorio', 'cat-pet', 'cat-celular', 'cat-cosmetico', 'cat-estrela', 'cat-promo', 'cat-presente'];
+  'cat-prato', 'cat-frango', 'cat-hotdog', 'cat-salada', 'cat-pao', 'cat-bolo', 'cat-mercado', 'cat-roupa', 'cat-vestido', 'cat-acessorio', 'cat-joia', 'cat-anel', 'cat-pet', 'cat-celular', 'cat-cosmetico', 'cat-estrela', 'cat-promo', 'cat-presente'];

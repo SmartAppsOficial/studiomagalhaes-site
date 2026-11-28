@@ -29,6 +29,15 @@ window.Catalogo = (() => {
     return ok;
   }
   function limparVisual() { ajusteVisual = {}; try { localStorage.removeItem(chave + ':visual'); } catch { /* */ } ouvintes.forEach(f => f('visual')); }
+  /** Aplica uma prévia de amostra recebida por link (#amostra=...) só na memória, sem mexer nos dados salvos nem permitir envio real ao WhatsApp. */
+  function aplicarAmostra(am) {
+    if (!am || typeof am !== 'object') return false;
+    ajusteVisual = { visual: am.visual || {}, textos: am.textos || {} };
+    dados.loja.whats = '';
+    ouvintes.forEach(f => f('visual'));
+    ouvintes.forEach(f => f('dados'));
+    return true;
+  }
   const ajustado = () => !!(ajusteVisual.visual && ajusteVisual.visual.nome);
 
   const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -43,7 +52,9 @@ window.Catalogo = (() => {
   /** Diz se a loja está aberta agora e quando abre ou fecha. */
   function situacao(agora = new Date()) {
     const l = dados.loja;
-    if (l.fechadaAgora) return { aberta: false, texto: 'Fechado agora', detalhe: l.avisoFechada || 'Voltamos em breve.' };
+    const v = visual();
+    if (l.fechadaAgora || v.demoFechada) return { aberta: false, texto: 'Fechado agora', detalhe: l.avisoFechada || 'Voltamos em breve.' };
+    if (LOJA.demo) return { aberta: true, texto: 'Aberto agora', detalhe: 'pronto para pedidos' };
     const dia = agora.getDay(), m = agora.getHours() * 60 + agora.getMinutes();
     for (const [de, ate] of l.horario[dia] || []) {
       const a = minutos(de), b = minutos(ate);
@@ -175,7 +186,7 @@ window.Catalogo = (() => {
 
   return {
     LOJA, get dados() { return dados }, salvar, restaurar,
-    get visual() { return visual(); }, get textos() { return textos(); }, definirVisual, limparVisual, ajustado, aplicarPartida,
+    get visual() { return visual(); }, get textos() { return textos(); }, definirVisual, limparVisual, aplicarAmostra, ajustado, aplicarPartida,
     clientes, guardarCliente, abrirCliente, apagarCliente, configAtual, aplicarConfig, codificar, decodificar,
     situacao, DIAS, hora, produto, grupo, categoria, precoItem, detalhes, precoMinimo,
     pedidos, salvarPedidos, registrarPedido,

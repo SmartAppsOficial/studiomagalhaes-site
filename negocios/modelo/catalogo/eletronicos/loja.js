@@ -37,7 +37,7 @@ window.LOJA = {
       avisoFechada: 'Hoje estamos fechados. Voltamos amanhã às 9h!',
       entrega: {
         ativa: true,
-        tempo: 'Motoboy em 40 min na região',
+        tempo: 'Entrega rápida em 40 min na região',
         bairros: [
           { nome: 'Centro', taxa: 8 }, { nome: 'Icaraí / Jardim', taxa: 10 }, { nome: 'Bairro Norte', taxa: 12 },
           { nome: 'Vila Nova', taxa: 14 }, { nome: 'Envio pelos Correios (combinar)', taxa: 0 }
@@ -54,7 +54,7 @@ window.LOJA = {
       { id: 'f-tiago', nome: 'Tiago · bancada (exemplo)', pin: '1111', ativo: true, permissoes: { pedidos: true, esgotado: true } }
     ],
     entregadores: [
-      { id: 'e-carlos', nome: 'Carlos · motoboy (exemplo)', whats: '(21) 99999-1234', ativo: true }
+      { id: 'e-carlos', nome: 'Carlos · entregador (exemplo)', whats: '(21) 99999-1234', ativo: true }
     ],
     cupons: [
       { codigo: 'TECH10', tipo: 'pct', valor: 10, minimo: 100, ativo: true }

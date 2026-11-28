@@ -55,7 +55,7 @@ window.LOJA = {
       { id: 'f-caio', nome: 'Caio (exemplo)', pin: '1111', ativo: true, permissoes: { pedidos: true, esgotado: true } }
     ],
     entregadores: [
-      { id: 'e-carlos', nome: 'Carlos · motoboy (exemplo)', whats: '(21) 99999-1234', ativo: true }
+      { id: 'e-carlos', nome: 'Carlos · entregador (exemplo)', whats: '(21) 99999-1234', ativo: true }
     ],
     cupons: [
       { codigo: 'BEMVINDO10', tipo: 'pct', valor: 10, minimo: 40, ativo: true }

@@ -52,7 +52,52 @@
   const MESA = (new URLSearchParams(location.search).get('mesa') || '').trim().slice(0, 20);
   let carrinho = lerLocal(CH + ':carrinho', []);
   let ultimoPedido = lerLocal(CH + ':ultimo', null);
-  const cliente = Object.assign({ tipo: '', bairro: '', endereco: '', compl: '', nome: '', whats: '', pagamento: '', troco: '', obs: '' }, lerLocal(CH + ':cliente', {}));
+  const cliente = Object.assign({ tipo: '', bairro: '', endereco: '', compl: '', cep: '', cidadeUf: '', freteServ: '', nome: '', whats: '', pagamento: '', troco: '', obs: '' }, lerLocal(CH + ':cliente', {}));
+  let freteInfo = null, freteCarregando = false, freteErro = '';
+  const modoEntrega = () => V.entregaModo || 'entregadores';
+  const temLocal = () => { const m = modoEntrega(); return (m === 'entregadores' || m === 'ambos') && !!D().loja.entrega.ativa; };
+  const temCorreios = () => { const m = modoEntrega(); return m === 'correios' || m === 'ambos'; };
+  const temRetirada = () => { const m = modoEntrega(); return m === 'correios' ? false : (m === 'nenhuma' ? true : !!D().loja.retirada); };
+  function estimarFrete(cepLimpo, uf) {
+    const orig = String(V.cepOrigem || '24220000').replace(/\D/g, '').padEnd(8, '0');
+    const regO = orig[0], regD = cepLimpo[0];
+    const mesmaRegiao = regO === regD;
+    const sudeste = ['0', '1', '2', '3'].includes(regO) && ['0', '1', '2', '3'].includes(regD);
+    const qtd = Math.max(1, totalItens());
+    const pesoExtra = Math.max(0, qtd - 2) * 3.5;
+    if (mesmaRegiao) return [
+      { id: 'PAC', nome: 'PAC · Correios', prazo: '3 a 6 dias úteis', valor: Math.round((18.9 + pesoExtra) * 100) / 100 },
+      { id: 'SEDEX', nome: 'SEDEX · Correios', prazo: '1 a 3 dias úteis', valor: Math.round((29.9 + pesoExtra) * 100) / 100 }
+    ];
+    if (sudeste) return [
+      { id: 'PAC', nome: 'PAC · Correios', prazo: '5 a 8 dias úteis', valor: Math.round((24.9 + pesoExtra) * 100) / 100 },
+      { id: 'SEDEX', nome: 'SEDEX · Correios', prazo: '2 a 4 dias úteis', valor: Math.round((42.9 + pesoExtra) * 100) / 100 }
+    ];
+    return [
+      { id: 'PAC', nome: 'PAC · Correios', prazo: '7 a 12 dias úteis', valor: Math.round((32.9 + pesoExtra) * 100) / 100 },
+      { id: 'SEDEX', nome: 'SEDEX · Correios', prazo: '3 a 6 dias úteis', valor: Math.round((58.9 + pesoExtra) * 100) / 100 }
+    ];
+  }
+  async function consultarCep(cepBruto) {
+    const cep = String(cepBruto || '').replace(/\D/g, '').slice(0, 8);
+    if (cep.length !== 8) { freteErro = 'Digite um CEP válido com 8 números.'; freteInfo = null; manterRolagem(renderCarrinho); return; }
+    freteCarregando = true; freteErro = ''; manterRolagem(renderCarrinho);
+    let end = null;
+    try {
+      const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (r.ok) { const j = await r.json(); if (!j.erro) end = j; }
+    } catch { /* sem internet: usa estimativa por faixa de CEP */ }
+    freteCarregando = false;
+    const ops = estimarFrete(cep, end?.uf || '');
+    freteInfo = { cep, local: end ? `${end.localidade}/${end.uf}` : `CEP ${cep.slice(0, 5)}-${cep.slice(5)}`, ops };
+    if (end) {
+      cliente.cidadeUf = `${end.localidade}/${end.uf}`;
+      if (end.logradouro && !cliente.endereco) cliente.endereco = `${end.logradouro}${end.bairro ? ' · ' + end.bairro : ''}`;
+    }
+    if (!cliente.freteServ || !ops.some(o => o.id === cliente.freteServ)) cliente.freteServ = ops[0].id;
+    salvarCliente();
+    manterRolagem(renderCarrinho);
+  }
   if (MESA) cliente.tipo = 'mesa';
   const salvarCarrinho = () => gravarLocal(CH + ':carrinho', carrinho);
   const salvarUltimo = itens => { ultimoPedido = itens; gravarLocal(CH + ':ultimo', itens); };
@@ -133,8 +178,9 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
   }
   function renderInfos() {
     const l = D().loja, out = [];
-    if (l.entrega.ativa) out.push(`${ic('entrega')}Entrega ${esc(l.entrega.tempo)}`);
-    if (l.retirada) out.push(`${ic('loja')}${L.tipo === 'loja' ? 'Retirada na loja' : 'Retirada no balcão'}`);
+    if (temLocal()) out.push(`${ic('entrega')}Entrega ${esc(l.entrega.tempo)}`);
+    if (temCorreios()) out.push(`${ic('entrega')}Correios (PAC e SEDEX para todo o Brasil)`);
+    if (temRetirada()) out.push(`${ic('loja')}${modoEntrega() === 'nenhuma' ? 'Somente retirada no local' : (L.tipo === 'loja' ? 'Retirada na loja' : 'Retirada no balcão')}`);
     if (l.pedidoMinimo) out.push(`${ic('sacola')}Pedido mínimo ${R(l.pedidoMinimo)}`);
     $('[data-infos]').innerHTML = out.map(x => `<li>${x}</li>`).join('');
   }
@@ -179,8 +225,8 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
         <p style="margin-top:12px"><a href="#" data-mapa>Como chegar</a></p>
         <h3 style="margin-top:22px">Pagamento</h3><p>${l.pagamentos.map(esc).join(' · ')}</p></div>
       <div><h3>Horário</h3><table>${linhas}</table></div>
-      <div><h3>Entrega</h3><p>${l.entrega.ativa ? `Entregamos em ${l.entrega.bairros.map(b => esc(b.nome)).join(', ')}.` : 'No momento, só retirada no local.'}</p>
-        ${l.retirada ? '<p style="margin-top:8px">Retirada no balcão.</p>' : ''}</div>
+      <div><h3>Entrega</h3><p>${temLocal() ? `Entregamos em ${l.entrega.bairros.map(b => esc(b.nome)).join(', ')}.` : ''}${temLocal() && temCorreios() ? '<br>' : ''}${temCorreios() ? 'Enviamos para todo o Brasil pelos Correios (PAC e SEDEX).' : ''}${!temLocal() && !temCorreios() ? 'No momento, somente retirada no local.' : ''}</p>
+        ${temRetirada() && (temLocal() || temCorreios()) ? `<p style="margin-top:8px">${L.tipo === 'loja' ? 'Retirada na loja.' : 'Retirada no balcão.'}</p>` : ''}</div>
     </div>
     <div class="rodape-base"><span>© ${new Date().getFullYear()} ${esc(V.nome)}</span>
       <span>Catálogo digital por Studio Magalhães · <a href="admin.html">Área da loja</a></span></div>`;
@@ -494,11 +540,20 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
   }
   function renderCarrinho() {
     const l = D().loja, f = $('[data-folha="carrinho"]'), itens = itensValidos();
-    if (MESA && cliente.tipo !== 'mesa' && !cliente.tipo) cliente.tipo = 'mesa';
-    if (cliente.tipo !== 'mesa' && (!cliente.tipo || (cliente.tipo === 'entrega' && !l.entrega.ativa) || (cliente.tipo === 'retirada' && !l.retirada))) cliente.tipo = MESA ? 'mesa' : (l.entrega.ativa && !l.retirada ? 'entrega' : !l.entrega.ativa && l.retirada ? 'retirada' : (cliente.tipo || ''));
+    const uLoc = temLocal(), uCor = temCorreios(), uRet = temRetirada();
+    if (MESA && !cliente.tipo) cliente.tipo = 'mesa';
+    const valido = (cliente.tipo === 'mesa' && MESA) || (cliente.tipo === 'entrega' && uLoc) || (cliente.tipo === 'correios' && uCor) || (cliente.tipo === 'retirada' && uRet);
+    if (!valido) cliente.tipo = MESA ? 'mesa' : (uLoc ? 'entrega' : uCor ? 'correios' : uRet ? 'retirada' : '');
     if (cliente.pagamento && !l.pagamentos.includes(cliente.pagamento)) cliente.pagamento = '';
     const bairro = l.entrega.bairros.find(b => b.nome === cliente.bairro);
-    const taxa = cliente.tipo === 'entrega' && bairro ? +bairro.taxa : 0;
+    const cepLimpo = String(cliente.cep || '').replace(/\D/g, '');
+    if (cliente.tipo === 'correios' && cepLimpo.length === 8 && (!freteInfo || freteInfo.cep !== cepLimpo) && !freteCarregando) {
+      const ops = estimarFrete(cepLimpo);
+      freteInfo = { cep: cepLimpo, local: cliente.cidadeUf || `CEP ${cepLimpo.slice(0, 5)}-${cepLimpo.slice(5)}`, ops };
+      if (!cliente.freteServ || !ops.some(o => o.id === cliente.freteServ)) cliente.freteServ = ops[0].id;
+    }
+    const freteOp = cliente.tipo === 'correios' && freteInfo ? freteInfo.ops.find(o => o.id === cliente.freteServ) : null;
+    const taxa = cliente.tipo === 'entrega' && bairro ? +bairro.taxa : (freteOp ? +freteOp.valor : 0);
     const sub = subtotal(), sit = C.situacao();
     const { cupom, desconto, motivo: cupomMotivo } = calcularCupom(sub);
     const temCupons = (D().cupons || []).some(c => c.ativo !== false);
@@ -513,14 +568,24 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       ${itens.length ? `
       <div class="campo"><span class="rotulo">Como você quer receber?</span><div class="escolha2">
         ${MESA ? `<button type="button" data-tipo="mesa" aria-pressed="${cliente.tipo === 'mesa'}">Na mesa ${esc(MESA)}<small>Servir no local</small></button>` : ''}
-        ${l.entrega.ativa ? `<button type="button" data-tipo="entrega" aria-pressed="${cliente.tipo === 'entrega'}">Entrega<small>${esc(l.entrega.tempo)}</small></button>` : ''}
-        ${l.retirada ? `<button type="button" data-tipo="retirada" aria-pressed="${cliente.tipo === 'retirada'}">Retirar no local<small>${esc(l.tempoRetirada || '')}</small></button>` : ''}</div></div>
+        ${uLoc ? `<button type="button" data-tipo="entrega" aria-pressed="${cliente.tipo === 'entrega'}">Entregador<small>${esc(l.entrega.tempo)}</small></button>` : ''}
+        ${uCor ? `<button type="button" data-tipo="correios" aria-pressed="${cliente.tipo === 'correios'}">Correios<small>PAC ou SEDEX por CEP</small></button>` : ''}
+        ${uRet ? `<button type="button" data-tipo="retirada" aria-pressed="${cliente.tipo === 'retirada'}">Retirar no local<small>${esc(l.tempoRetirada || '')}</small></button>` : ''}</div></div>
       ${cliente.tipo === 'mesa' && MESA ? `<div class="alerta">${ic('loja')}<span>Pedido para servir na <b>Mesa ${esc(MESA)}</b>.</span></div>` : ''}
       ${cliente.tipo === 'entrega' ? `
       <label class="campo"><span>Bairro</span><select class="entrada" data-cli="bairro"><option value="">Escolha o bairro</option>
         ${l.entrega.bairros.map(b => `<option value="${esc(b.nome)}"${b.nome === cliente.bairro ? ' selected' : ''}>${esc(b.nome)} · ${+b.taxa ? R(b.taxa) : 'grátis'}</option>`).join('')}</select></label>
       <label class="campo"><span>Rua e número</span><input class="entrada" data-cli="endereco" value="${esc(cliente.endereco)}" autocomplete="street-address" placeholder="Ex.: Rua das Flores, 120"></label>
       <label class="campo"><span>Complemento ou ponto de referência</span><input class="entrada" data-cli="compl" value="${esc(cliente.compl)}" placeholder="Ex.: apto 302, perto da praça"></label>` : ''}
+      ${cliente.tipo === 'correios' ? `
+      <div class="campo"><span class="rotulo">CEP de destino</span>
+        <div class="cupom-linha"><input class="entrada" data-cli="cep" inputmode="numeric" maxlength="9" value="${esc(cliente.cep)}" placeholder="00000-000">
+          <button type="button" class="btn btn-borda" data-calc-frete${freteCarregando ? ' disabled' : ''}>${freteCarregando ? 'Calculando...' : 'Calcular'}</button></div>
+        ${freteErro ? `<div class="cupom-erro">${esc(freteErro)}</div>` : ''}
+        ${freteInfo ? `<div class="chips" style="margin-top:10px">${freteInfo.ops.map(o => `<button type="button" data-frete="${esc(o.id)}" aria-pressed="${cliente.freteServ === o.id}">${esc(o.nome)} · <b>${R(o.valor)}</b><small style="display:block;font-weight:500;opacity:.8">${esc(o.prazo)}</small></button>`).join('')}</div>
+          <p class="nota" style="text-align:left;margin-top:6px">Destino: <b>${esc(freteInfo.local)}</b> · Estimativa por região (na versão com Melhor Envio/Correios, o valor é exato na hora).</p>` : ''}</div>
+      <label class="campo"><span>Rua, número e bairro</span><input class="entrada" data-cli="endereco" value="${esc(cliente.endereco)}" autocomplete="street-address" placeholder="Ex.: Rua das Flores, 120 · Centro"></label>
+      <label class="campo"><span>Complemento (opcional)</span><input class="entrada" data-cli="compl" value="${esc(cliente.compl)}" placeholder="Ex.: apto 302, bloco B"></label>` : ''}
       ${cliente.tipo === 'retirada' ? `<div class="alerta">${ic('pin')}<span>Retirada em ${esc(l.endereco)}.</span></div>` : ''}
       <label class="campo"><span>Seu nome</span><input class="entrada" data-cli="nome" value="${esc(cliente.nome)}" autocomplete="name" placeholder="Como podemos te chamar?"></label>
       <label class="campo"><span>Seu WhatsApp (fica salvo para os próximos pedidos)</span><input class="entrada" data-cli="whats" type="tel" inputmode="tel" autocomplete="tel" value="${esc(cliente.whats)}" placeholder="(21) 99999-9999"></label>
@@ -535,6 +600,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       <div class="resumo"><div><span>Subtotal</span><span>${R(sub)}</span></div>
         ${desconto > 0 ? `<div class="desc-linha"><span>Cupom ${esc(cupomCod)}</span><span>- ${R(desconto)}</span></div>` : ''}
         ${cliente.tipo === 'entrega' ? `<div><span>Entrega${bairro ? ' · ' + esc(bairro.nome) : ''}</span><span>${bairro ? (taxa ? R(taxa) : 'grátis') : 'escolha o bairro'}</span></div>` : ''}
+        ${cliente.tipo === 'correios' ? `<div><span>Frete Correios${freteOp ? ' · ' + esc(freteOp.id) : ''}</span><span>${freteOp ? R(freteOp.valor) : 'informe o CEP'}</span></div>` : ''}
         <div class="total"><span>Total</span><span>${R(totalFinal)}</span></div></div>
       ${abaixo ? `<div class="alerta">${ic('info')}<span>O pedido mínimo é ${R(l.pedidoMinimo)}. Faltam ${R(l.pedidoMinimo - sub)}.</span></div>` : ''}
       ${!sit.aberta ? `<div class="alerta erro">${ic('relogio')}<span>${esc(sit.texto)}${sit.detalhe ? ', ' + esc(sit.detalhe) : ''}. Você pode montar o pedido e enviar quando abrirmos.</span></div>` : ''}
@@ -559,6 +625,9 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       manterRolagem(renderCarrinho); return;
     }
     if (e.target.closest('[data-tirar-cupom]')) { cupomCod = ''; cupomDigitado = ''; cupomErro = ''; manterRolagem(renderCarrinho); return; }
+    if (e.target.closest('[data-calc-frete]')) { consultarCep(cliente.cep); return; }
+    const fr = e.target.closest('[data-frete]');
+    if (fr) { cliente.freteServ = fr.dataset.frete; salvarCliente(); manterRolagem(renderCarrinho); return; }
     const b = e.target.closest('[data-car],[data-tipo],[data-pag],[data-enviar]'); if (!b) return;
     if (b.dataset.car) {
       const it = carrinho.find(c => c.uid === b.dataset.car); if (!it) return;
@@ -572,7 +641,16 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
   });
   folhaCar.addEventListener('input', e => {
     if (e.target.matches('[data-cupom-in]')) { cupomDigitado = e.target.value.toUpperCase().replace(/\s+/g, ''); return; }
-    const k = e.target.dataset.cli; if (!k) return; cliente[k] = e.target.value; salvarCliente();
+    const k = e.target.dataset.cli; if (!k) return;
+    if (k === 'cep') {
+      const d = e.target.value.replace(/\D/g, '').slice(0, 8);
+      cliente.cep = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+      e.target.value = cliente.cep;
+      salvarCliente();
+      if (d.length === 8) consultarCep(d);
+      return;
+    }
+    cliente[k] = e.target.value; salvarCliente();
   });
   folhaCar.addEventListener('change', e => { if (e.target.dataset.cli === 'bairro') manterRolagem(renderCarrinho); });
 
@@ -580,12 +658,18 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     const l = D().loja, itens = itensValidos(), falta = [];
     if (!cliente.tipo) falta.push('como quer receber');
     if (cliente.tipo === 'entrega') { if (!cliente.bairro) falta.push('o bairro'); if (!cliente.endereco.trim()) falta.push('a rua e o número'); }
+    if (cliente.tipo === 'correios') {
+      if (String(cliente.cep || '').replace(/\D/g, '').length !== 8) falta.push('o CEP de destino');
+      if (!freteInfo || !cliente.freteServ) falta.push('o tipo de frete (PAC ou SEDEX)');
+      if (!cliente.endereco.trim()) falta.push('a rua e o número');
+    }
     if (!cliente.nome.trim()) falta.push('seu nome');
     if (String(cliente.whats || '').replace(/\D/g, '').length < 10) falta.push('seu WhatsApp com DDD');
     if (!cliente.pagamento) falta.push('a forma de pagamento');
     if (falta.length) { erroEnvio = 'Falta preencher: ' + falta.join(', ') + '.'; manterRolagem(renderCarrinho); $('[data-erro]', folhaCar)?.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     const bairro = l.entrega.bairros.find(b => b.nome === cliente.bairro);
-    const taxa = cliente.tipo === 'entrega' && bairro ? +bairro.taxa : 0;
+    const freteOp = cliente.tipo === 'correios' && freteInfo ? freteInfo.ops.find(o => o.id === cliente.freteServ) : null;
+    const taxa = cliente.tipo === 'entrega' && bairro ? +bairro.taxa : (freteOp ? +freteOp.valor : 0);
     const cent = v => Math.round(v * 100) / 100;
     const sub = cent(subtotal());
     const { desconto } = calcularCupom(sub);
@@ -593,8 +677,8 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     const linhasItens = itens.map(it => ({ nome: C.produto(it.produto).nome, qtd: it.qtd, detalhes: C.detalhes(it), total: cent(C.precoItem(it) * it.qtd), produto: it.produto }));
     const pedido = C.registrarPedido({
       itens: linhasItens, subtotal: sub, desconto, cupom: desconto > 0 ? cupomCod : '', taxa, total, tipo: cliente.tipo, mesa: cliente.tipo === 'mesa' ? MESA : '',
-      bairro: cliente.tipo === 'entrega' ? cliente.bairro : '',
-      endereco: cliente.tipo === 'entrega' ? [cliente.endereco, cliente.compl].filter(Boolean).join(' · ') : '',
+      bairro: cliente.tipo === 'entrega' ? cliente.bairro : (cliente.tipo === 'correios' ? `Correios ${freteOp?.id || ''}` : ''),
+      endereco: (cliente.tipo === 'entrega' || cliente.tipo === 'correios') ? [cliente.endereco, cliente.compl, cliente.tipo === 'correios' ? `CEP ${cliente.cep} · ${freteInfo?.local || ''}` : ''].filter(Boolean).join(' · ') : '',
       nome: cliente.nome.trim(), whats: cliente.whats.trim(), pagamento: cliente.pagamento, troco: cliente.troco, obs: cliente.obs.trim()
     });
     const m = [`*Pedido nº ${pedido.numero} · ${V.nome}*`, ''];
@@ -602,8 +686,12 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     m.push('', `Subtotal: ${R(sub)}`);
     if (desconto > 0) m.push(`Desconto (${cupomCod}): - ${R(desconto)}`);
     if (cliente.tipo === 'entrega') m.push(`Entrega (${cliente.bairro}): ${taxa ? R(taxa) : 'grátis'}`);
+    if (cliente.tipo === 'correios' && freteOp) m.push(`Frete (${freteOp.nome} · ${freteOp.prazo}): ${R(freteOp.valor)}`);
     m.push(`*Total: ${R(total)}*`, '');
-    m.push(cliente.tipo === 'mesa' && MESA ? `*Mesa:* ${MESA}` : cliente.tipo === 'entrega' ? `*Entrega:* ${pedido.endereco} · ${cliente.bairro}` : '*Retirada no local*');
+    m.push(cliente.tipo === 'mesa' && MESA ? `*Mesa:* ${MESA}`
+      : cliente.tipo === 'entrega' ? `*Entrega:* ${pedido.endereco} · ${cliente.bairro}`
+      : cliente.tipo === 'correios' ? `*Envio Correios (${freteOp?.id || ''}):* ${pedido.endereco}`
+      : '*Retirada no local*');
     m.push(`*Pagamento:* ${cliente.pagamento}${/dinheiro/i.test(cliente.pagamento) && cliente.troco ? ` (troco para R$ ${cliente.troco})` : ''}`);
     m.push(`*Nome:* ${pedido.nome}`);
     if (pedido.whats) m.push(`*WhatsApp:* ${pedido.whats}`);
@@ -667,7 +755,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
   renderTudo();
   setInterval(renderStatus, 60000);
   C.aoMudar(tipo => {
-    if (tipo === 'visual') { V = C.visual; T = C.textos; aplicarTema(); renderMarca(); renderHero(); renderRodape(); return; }
+    if (tipo === 'visual') { V = C.visual; T = C.textos; aplicarTema(); renderMarca(); renderHero(); renderStatus(); renderRodape(); if (!$('[data-folha="carrinho"]').hidden) renderCarrinho(); return; }
     if (tipo === 'dados') { renderStatus(); renderInfos(); renderCardapio(); renderRodape(); renderBarra(); if (!$('[data-folha="carrinho"]').hidden) renderCarrinho(); }
   });
 })();

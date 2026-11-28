@@ -1,6 +1,6 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
 // Guarda o site modelo inteiro no aparelho para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-96b96bf0e3';
+const VERSAO = 'sm-modelo-b213feab87';
 const ARQUIVOS = [
   "./",
   "assets/css/modelo.css",
@@ -199,6 +199,23 @@ const ARQUIVOS = [
   "catalogo/eletronicos/index.html",
   "catalogo/eletronicos/loja.js",
   "catalogo/index.html",
+  "catalogo/joalheria/admin.html",
+  "catalogo/joalheria/cenas.js",
+  "catalogo/joalheria/fotos/aliancas.jpg",
+  "catalogo/joalheria/fotos/anel-esmeralda.jpg",
+  "catalogo/joalheria/fotos/brincos.jpg",
+  "catalogo/joalheria/fotos/colar-diamante.jpg",
+  "catalogo/joalheria/fotos/colar-safira.jpg",
+  "catalogo/joalheria/fotos/gema-ametista.jpg",
+  "catalogo/joalheria/fotos/gema-esmeralda.jpg",
+  "catalogo/joalheria/fotos/gema-rubi.jpg",
+  "catalogo/joalheria/fotos/gema-safira.jpg",
+  "catalogo/joalheria/fotos/gema-turmalina.jpg",
+  "catalogo/joalheria/fotos/ourives.jpg",
+  "catalogo/joalheria/fotos/pulseira.jpg",
+  "catalogo/joalheria/fotos/solitario.jpg",
+  "catalogo/joalheria/index.html",
+  "catalogo/joalheria/loja.js",
   "catalogo/lanchonete/admin.html",
   "catalogo/lanchonete/cenas.js",
   "catalogo/lanchonete/fotos/batata.jpg",
