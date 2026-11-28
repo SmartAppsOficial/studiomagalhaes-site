@@ -15,15 +15,34 @@
   const PASTA = location.pathname.split('/').filter(Boolean).slice(-2, -1)[0] || L.id; // ex.: "lanchonete"
   const URL_PUB = 'https://studiomagalhaes.com.br/negocios/modelo/catalogo/';
 
-  /* ---------- Modo amostra recebida por link (#amostra=...) para cliente remoto ---------- */
-  if (location.hash.startsWith('#amostra=')) {
-    const am = C.decodificar(location.hash.slice(9));
-    if (am) {
-      C.aplicarAmostra(am);
+  /* ---------- Modo amostra recebida por link (#amostra=... ou ?amostra=...) para cliente remoto ---------- */
+  const rawAmostra = location.hash.startsWith('#amostra=')
+    ? location.hash.slice(9)
+    : (new URLSearchParams(location.search).get('amostra') || '');
+  if (rawAmostra || location.hash.startsWith('#amostra') || /[?&]amostra\b/.test(location.search)) {
+    const am = rawAmostra ? C.decodificar(rawAmostra) : null;
+    if (am) C.aplicarAmostra(am);
+    document.body.classList.add('modo-amostra');
+    // NUNCA monta o pincel nem Valores em link de amostra (mesmo se o link vier truncado ou no aparelho do Studio)
+    return;
+  }
+  /* Trava extra de segurança no site publicado: sem login do Studio, NUNCA mostra o pincel */
+  if (/(^|\.)studiomagalhaes\.com\.br$/.test(location.hostname)) {
+    let liberado = false;
+    try {
+      const a = JSON.parse(localStorage.getItem('sm-acesso') || 'null');
+      liberado = !!(a && a.email && Date.now() - a.quando < 60 * 24 * 60 * 60 * 1000);
+    } catch { liberado = false; }
+    if (!liberado) {
       document.body.classList.add('modo-amostra');
       return;
     }
   }
+
+  /* Se o usuário abrir um link #amostra= na mesma aba onde o painel já estava montado, recarrega para entrar no modo cliente limpo */
+  window.addEventListener('hashchange', () => {
+    if (location.hash.startsWith('#amostra')) location.reload();
+  });
 
   /* Registra o Service Worker para o app do Catálogo funcionar instalável e sem internet */
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
@@ -458,17 +477,24 @@
     return { p, mensal, criacao: p.criacao, linhas, extrasTxt, planoLinha };
   }
   function gerarLinkAmostra() {
-    const v = C.visual, t = C.textos;
-    const visualLimpo = {
-      nome: v.nome, segmento: v.segmento, sigla: v.sigla,
-      cores: v.cores, fontes: v.fontes, cena: v.cena,
-      estiloHero: v.estiloHero || 'escuro', fundoHero: v.fundoHero || 'pontos',
-      grade: v.grade || 'horizontal', cantos: v.cantos || 'arredondado',
-      topoEstilo: v.topoEstilo || 'claro',
-      entregaModo: v.entregaModo || 'entregadores', cepOrigem: v.cepOrigem || ''
-    };
-    if (v.logo && v.logo.length < 4500) visualLimpo.logo = v.logo;
-    const cod = C.codificar({ visual: visualLimpo, textos: { selo: t.selo, titulo: t.titulo, sub: t.sub, botao: t.botao } });
+    const v = C.visual, t = C.textos, lv = L.visual, lt = L.textos;
+    const vl = { nome: v.nome };
+    if (v.segmento !== lv.segmento) vl.segmento = v.segmento;
+    if (v.sigla !== lv.sigla) vl.sigla = v.sigla;
+    if (JSON.stringify(v.cores) !== JSON.stringify(lv.cores)) vl.cores = v.cores;
+    if (JSON.stringify(v.fontes) !== JSON.stringify(lv.fontes)) vl.fontes = v.fontes;
+    if (v.cena !== lv.cena) vl.cena = v.cena;
+    for (const k of ['estiloHero', 'fundoHero', 'grade', 'cantos', 'topoEstilo', 'entregaModo', 'cepOrigem']) {
+      if (v[k] && v[k] !== lv[k]) vl[k] = v[k];
+    }
+    if (v.demoFechada) vl.demoFechada = true;
+    if (v.logo && /^https?:\/\//i.test(v.logo)) vl.logo = v.logo;
+    const tx = {};
+    for (const k of ['selo', 'titulo', 'sub', 'botao']) {
+      if (t[k] && t[k] !== lt[k]) tx[k] = t[k];
+    }
+    const payload = Object.keys(tx).length ? { visual: vl, textos: tx } : { visual: vl };
+    const cod = C.codificar(payload);
     const base = /^https?:\/\/[^/]*studiomagalhaes\.com\.br/i.test(location.origin) ? `${location.origin}${location.pathname}` : `${URL_PUB}${PASTA}/`;
     return `${base}#amostra=${cod}`;
   }

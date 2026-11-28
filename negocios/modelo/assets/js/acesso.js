@@ -9,8 +9,9 @@
   'use strict';
   // "?porta" no endereço força a porta (para testar no computador)
   if (!/(^|\.)studiomagalhaes\.com\.br$/.test(location.hostname) && !/[?&]porta\b/.test(location.search)) return;
-  // Links de amostra enviados pelo Studio para clientes (#amostra=...) abrem direto a prévia da loja e a Área da loja para teste
-  if (location.hash.startsWith('#amostra=') && /\/catalogo\/[^/]+\/(index\.html|admin\.html)?$/.test(location.pathname)) return;
+  // Links de amostra enviados pelo Studio para clientes (#amostra=... ou ?amostra=...) abrem direto a prévia da loja e a Área da loja para teste
+  const temAmostra = location.hash.startsWith('#amostra=') || /[?&]amostra=/.test(location.search);
+  if (temAmostra && /\/catalogo\/[^/]+\/(index\.html|admin\.html)?$/.test(location.pathname)) return;
   const CH = 'sm-acesso', VALIDADE = 60 * 24 * 60 * 60 * 1000, VERSAO = '10.12.2';
   try { const a = JSON.parse(localStorage.getItem(CH) || 'null'); if (a && a.email && Date.now() - a.quando < VALIDADE) return; } catch { /* sem armazenamento: pede login */ }
 

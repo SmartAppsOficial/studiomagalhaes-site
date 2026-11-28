@@ -1,6 +1,6 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
 // Guarda o site modelo e os 14 ramos do catálogo no aparelho para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-b5fd97d051';
+const VERSAO = 'sm-modelo-b7d6df0028';
 const ARQUIVOS = [
   "./",
   "catalogo/",
@@ -363,24 +363,42 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const u = new URL(e.request.url);
   if (u.origin !== location.origin) return;
+  const ehCodigo = e.request.mode === 'navigate' || u.pathname.endsWith('/') || /.(html|js|css|webmanifest)$/i.test(u.pathname);
   e.respondWith((async () => {
     const c = await caches.open(VERSAO);
-    let r = await c.match(e.request, { ignoreSearch: true });
-    if (!r && u.pathname.endsWith('/')) {
-      r = await c.match(new URL('index.html', u.href).href, { ignoreSearch: true });
+    const buscarCache = async () => {
+      let r = await c.match(e.request, { ignoreSearch: true });
+      if (!r && u.pathname.endsWith('/')) {
+        r = await c.match(new URL('index.html', u.href).href, { ignoreSearch: true });
+      }
+      return r;
+    };
+    if (ehCodigo) {
+      // HTML, JS, CSS e manifest: busca sempre a versão mais recente na rede quando há internet; se estiver offline, usa o cache
+      try {
+        const rede = await fetch(e.request);
+        if (rede && rede.ok) c.put(e.request, rede.clone()).catch(() => {});
+        return rede;
+      } catch {
+        const emCache = await buscarCache();
+        if (emCache) return emCache;
+        if (e.request.mode === 'navigate') {
+          if (u.pathname.includes('/catalogo/')) {
+            return (await c.match('catalogo/index.html')) || (await c.match('./')) || Response.error();
+          }
+          return (await c.match('./')) || Response.error();
+        }
+        return Response.error();
+      }
     }
-    if (r) return r;
+    // Imagens e fontes: cache-first para abrir instantaneamente
+    const emCache = await buscarCache();
+    if (emCache) return emCache;
     try {
       const rede = await fetch(e.request);
       if (rede && rede.ok) c.put(e.request, rede.clone()).catch(() => {});
       return rede;
     } catch {
-      if (e.request.mode === 'navigate') {
-        if (u.pathname.includes('/catalogo/')) {
-          return (await c.match('catalogo/index.html')) || (await c.match('./')) || Response.error();
-        }
-        return (await c.match('./')) || Response.error();
-      }
       return Response.error();
     }
   })());

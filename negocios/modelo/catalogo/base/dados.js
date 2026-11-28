@@ -168,8 +168,15 @@ window.Catalogo = (() => {
     ouvintes.forEach(f => f('visual')); ouvintes.forEach(f => f('dados'));
     return true;
   }
-  const codificar = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  const decodificar = t => { try { let s = String(t).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch { return null; } };
+  const codificar = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '.').replace(/=+$/, '');
+  const decodificar = t => {
+    try {
+      const limpo = String(t || '').trim().split(/[\s&#]/)[0];
+      let s = limpo.replace(/-/g, '+').replace(/[_.]/g, '/');
+      while (s.length % 4) s += '=';
+      return JSON.parse(decodeURIComponent(escape(atob(s))));
+    } catch { return null; }
+  };
 
   /* ---------- Pedidos ---------- */
   const pedidos = () => ler(chave + ':pedidos', []);
