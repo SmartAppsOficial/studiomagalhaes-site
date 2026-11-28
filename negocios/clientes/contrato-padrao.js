@@ -28,7 +28,7 @@ export const CAMPOS_PADRAO = {
   loja: "", siteEndereco: "",
   valorCriacao: "490,00", valorMensal: "49,90", diaVencimento: "10", formaPagamento: "Pix",
   inicio: "", prazoEntrega: "15", atualizacoesMes: "0", valorAvulsa: "89,90",
-  produtosIniciais: "20", permanencia: "6", multaPermanencia: "50",
+  produtosIniciais: "20", permanencia: "6", multaPermanencia: "20",
   funcIncluidos: "3", entIncluidos: "3", funcExtras: "0", entExtras: "0", valorExtra: "10,00",
   entregaModo: "entregadores",
   pagamentoOnline: false, valorPagOnline: "25,00", provedorPagamento: "Mercado Pago ou InfinitePay",
