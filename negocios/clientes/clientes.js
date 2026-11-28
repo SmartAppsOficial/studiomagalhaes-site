@@ -2,6 +2,8 @@
 // Lista os fechamentos feitos pelo app de modelos (studiomagalhaes.com.br/negocios/modelo/):
 // o modelo escolhido pelo cliente e as observações. Só a conta Google do Paulo entra
 // (quem garante isso são as regras do Firestore, fora deste repositório).
+// A aba "Contratos" (contratos.js) gera os contratos a partir do contrato padrão.
+import { iniciarContratos, telaContratos, pararContratos } from "./contratos.js";
 const FIREBASE_VERSAO = "10.12.2";
 const cfg = window.SM_FIREBASE;
 const app = document.getElementById("app");
@@ -16,7 +18,12 @@ const ICONES = {
   link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
   whats: '<path d="M3.5 20.5l1.3-4A8.5 8.5 0 1 1 8 19.6z"/>',
   lixo: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
-  atualizar: '<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.6 4.5L20 16M20 20v-4h-4"/>'
+  atualizar: '<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.6 4.5L20 16M20 20v-4h-4"/>',
+  mais: '<path d="M12 5v14M5 12h14"/>',
+  editar: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  salvar: '<path d="M5 3.5h11l3.5 3.5v13.5h-15z"/><path d="M8 3.5v5h7v-5M8 20.5v-6h8v6"/>',
+  contrato: '<path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4M10 12h5M10 15.5h5"/>',
+  clientes: '<path d="M5 12.5l4.5 4.5L19 7.5"/>'
 };
 const ic = (n) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONES[n] || ""}</svg>`;
 const STATUS = { fechado: "Fechado", producao: "Em produção", "no-ar": "No ar", cancelado: "Cancelado" };
@@ -54,17 +61,23 @@ function telaEntrar(erro = "") {
   });
 }
 
+let tela = location.hash === "#contratos" ? "contratos" : "clientes";
 function telaLista(usuario) {
   app.innerHTML = `<header class="topo"><div class="topo-in"><span class="marca">SM</span><div><b>Clientes fechados</b><small>${esc(usuario.email)}</small></div>
       <div class="acoes"><a class="btn btn-ic" href="../painel/" title="Painel de propostas" aria-label="Painel de propostas">${ic("link")}</a>
-      <button type="button" class="btn btn-ic" data-sair title="Sair" aria-label="Sair">${ic("sair")}</button></div></div></header>
-    <main class="caixa">
+      <button type="button" class="btn btn-ic" data-sair title="Sair" aria-label="Sair">${ic("sair")}</button></div></div>
+      <nav class="caixa abas-area" role="tablist">
+        <button type="button" role="tab" data-tela="clientes" aria-selected="${tela === "clientes"}">${ic("clientes")}Clientes</button>
+        <button type="button" role="tab" data-tela="contratos" aria-selected="${tela === "contratos"}">${ic("contrato")}Contratos</button></nav></header>
+    <main class="caixa" data-conteudo></main>`;
+  $("[data-sair]").addEventListener("click", () => fb.au.signOut(fb.a));
+  $(".abas-area").addEventListener("click", (e) => { const b = e.target.closest("[data-tela]"); if (!b) return; tela = b.dataset.tela; history.replaceState(null, "", tela === "contratos" ? "#contratos" : location.pathname); telaLista(usuario); });
+  if (tela === "contratos") { telaContratos($("[data-conteudo]")); return; }
+  $("[data-conteudo]").innerHTML = `
       <div class="ferr"><label class="busca">${ic("busca")}<input type="search" data-busca placeholder="Buscar loja, responsável ou observação" value="${esc(busca)}"></label>
         <div class="filtros" data-filtros>${[["todos", "Todos"], ...Object.entries(STATUS)].map(([v, n]) => `<button type="button" data-v="${v}" aria-pressed="${filtro === v}">${n}</button>`).join("")}</div></div>
       <p class="resumo" data-resumo></p>
-      <div class="grade" data-grade></div>
-    </main>`;
-  $("[data-sair]").addEventListener("click", () => fb.au.signOut(fb.a));
+      <div class="grade" data-grade></div>`;
   $("[data-busca]").addEventListener("input", (e) => { busca = e.target.value; renderGrade(); });
   $("[data-filtros]").addEventListener("click", (e) => { const b = e.target.closest("[data-v]"); if (!b) return; filtro = b.dataset.v; [...e.currentTarget.children].forEach((x) => x.setAttribute("aria-pressed", String(x === b))); renderGrade(); });
   $("[data-grade]").addEventListener("click", (e) => { const c = e.target.closest("[data-id]"); if (c) abrirDetalhe(c.dataset.id); });
@@ -138,9 +151,10 @@ function abrirDetalhe(id) {
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
   try { fb = await carregarFirebase(); }
   catch { app.innerHTML = `<div class="entrar"><div class="entrar-cartao"><span class="marca">SM</span><h1>Sem conexão</h1><p>Abra com internet pelo menos uma vez para entrar.</p><button class="btn btn-p btn-cheio" onclick="location.reload()">${ic("atualizar")}Tentar de novo</button></div></div>`; return; }
+  iniciarContratos({ fb, toast, ic, lista: () => lista });
   fb.au.onAuthStateChanged(fb.a, (u) => {
     if (pararOuvir) { pararOuvir(); pararOuvir = null; }
-    if (!u) { lista = []; telaEntrar(); return; }
+    if (!u) { lista = []; pararContratos(); telaEntrar(); return; }
     telaLista(u);
     pararOuvir = fb.fs.onSnapshot(fb.fs.query(fb.fs.collection(fb.db, "fechamentos"), fb.fs.orderBy("criadoEm", "desc"), fb.fs.limit(500)),
       (s) => { lista = s.docs.map((d) => ({ id: d.id, ...d.data() })); renderGrade(); },
