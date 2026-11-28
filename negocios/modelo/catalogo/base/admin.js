@@ -7,6 +7,11 @@
   const C = window.Catalogo, L = C.LOJA, I = window.ICONES;
   const HASH_AMOSTRA = C.linkParamAmostra || '';
   const V = C.visual;
+  const MODO_ENT = () => C.visual.entregaModo || 'entregadores';
+  const usaLocal = () => MODO_ENT() === 'entregadores' || MODO_ENT() === 'ambos';
+  const usaCorreios = () => MODO_ENT() === 'correios' || MODO_ENT() === 'ambos';
+  const usaRetirada = () => MODO_ENT() !== 'correios';
+  const ehLoja = L.tipo === 'loja';
   const siglaHTML = () => V.logo ? `<img src="${esc(V.logo)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : esc(V.sigla);
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -56,8 +61,8 @@
     ['esgotado', 'Marcar produto esgotado ou disponível', 'O botão rápido da lista de produtos.'],
     ['produtos', 'Editar produtos', 'Nome, descrição, preço, foto, destaque e ordem.'],
     ['criar', 'Criar e excluir produtos', ''],
-    ['cardapio', 'Categorias e opções', 'Tamanhos, adicionais, bordas e categorias.'],
-    ['funcionamento', 'Funcionamento da loja', 'Abrir e fechar a loja, horário, entrega e pagamento.']
+    ['cardapio', 'Categorias e opções', ehLoja ? 'Tamanhos, cores, opções e categorias.' : 'Tamanhos, adicionais, bordas e categorias.'],
+    ['funcionamento', 'Funcionamento da loja', 'Abrir e fechar a loja, horário, envio/entrega e pagamento.']
   ];
   const LIMITE_EQUIPE = +L.limiteEquipe || 3;
   const LIMITE_ENTREGADORES = +L.limiteEntregadores || 3;
@@ -172,33 +177,42 @@
       <div class="filtros" data-filtro>${[['todos', 'Todos'], ...Object.entries(STATUS)].map(([v, n]) => `<button type="button" data-v="${v}" aria-pressed="${filtroStatus === v}">${n}${v === 'novo' ? ` (${todos.filter(p => p.status === 'novo').length})` : ''}</button>`).join('')}</div>
     </div>
     <div class="pedidos">${lista.length ? lista.map(p => `<article class="pedido" data-status="${esc(p.status)}">
-      <div class="pedido-cab"><div><b>Pedido nº ${p.numero}</b> · <small>${quando(p.quando)}</small><br><small>${esc(p.nome)}${p.whats ? ` · ${esc(p.whats)}` : ''} · ${p.tipo === 'mesa' ? `Mesa ${esc(p.mesa || '')}` : p.tipo === 'entrega' ? `Entrega · ${esc(p.bairro)}` : 'Retirada no local'}</small></div>
+      <div class="pedido-cab"><div><b>Pedido nº ${p.numero}</b> · <small>${quando(p.quando)}</small><br><small>${esc(p.nome)}${p.whats ? ` · ${esc(p.whats)}` : ''} · ${p.tipo === 'mesa' ? `Mesa ${esc(p.mesa || '')}` : p.tipo === 'correios' ? `Envio ${esc(p.bairro || 'Correios')}` : p.tipo === 'entrega' ? `Entrega · ${esc(p.bairro)}` : 'Retirada no local'}</small></div>
         <div style="text-align:right"><div class="pedido-acoes"><select class="status-sel" data-status-ped="${p.numero}" aria-label="Situação do pedido ${p.numero}"${pode('situacao') ? '' : ' disabled title="Peça ao dono para liberar"'}>${Object.entries(STATUS).map(([v, n]) => `<option value="${v}"${p.status === v ? ' selected' : ''}>${n}</option>`).join('')}</select>
           <button type="button" class="btn btn-peq" data-imprimir-ped="${p.numero}" title="Imprimir comanda térmica 58mm ou 80mm">${ic('imprimir')}Imprimir</button>
           ${pode('situacao') && p.status !== 'cancelado' ? `<button type="button" class="btn btn-peq btn-perigo" data-cancelar-ped="${p.numero}">${ic('x')}Cancelar</button>` : ''}
           ${p.status === 'cancelado' && p.whats ? `<button type="button" class="btn btn-peq" data-avisar-cancel="${p.numero}">${ic('whats')}Avisar cliente</button>` : ''}</div>
           ${p.por ? `<small>${esc(STATUS[p.status])} por ${esc(p.por)}${p.motivoCancelamento ? ` · ${esc(p.motivoCancelamento)}` : ''}</small>` : (p.motivoCancelamento ? `<small>Motivo: ${esc(p.motivoCancelamento)}</small>` : '')}</div></div>
       <ul>${p.itens.map(i => `<li>${i.qtd}x ${esc(i.nome)} · ${R(i.total)}${i.detalhes.length ? `<small>${i.detalhes.map(esc).join(' · ')}</small>` : ''}</li>`).join('')}</ul>
-      <div class="pedido-pe"><span>Total do pedido: <b>${R(p.total)}</b>${p.desconto ? ` (cupom ${esc(p.cupom || '')} -${R(p.desconto)})` : ''}${p.taxa ? ` (entrega ${R(p.taxa)})` : ''}</span><span>${esc(p.pagamento)}${p.troco ? ` · troco para R$ ${esc(p.troco)}` : ''}</span>
+      <div class="pedido-pe"><span>Total do pedido: <b>${R(p.total)}</b>${p.desconto ? ` (cupom ${esc(p.cupom || '')} -${R(p.desconto)})` : ''}${p.taxa ? ` (${p.tipo === 'correios' ? 'frete' : 'entrega'} ${R(p.taxa)})` : ''}</span><span>${esc(p.pagamento)}${p.troco ? ` · troco para R$ ${esc(p.troco)}` : ''}</span>
         ${p.endereco ? `<span>${esc(p.endereco)}</span>` : ''}${p.obs ? `<span>Obs.: ${esc(p.obs)}</span>` : ''}</div>
-      ${p.tipo === 'entrega' && p.status !== 'cancelado' && entregadores().filter(e => e.ativo !== false).length ? `<div class="pedido-entreg"><span>${ic('entrega')}Entregador:</span>
+      ${usaLocal() && p.tipo === 'entrega' && p.status !== 'cancelado' && entregadores().filter(e => e.ativo !== false).length ? `<div class="pedido-entreg"><span>${ic('entrega')}Entregador:</span>
         <select data-entreg-ped="${p.numero}" aria-label="Escolher entregador do pedido ${p.numero}"><option value="">Escolher entregador</option>
           ${entregadores().filter(e => e.ativo !== false).map(en => `<option value="${esc(en.id)}"${p.entregador === en.id ? ' selected' : ''}>${esc(en.nome)}</option>`).join('')}</select>
-        ${p.entregador ? `<button type="button" class="btn btn-peq" data-rota-ped="${p.numero}">${ic('whats')}Enviar rota</button>` : ''}</div>` : ''}</article>`).join('')
+        ${p.entregador ? `<button type="button" class="btn btn-peq" data-rota-ped="${p.numero}">${ic('whats')}Enviar rota</button>` : ''}</div>` : ''}
+      ${p.tipo === 'correios' && p.status !== 'cancelado' ? `<div class="pedido-entreg"><span>${ic('entrega')}Rastreio Correios:</span>
+        <input class="entrada" style="max-width:190px;padding:6px 9px;font-size:.86rem" data-rastreio-ped="${p.numero}" value="${esc(p.rastreio || '')}" maxlength="24" placeholder="Ex.: BR123456789BR" aria-label="Código de rastreio">
+        <button type="button" class="btn btn-peq" data-enviar-rastreio="${p.numero}">${ic('whats')}Enviar rastreio</button></div>` : ''}</article>`).join('')
       : `<p class="vazio">Nenhum pedido ${periodo === 'hoje' ? 'hoje' : 'neste período'}${filtroStatus !== 'todos' ? ' com essa situação' : ''}.</p>`}</div>
     ${L.demo && todos.length && quem().dono ? `<p style="margin-top:20px"><button type="button" class="btn btn-peq btn-perigo" data-apagar-pedidos>${ic('lixo')}Apagar todos os pedidos (demonstração)</button></p>` : ''}`;
   }
-  const MOTIVOS_CANCEL = ['Produto esgotado', 'Fora da área de entrega', 'Loja fechando', 'A pedido do cliente'];
+  const motivosCancel = () => {
+    const m = MODO_ENT();
+    if (m === 'correios') return ['Produto esgotado', 'CEP / frete indisponível', 'Prazo de envio indisponível', 'A pedido do cliente'];
+    if (m === 'nenhuma') return ['Produto esgotado', 'Loja fechando', 'Horário de retirada indisponível', 'A pedido do cliente'];
+    return ['Produto esgotado', 'Fora da área de entrega', 'Loja fechando', 'A pedido do cliente'];
+  };
   const whatsLimpo = s => { const d = String(s || '').replace(/\D/g, ''); return d.length >= 10 ? (d.length <= 11 ? '55' + d : d) : ''; };
   const msgCancelamento = (p, motivo) => `Olá, ${p.nome}! Aqui é da ${V.nome}. Infelizmente precisamos cancelar o seu pedido nº ${p.numero}${motivo ? ` (motivo: ${motivo})` : ''}. Qualquer dúvida, estamos por aqui!`;
   function abrirCancelamento(numero) {
     const lista = C.pedidos(), p = lista.find(x => x.numero === +numero);
     if (!p) return;
-    let motivo = p.motivoCancelamento || MOTIVOS_CANCEL[0];
+    const MOTS = motivosCancel();
+    let motivo = p.motivoCancelamento || MOTS[0];
     const numCli = whatsLimpo(p.whats);
     const j = janela(`Cancelar pedido nº ${p.numero}`, `
       <p style="margin:0 0 12px;color:var(--suave)">Escolha o motivo do cancelamento. <b>Lembre de avisar ${esc(p.nome)}</b> para o cliente não ficar esperando.</p>
-      <div class="motivos-chips" data-motivos>${MOTIVOS_CANCEL.map(m => `<button type="button" data-motivo="${esc(m)}" aria-pressed="${m === motivo}">${esc(m)}</button>`).join('')}</div>
+      <div class="motivos-chips" data-motivos>${MOTS.map(m => `<button type="button" data-motivo="${esc(m)}" aria-pressed="${m === motivo}">${esc(m)}</button>`).join('')}</div>
       <label class="campo"><span>Motivo (pode editar ou escrever outro)</span><input class="entrada" data-motivo-txt value="${esc(motivo)}" maxlength="120"></label>
       <div class="campo"><span>Mensagem pronta para o cliente</span><div class="msg-previa" data-msg-previa>${esc(msgCancelamento(p, motivo))}</div></div>
       ${numCli ? '' : `<p style="margin:6px 0 0;font-size:.85rem;color:#8a5f00">Este pedido não tem o WhatsApp do cliente salvo. Copie a mensagem acima e envie na conversa com ele.</p>`}`,
@@ -229,7 +243,7 @@
     let larg = localStorage.getItem('sm-catalogo:largura-bobina') || '80';
     const d = new Date(p.quando);
     const dataH = `${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-    const destino = p.tipo === 'mesa' ? `MESA ${p.mesa || ''}` : p.tipo === 'entrega' ? `ENTREGA · ${p.bairro || ''}` : 'RETIRADA NO LOCAL';
+    const destino = p.tipo === 'mesa' ? `MESA ${p.mesa || ''}` : p.tipo === 'correios' ? `ENVIO ${String(p.bairro || 'CORREIOS').toUpperCase()}` : p.tipo === 'entrega' ? `ENTREGA · ${p.bairro || ''}` : 'RETIRADA NO LOCAL';
     const w = window.open('', '_blank', 'width=420,height=680');
     if (!w) { salvo('Libere pop-ups para imprimir o pedido', 'info'); return; }
     const itensHtml = p.itens.map(i => `<div class="it"><b>${i.qtd}x ${esc(i.nome)}</b><span>${R(i.total)}</span>${i.detalhes.length ? `<div class="det">${i.detalhes.map(x => `• ${esc(x)}`).join('<br>')}</div>` : ''}</div>`).join('');
@@ -265,10 +279,11 @@
         <div class="hr"></div>
         <div class="ln"><span>Subtotal</span><span>${R(p.subtotal)}</span></div>
         ${p.desconto ? `<div class="ln"><span>Cupom ${esc(p.cupom || '')}</span><span>- ${R(p.desconto)}</span></div>` : ''}
-        ${p.taxa ? `<div class="ln"><span>Entrega</span><span>${R(p.taxa)}</span></div>` : ''}
+        ${p.taxa ? `<div class="ln"><span>${p.tipo === 'correios' ? 'Frete Correios' : 'Entrega'}</span><span>${R(p.taxa)}</span></div>` : ''}
         <div class="ln tot"><span>TOTAL</span><span>${R(p.total)}</span></div>
         <div class="hr"></div>
         <div><b>Pagamento:</b> ${esc(p.pagamento)}${p.troco ? ` (troco p/ R$ ${esc(p.troco)})` : ''}</div>
+        ${p.rastreio ? `<div><b>Rastreio:</b> ${esc(p.rastreio)}</div>` : ''}
         ${p.obs ? `<div><b>Obs.:</b> ${esc(p.obs)}</div>` : ''}
         ${p.motivoCancelamento ? `<div><b>Motivo cancel.:</b> ${esc(p.motivoCancelamento)}</div>` : ''}
         <div class="hr"></div>
@@ -292,19 +307,26 @@
       const d = new Date(); d.setDate(d.getDate() - Math.floor(Math.random() * 20)); d.setHours(11 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60));
       if (i < 4) { const h = new Date(); d.setTime(h.getTime() - (i + 1) * 47 * 60000); }
       const itens = Array.from({ length: 1 + Math.floor(Math.random() * 3) }, () => { const p = prods[Math.floor(Math.random() * prods.length)], q = 1 + Math.floor(Math.random() * 2); return { nome: p.nome, qtd: q, detalhes: [], total: Math.round(C.precoMinimo(p) * q * 100) / 100, produto: p.id }; });
-      const entrega = Math.random() < .7, b = bairros[Math.floor(Math.random() * bairros.length)];
-      const sub = itens.reduce((s, x) => s + x.total, 0), taxa = entrega && b ? +b.taxa : 0;
-      lista.push({ quando: d.toISOString(), itens, subtotal: sub, taxa, total: Math.round((sub + taxa) * 100) / 100, tipo: entrega ? 'entrega' : 'retirada', bairro: entrega && b ? b.nome : '',
-        endereco: entrega ? 'Rua de exemplo, ' + (10 + i * 7) : '', nome: nomes[i % nomes.length] + ' (exemplo)', whats: '(21) 99999-00' + String(10 + i).slice(-2), pagamento: pags[i % pags.length], troco: '', obs: '',
+      const m = MODO_ENT();
+      const tipoPed = m === 'correios' ? 'correios' : m === 'nenhuma' ? 'retirada' : m === 'ambos' ? (i % 3 === 0 ? 'correios' : Math.random() < .65 ? 'entrega' : 'retirada') : (Math.random() < .7 ? 'entrega' : 'retirada');
+      const b = bairros[Math.floor(Math.random() * bairros.length)];
+      const sub = itens.reduce((s, x) => s + x.total, 0);
+      const servCor = i % 2 === 0 ? 'SEDEX' : 'PAC';
+      const taxa = tipoPed === 'correios' ? (servCor === 'SEDEX' ? 34.9 : 22.9) : (tipoPed === 'entrega' && b ? +b.taxa : 0);
+      const bairroPed = tipoPed === 'correios' ? `Correios ${servCor}` : (tipoPed === 'entrega' && b ? b.nome : '');
+      const endPed = tipoPed === 'correios' ? `Rua Exemplo, ${10 + i * 7} · CEP 01310-100 · São Paulo/SP` : (tipoPed === 'entrega' ? 'Rua de exemplo, ' + (10 + i * 7) : '');
+      lista.push({ quando: d.toISOString(), itens, subtotal: sub, taxa, total: Math.round((sub + taxa) * 100) / 100, tipo: tipoPed, bairro: bairroPed,
+        endereco: endPed, nome: nomes[i % nomes.length] + ' (exemplo)', whats: '(21) 99999-00' + String(10 + i).slice(-2), pagamento: pags[i % pags.length], troco: '', obs: '',
         status: i < 3 ? 'novo' : i < 5 ? 'confirmado' : Math.random() < .1 ? 'cancelado' : 'entregue' });
     }
     lista.sort((a, b) => new Date(a.quando) - new Date(b.quando)).forEach(p => C.registrarPedido(p));
     salvo('Pedidos de exemplo criados');
   }
   function baixarCSV() {
-    const linhas = [['Número', 'Data', 'Hora', 'Cliente', 'WhatsApp', 'Tipo', 'Bairro', 'Endereço', 'Pagamento', 'Situação', 'Motivo cancelamento', 'Itens', 'Subtotal', 'Entrega', 'Total do pedido']];
+    const temCor = usaCorreios();
+    const linhas = [['Número', 'Data', 'Hora', 'Cliente', 'WhatsApp', 'Tipo', temCor ? 'Bairro / Frete' : 'Bairro', 'Endereço', ...(temCor ? ['Rastreio'] : []), 'Pagamento', 'Situação', 'Motivo cancelamento', 'Itens', 'Subtotal', temCor ? 'Frete / Entrega' : 'Entrega', 'Total do pedido']];
     C.pedidos().filter(p => noPeriodo(p, periodo)).forEach(p => { const d = new Date(p.quando);
-      linhas.push([p.numero, d.toLocaleDateString('pt-BR'), d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), p.nome, p.whats || '', p.tipo, p.bairro, p.endereco, p.pagamento, STATUS[p.status], p.motivoCancelamento || '',
+      linhas.push([p.numero, d.toLocaleDateString('pt-BR'), d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), p.nome, p.whats || '', p.tipo, p.bairro, p.endereco, ...(temCor ? [p.rastreio || ''] : []), p.pagamento, STATUS[p.status], p.motivoCancelamento || '',
         p.itens.map(i => `${i.qtd}x ${i.nome}`).join(' + '), preco(p.subtotal), preco(p.taxa), preco(p.total)]); });
     const csv = '﻿' + linhas.map(l => l.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
     const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })), download: `pedidos-${V.nome.toLowerCase().replace(/\W+/g, '-')}.csv` });
@@ -334,7 +356,8 @@
             <button type="button" class="btn btn-peq" data-editar="${p.id}">${ic('editar')}Editar</button>` : ''}
           </div></div>`).join('')}</div>`;
     }).join('');
-    P().innerHTML = cab('Produtos', `${ds.produtos.length} produtos no cardápio.`, pode('criar') ? `<button type="button" class="btn btn-p" data-novo>${ic('mais')}Novo produto</button>` : '') +
+    const termoCat = ehLoja ? 'catálogo' : 'cardápio';
+    P().innerHTML = cab('Produtos', `${ds.produtos.length} produtos no ${termoCat}.`, pode('criar') ? `<button type="button" class="btn btn-p" data-novo>${ic('mais')}Novo produto</button>` : '') +
       `<div class="barra-ferr"><input class="entrada" style="max-width:320px" type="search" data-busca placeholder="Buscar produto" value="${esc(busca)}">
         <select class="entrada" style="max-width:220px" data-filtro-cat><option value="">Todas as categorias</option>${ds.categorias.map(c => `<option value="${c.id}"${filtroCat === c.id ? ' selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></div>
       ${html || '<p class="vazio">Nenhum produto encontrado.</p>'}`;
@@ -395,7 +418,7 @@
         if (i >= 0) l[i] = p; else l.push(p);
         salvar(novo ? 'Produto criado' : 'Produto salvo'); j.fechar(); produtos();
       }
-      if (e.target.closest('[data-excluir]') && confirm(`Excluir "${p.nome}" do cardápio?`)) { D().produtos = D().produtos.filter(x => x.id !== p.id); salvar('Produto excluído'); j.fechar(); produtos(); }
+      if (e.target.closest('[data-excluir]') && confirm(`Excluir "${p.nome}" do ${ehLoja ? 'catálogo' : 'cardápio'}?`)) { D().produtos = D().produtos.filter(x => x.id !== p.id); salvar('Produto excluído'); j.fechar(); produtos(); }
       if (e.target.closest('[data-duplicar]')) { const l = D().produtos, i = l.findIndex(x => x.id === p.id); const c = { ...C.copia(l[i]), id: C.novoId('p'), nome: l[i].nome + ' (cópia)' }; l.splice(i + 1, 0, c); salvar('Produto duplicado'); j.fechar(); produtos(); editarProduto(c.id); }
     });
     if (novo) setTimeout(() => $('[data-c="nome"]', w).focus(), 50);
@@ -406,7 +429,7 @@
      ============================================================ */
   function categorias() {
     const ds = D();
-    P().innerHTML = cab('Categorias', 'Os grupos do cardápio. A ordem aqui é a ordem no site.') +
+    P().innerHTML = cab('Categorias', `Os grupos do ${ehLoja ? 'catálogo' : 'cardápio'}. A ordem aqui é a ordem no site.`) +
       `<div class="cartao"><div class="linhas">${ds.categorias.map((c, i) => { const n = ds.produtos.filter(p => p.cat === c.id).length; return `
         <div class="linha-prod" style="grid-template-columns:auto 1fr auto"><button type="button" class="btn btn-ic icone-cat" data-icone-cat="${c.id}" aria-label="Escolher ícone de ${esc(c.nome)}" title="Escolher ícone">${c.icone ? ic(c.icone) : ic('mais')}</button>
           <input class="entrada" data-cat-nome="${c.id}" value="${esc(c.nome)}" maxlength="40" aria-label="Nome da categoria">
@@ -420,10 +443,12 @@
   /* ============================================================
      Opções (tamanhos, adicionais, bordas...)
      ============================================================ */
-  const TIPOS = { um: 'O cliente escolhe 1', varios: 'O cliente escolhe vários', meio: 'Meio a meio (segundo sabor)', texto: 'Texto do cliente (ex.: frase, tema)', data: 'Data (ex.: entrega ou retirada)' };
+  const TIPOS = ehLoja
+    ? { um: 'O cliente escolhe 1', varios: 'O cliente escolhe vários', texto: 'Texto do cliente (ex.: gravação, dedicatória)', data: 'Data (ex.: encomenda ou entrega)' }
+    : { um: 'O cliente escolhe 1', varios: 'O cliente escolhe vários', meio: 'Meio a meio (segundo sabor)', texto: 'Texto do cliente (ex.: frase, tema)', data: 'Data (ex.: entrega ou retirada)' };
   function opcoes() {
     const ds = D();
-    P().innerHTML = cab('Opções dos produtos', 'Tamanhos, adicionais, bordas, sabores… Depois, marque em cada produto quais opções ele tem.', `<button type="button" class="btn btn-p" data-novo-grupo>${ic('mais')}Nova opção</button>`) +
+    P().innerHTML = cab('Opções dos produtos', ehLoja ? 'Tamanhos, cores, modelos, gravação… Depois, marque em cada produto quais opções ele tem.' : 'Tamanhos, adicionais, bordas, sabores… Depois, marque em cada produto quais opções ele tem.', `<button type="button" class="btn btn-p" data-novo-grupo>${ic('mais')}Nova opção</button>`) +
       ds.grupos.map(g => { const usados = ds.produtos.filter(p => (p.grupos || []).includes(g.id)).length; return `<div class="cartao" data-grupo="${g.id}">
         <div class="lado2"><label class="campo"><span>Nome (aparece para o cliente)</span><input class="entrada" data-gc="nome" value="${esc(g.nome)}" maxlength="40"></label>
           <label class="campo"><span>Tipo</span><select class="entrada" data-gc="tipo">${Object.entries(TIPOS).map(([v, n]) => `<option value="${v}"${g.tipo === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label></div>
@@ -447,11 +472,22 @@
   /* ============================================================
      Funcionamento da loja
      ============================================================ */
-  const PAGS = ['Pix', 'Cartão de crédito na entrega', 'Cartão de débito na entrega', 'Dinheiro', 'Vale-refeição'];
+  const PAGS_COMIDA = ['Pix', 'Cartão de crédito na entrega', 'Cartão de débito na entrega', 'Dinheiro', 'Vale-refeição'];
+  const PAGS_LOJA = ['Pix', 'Cartão de crédito', 'Cartão de débito', 'Dinheiro'];
+  const PAGS_DIGITAL = ['Pix', 'Cartão de crédito (link de pagamento)', 'Cartão de débito', 'Boleto bancário'];
   function loja() {
     const l = D().loja;
-    const todosPags = [...new Set([...PAGS, ...l.pagamentos])];
-    P().innerHTML = cab('Funcionamento', 'Horário, entrega, pagamento e contato. Tudo salva sozinho.') + `
+    const m = MODO_ENT(), uLoc = usaLocal(), uCor = usaCorreios(), uRet = usaRetirada();
+    const basePags = m === 'correios' ? PAGS_DIGITAL : ehLoja ? PAGS_LOJA : PAGS_COMIDA;
+    const todosPags = [...new Set([...basePags, ...l.pagamentos])];
+    const titEntrega = m === 'correios' ? 'Envio pelos Correios (loja digital)'
+      : m === 'nenhuma' ? 'Retirada no local'
+      : m === 'ambos' ? 'Entrega local, Correios e retirada'
+      : 'Entrega e retirada';
+    const subCab = m === 'correios' ? 'Horário, Correios, pagamento e contato. Tudo salva sozinho.'
+      : m === 'nenhuma' ? 'Horário, retirada, pagamento e contato. Tudo salva sozinho.'
+      : 'Horário, entrega, pagamento e contato. Tudo salva sozinho.';
+    P().innerHTML = cab('Funcionamento', subCab) + `
     <div class="cartao"><h2>Loja aberta ou fechada</h2><p class="sub">Use para feriados, férias ou imprevistos. O site avisa e não deixa enviar pedido.</p>
       <label class="chave"><input type="checkbox" data-l="fechadaAgora"${l.fechadaAgora ? ' checked' : ''}><span class="trilho"></span><span><b>Fechar a loja agora</b></span></label>
       <label class="campo" style="margin-top:12px"><span>Mensagem quando estiver fechada</span><input class="entrada" data-l="avisoFechada" value="${esc(l.avisoFechada)}" maxlength="120"></label></div>
@@ -460,16 +496,20 @@
         <label class="chave"><input type="checkbox" data-dia="${i}"${h ? ' checked' : ''}><span class="trilho"></span></label>
         <input class="entrada" type="time" data-de="${i}" value="${h ? h[0] : '18:00'}"${h ? '' : ' disabled'} aria-label="${d}: abre">
         <input class="entrada" type="time" data-ate="${i}" value="${h ? h[1] : '23:00'}"${h ? '' : ' disabled'} aria-label="${d}: fecha"></div>`; }).join('')}</div></div>
-    <div class="cartao"><h2>Entrega e retirada</h2>
-      <div style="display:flex;flex-wrap:wrap;gap:18px;margin-bottom:12px">
-        <label class="chave"><input type="checkbox" data-l="entrega.ativa"${l.entrega.ativa ? ' checked' : ''}><span class="trilho"></span><span>Faço entrega</span></label>
-        <label class="chave"><input type="checkbox" data-l="retirada"${l.retirada ? ' checked' : ''}><span class="trilho"></span><span>Cliente pode retirar no local</span></label></div>
-      <div class="lado2"><label class="campo"><span>Tempo de entrega</span><input class="entrada" data-l="entrega.tempo" value="${esc(l.entrega.tempo)}" maxlength="30"></label>
-        <label class="campo"><span>Tempo para retirar</span><input class="entrada" data-l="tempoRetirada" value="${esc(l.tempoRetirada || '')}" maxlength="30"></label></div>
+    <div class="cartao"><h2>${titEntrega}</h2>
+      ${uLoc || uRet ? `<div style="display:flex;flex-wrap:wrap;gap:18px;margin-bottom:12px">
+        ${uLoc ? `<label class="chave"><input type="checkbox" data-l="entrega.ativa"${l.entrega.ativa ? ' checked' : ''}><span class="trilho"></span><span>Faço entrega local</span></label>` : ''}
+        ${uRet ? `<label class="chave"><input type="checkbox" data-l="retirada"${l.retirada ? ' checked' : ''}><span class="trilho"></span><span>Cliente pode retirar no local</span></label>` : ''}</div>` : ''}
+      ${uLoc || uRet ? `<div class="lado2">
+        ${uLoc ? `<label class="campo"><span>Tempo de entrega</span><input class="entrada" data-l="entrega.tempo" value="${esc(l.entrega.tempo)}" maxlength="30"></label>` : ''}
+        ${uRet ? `<label class="campo"><span>Tempo para retirar</span><input class="entrada" data-l="tempoRetirada" value="${esc(l.tempoRetirada || '')}" maxlength="30"></label>` : ''}</div>` : ''}
+      ${uCor ? `<div class="campo" style="max-width:280px"><span>CEP de origem para cálculo de frete (PAC / SEDEX)</span>
+        <input class="entrada" data-cep-origem inputmode="numeric" maxlength="9" value="${esc(C.visual.cepOrigem || '24220-000')}" placeholder="24220-000"></div>
+        <p class="sub" style="margin:-6px 0 12px">O cliente informa o CEP no carrinho e vê o valor estimado de PAC e SEDEX automaticamente.</p>` : ''}
       <label class="campo" style="max-width:240px"><span>Pedido mínimo (R$, 0 = sem mínimo)</span><input class="entrada" data-l="pedidoMinimo" data-numero inputmode="decimal" value="${preco(l.pedidoMinimo)}"></label>
-      <div class="campo"><span>Bairros atendidos e taxa de entrega</span>
+      ${uLoc ? `<div class="campo"><span>Bairros atendidos e taxa de entrega</span>
         ${l.entrega.bairros.map((b, i) => `<div class="bairro"><input class="entrada" data-bairro="nome" data-i="${i}" value="${esc(b.nome)}" aria-label="Bairro"><input class="entrada" data-bairro="taxa" data-i="${i}" inputmode="decimal" value="${preco(b.taxa)}" aria-label="Taxa"><button type="button" class="btn btn-ic btn-perigo" data-tirar-bairro="${i}" aria-label="Tirar bairro">${ic('x')}</button></div>`).join('')}
-        <button type="button" class="btn btn-peq" data-mais-bairro style="justify-self:start">${ic('mais')}Adicionar bairro</button></div></div>
+        <button type="button" class="btn btn-peq" data-mais-bairro style="justify-self:start">${ic('mais')}Adicionar bairro</button></div>` : ''}</div>
     <div class="cartao"><h2>Formas de pagamento</h2><p class="sub">Só informam o cliente. O pagamento é combinado com ele, fora do site.</p>
       <div class="checks">${todosPags.map(pg => `<label><input type="checkbox" data-pag="${esc(pg)}"${l.pagamentos.includes(pg) ? ' checked' : ''}>${esc(pg)}</label>`).join('')}</div>
       <form data-novo-pag style="display:flex;gap:8px;margin-top:10px"><input class="entrada" name="pag" placeholder="Outra forma de pagamento" maxlength="40" required><button class="btn">${ic('mais')}Adicionar</button></form></div>
@@ -483,12 +523,12 @@
         <label class="chave" title="Cupom ativo"><input type="checkbox" data-cp-c="ativo"${cp.ativo !== false ? ' checked' : ''}><span class="trilho"></span><span style="font-size:.78rem">Ativo</span></label>
         <button type="button" class="btn btn-ic btn-perigo" data-tirar-cp="${i}" aria-label="Excluir cupom">${ic('x')}</button></div>`).join('') || '<p class="sub" style="margin-bottom:10px">Nenhum cupom criado ainda.</p>'}
       <button type="button" class="btn btn-peq" data-mais-cp>${ic('mais')}Novo cupom</button></div>
-    <div class="cartao"><h2>Contato e endereço</h2>
+    <div class="cartao"><h2>${m === 'correios' ? 'Contato e origem (loja digital)' : 'Contato e endereço'}</h2>
       <label class="campo"><span>WhatsApp que recebe os pedidos (com DDD)</span><input class="entrada" data-l="whats" inputmode="tel" value="${esc(l.whats)}" placeholder="(21) 99999-9999"></label>
-      <div class="lado2"><label class="campo"><span>Endereço</span><input class="entrada" data-l="endereco" value="${esc(l.endereco)}"></label>
-        <label class="campo"><span>Cidade</span><input class="entrada" data-l="cidade" value="${esc(l.cidade)}"></label></div></div>
+      <div class="lado2">${m === 'correios' ? '' : `<label class="campo"><span>Endereço</span><input class="entrada" data-l="endereco" value="${esc(l.endereco)}"></label>`}
+        <label class="campo"><span>${m === 'correios' ? 'Cidade / Estado de envio' : 'Cidade'}</span><input class="entrada" data-l="cidade" value="${esc(l.cidade)}"></label></div></div>
     ${window.QRCodeSVG ? renderCartaoQR() : ''}
-    ${L.demo ? `<div class="cartao"><h2>Demonstração</h2><p class="sub">Volta o cardápio, as opções e o funcionamento ao modelo original. Os pedidos não mudam.</p>
+    ${L.demo ? `<div class="cartao"><h2>Demonstração</h2><p class="sub">Volta o ${ehLoja ? 'catálogo' : 'cardápio'}, as opções e o funcionamento ao modelo original. Os pedidos não mudam.</p>
       <button type="button" class="btn btn-perigo" data-restaurar>${ic('desfazer')}Restaurar a demonstração</button></div>` : ''}`;
   }
   let qrBase = new URL('index.html', location.href).href.replace(/index\.html$/, ''), qrMesa = '';
@@ -499,16 +539,16 @@
     return base + (base.includes('?') ? '&' : '?') + 'mesa=' + encodeURIComponent(m);
   };
   function renderCartaoQR() {
-    const u = qrUrlAtual();
+    const u = qrUrlAtual(), temMesa = !ehLoja && MODO_ENT() !== 'correios';
     let svg = '';
     try { svg = window.QRCodeSVG(u, '#1d1a17'); } catch { svg = '<small>Link longo demais</small>'; }
-    return `<div class="cartao" data-qr-box><h2>QR Code da loja (balcão, sacola e mesas)</h2>
-      <p class="sub">Imprima para colar no balcão, nas embalagens ou nas mesas. Se preencher o número da mesa, o pedido já chega identificado com ela.</p>
+    return `<div class="cartao" data-qr-box><h2>${temMesa ? 'QR Code da loja (balcão, sacola e mesas)' : 'QR Code da loja (embalagens, cartão e divulgação)'}</h2>
+      <p class="sub">${temMesa ? 'Imprima para colar no balcão, nas embalagens ou nas mesas. Se preencher o número da mesa, o pedido já chega identificado com ela.' : 'Baixe ou imprima para colocar nas embalagens, cartões de visita, sacolas e divulgação.'}</p>
       <div class="qr-caixa">
         <div class="qr-previa" data-qr-svg>${svg}</div>
         <div>
           <label class="campo"><span>Link da loja</span><input class="entrada" data-qr-base value="${esc(qrBase)}" placeholder="https://sualoja.sitesm.com.br"></label>
-          <label class="campo"><span>Número da mesa (opcional — deixe vazio para balcão/sacola)</span><input class="entrada" style="max-width:180px" data-qr-mesa value="${esc(qrMesa)}" maxlength="20" placeholder="Ex.: 04"></label>
+          ${temMesa ? `<label class="campo"><span>Número da mesa (opcional — deixe vazio para balcão/sacola)</span><input class="entrada" style="max-width:180px" data-qr-mesa value="${esc(qrMesa)}" maxlength="20" placeholder="Ex.: 04"></label>` : ''}
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
             <button type="button" class="btn btn-p btn-peq" data-qr-imprimir>${ic('imprimir')}Imprimir plaquinha</button>
             <button type="button" class="btn btn-peq" data-qr-png>${ic('baixar')}Baixar PNG</button>
@@ -551,7 +591,7 @@
         @media print{body{background:#fff;padding:0}.placa{box-shadow:none}.acoes{display:none}}
       </style></head><body>
       <div class="placa">
-        <span class="topo">${mesa ? `Mesa ${esc(mesa)}` : 'Cardápio digital'}</span>
+        <span class="topo">${mesa ? `Mesa ${esc(mesa)}` : (ehLoja ? 'Catálogo digital' : 'Cardápio digital')}</span>
         <h1>${esc(V.nome)}</h1>
         <p>${mesa ? 'Aponte a câmera do celular para fazer seu pedido direto da mesa.' : 'Aponte a câmera do celular para ver os produtos e pedir pelo WhatsApp.'}</p>
         <div class="qr">${svg}</div>
@@ -568,26 +608,29 @@
      ============================================================ */
   const MODELOS_FUNC = {
     atendente: { nome: 'Atendente', p: ['pedidos', 'situacao', 'esgotado'] },
-    cozinha: { nome: 'Cozinha', p: ['pedidos', 'esgotado'] },
+    cozinha: { nome: ehLoja ? 'Separação' : 'Cozinha', p: ['pedidos', 'esgotado'] },
     gerente: { nome: 'Gerente', p: ['pedidos', 'situacao', 'valores', 'esgotado', 'produtos', 'criar', 'cardapio', 'funcionamento'] }
   };
   let subEquipe = 'funcionarios';
   function equipeTela() {
-    const eq = equipe(), ent = entregadores();
+    const eq = equipe(), ent = entregadores(), temEnt = usaLocal();
+    if (!temEnt) subEquipe = 'funcionarios';
     const noLimFunc = eq.length >= LIMITE_EQUIPE, noLimEnt = ent.length >= LIMITE_ENTREGADORES;
-    const ehEnt = subEquipe === 'entregadores';
+    const ehEnt = temEnt && subEquipe === 'entregadores';
     const botaoTopo = ehEnt
       ? `<button type="button" class="btn btn-p" data-mais-en${noLimEnt ? ' disabled title="Limite de entregadores do plano atingido"' : ''}>${ic('mais')}Adicionar entregador</button>`
       : `<button type="button" class="btn btn-p" data-novo-func${noLimFunc ? ' disabled title="Limite de funcionários do plano atingido"' : ''}>${ic('mais')}Adicionar funcionário</button>`;
-    P().innerHTML = cab('Equipe e entregadores',
-      `Funcionários com acesso (${eq.length}/${LIMITE_EQUIPE}) e entregadores para envio de rota (${ent.length}/${LIMITE_ENTREGADORES}).`, botaoTopo) + `
-    <div class="filtros" data-sub-equipe style="margin-bottom:14px">
+    P().innerHTML = cab(temEnt ? 'Equipe e entregadores' : 'Equipe',
+      temEnt
+        ? `Funcionários com acesso (${eq.length}/${LIMITE_EQUIPE}) e entregadores para envio de rota (${ent.length}/${LIMITE_ENTREGADORES}).`
+        : `Funcionários com acesso à Área da loja (${eq.length}/${LIMITE_EQUIPE}).`, botaoTopo) + `
+    ${temEnt ? `<div class="filtros" data-sub-equipe style="margin-bottom:14px">
       <button type="button" data-sub-eq="funcionarios" aria-pressed="${!ehEnt}">${ic('grupo')} Funcionários (${eq.length}/${LIMITE_EQUIPE})</button>
       <button type="button" data-sub-eq="entregadores" aria-pressed="${ehEnt}">${ic('entrega')} Entregadores (${ent.length}/${LIMITE_ENTREGADORES})</button>
-    </div>
+    </div>` : ''}
     ${!ehEnt ? `
       ${noLimFunc ? `<div class="nota-studio" style="margin:0 0 14px">${ic('info')}<div><b>Limite do plano atingido (${LIMITE_EQUIPE} funcionários).</b> Para liberar mais acessos na sua equipe, fale com o <b>Studio Magalhães</b> (+ R$ 10,00/mês por funcionário extra).</div></div>` : ''}
-      <div class="cartao"><h2>Dono</h2><p class="sub">Você vê e muda tudo, inclusive a equipe e os entregadores. ${L.demo ? 'Na loja de verdade, a sua senha é trocada aqui.' : ''}</p></div>
+      <div class="cartao"><h2>Dono</h2><p class="sub">Você vê e muda tudo${temEnt ? ', inclusive a equipe e os entregadores' : ', inclusive a equipe'}. ${L.demo ? 'Na loja de verdade, a sua senha é trocada aqui.' : ''}</p></div>
       ${eq.map(f => `<div class="cartao" data-func="${esc(f.id)}">
         <div class="lado2"><label class="campo"><span>Nome</span><input class="entrada" data-func-campo="nome" value="${esc(f.nome)}" maxlength="40"></label>
           <label class="campo"><span>PIN para entrar (4 a 6 números)</span><input class="entrada" data-func-campo="pin" inputmode="numeric" value="${esc(f.pin)}" maxlength="6"></label></div>
@@ -598,7 +641,7 @@
         <div class="checks">${PERMISSOES.map(([id, n, dica]) => `<label><input type="checkbox" data-perm="${id}"${(f.permissoes || {})[id] ? ' checked' : ''}>${n}${dica ? `<small>${dica}</small>` : ''}</label>`).join('')}</div>
         <div style="display:flex;justify-content:flex-end;margin-top:12px"><button type="button" class="btn btn-peq btn-perigo" data-apagar-func>${ic('lixo')}Tirar da equipe</button></div></div>`).join('')}
       ${eq.length ? '' : '<p class="vazio">Nenhum funcionário ainda. Toque em “Adicionar funcionário”.</p>'}
-      <div class="nota-studio">${ic('info')}<div>Seu plano inclui o dono + <b>até ${LIMITE_EQUIPE} funcionários</b> (extras: + R$ 10,00/mês cada). Dê a cada pessoa só o que ela precisa: <b>atendente</b> vê pedidos e muda situação; <b>cozinha</b> vê pedidos e marca esgotados. Cada mudança mostra quem fez.</div></div>`
+      <div class="nota-studio">${ic('info')}<div>Seu plano inclui o dono + <b>até ${LIMITE_EQUIPE} funcionários</b> (extras: + R$ 10,00/mês cada). Dê a cada pessoa só o que ela precisa: <b>atendente</b> vê pedidos e muda situação; <b>${ehLoja ? 'separação' : 'cozinha'}</b> vê pedidos e marca esgotados. Cada mudança mostra quem fez.</div></div>`
     : `
       ${noLimEnt ? `<div class="nota-studio" style="margin:0 0 14px">${ic('info')}<div><b>Limite do plano atingido (${LIMITE_ENTREGADORES} entregadores).</b> Para cadastrar mais entregadores, fale com o <b>Studio Magalhães</b> (+ R$ 10,00/mês por entregador extra).</div></div>` : ''}
       <div class="cartao"><h2>Entregadores</h2><p class="sub">Cadastre até ${LIMITE_ENTREGADORES} entregadores incluídos no plano. Em cada pedido de entrega, escolha quem vai levar e toque em <b>Enviar rota</b> para mandar o endereço e o link do Google Maps direto no WhatsApp dele.</p>
@@ -658,16 +701,22 @@
         <li><b>Texto do cliente:</b> campo livre para tema, frase no bolo ou dedicatória no cartão.</li></ul>
         <p>O valor ao lado de cada escolha <b>soma</b> ao preço do produto (0 = grátis). Depois, em cada produto, marque quais opções ele tem.</p>`)}
       ${sec('Cupons de desconto', `<p>Em <b>Funcionamento → Cupons de desconto</b>, você cria códigos promocionais (ex.: <b>BEMVINDO10</b>) com desconto em <b>%</b> ou <b>R$</b> e pedido mínimo opcional. Você liga ou desliga cada cupom com 1 toque — o desconto é sempre concedido pela própria loja.</p>`)}
-      ${sec('QR Code para balcão, sacola e mesas', `<p>Em <b>Funcionamento → QR Code da loja</b>, o sistema gera o QR Code pronto sem precisar de internet:</p>
-        <ul><li><b>Imprimir plaquinha:</b> gera o cartaz pronto para balcão ou mesa.</li>
+      ${sec('QR Code da loja', `<p>Em <b>Funcionamento → QR Code da loja</b>, o sistema gera o QR Code pronto sem precisar de internet:</p>
+        <ul><li><b>Imprimir plaquinha:</b> gera o cartaz pronto para balcão ou vitrine.</li>
         <li><b>Baixar PNG:</b> salva a imagem em alta qualidade para colocar em embalagens, sacolas e panfletos.</li>
-        <li><b>QR Code de mesa:</b> preencha o número da mesa (ex.: <b>04</b>) para que os pedidos feitos por aquele QR Code já cheguem marcados com <b>Mesa 04</b>.</li></ul>`)}
+        ${!ehLoja && MODO_ENT() !== 'correios' ? '<li><b>QR Code de mesa:</b> preencha o número da mesa (ex.: <b>04</b>) para que os pedidos feitos por aquele QR Code já cheguem marcados com <b>Mesa 04</b>.</li>' : ''}</ul>`)}
       ${sec('Horário, feriados e loja fechada', `<p>Em Funcionamento, ajuste o horário de cada dia. Para feriados ou imprevistos, ligue "Fechar a loja agora" e escreva o aviso. O site para de aceitar pedidos até você desligar.</p>`)}
-      ${sec('Entrega, taxa por bairro e pedido mínimo', `<p>Cadastre os bairros que você atende e a taxa de cada um. O cliente escolhe o bairro e o site soma a taxa sozinho. Com pedido mínimo, o site só deixa enviar quando o valor for atingido.</p>`)}
-      ${sec('Equipe e entregadores', `<p>Na aba <b>Equipe</b> você encontra duas abas no topo: <b>Funcionários</b> e <b>Entregadores</b>.</p>
+      ${usaLocal() && usaCorreios()
+        ? sec('Entrega local, Correios e pedido mínimo', `<p>Cadastre os bairros que você atende com entrega local e configure o CEP de origem para o cálculo de PAC/SEDEX pelos Correios. Em pedidos pelos Correios, você pode preencher o código de rastreio e enviar direto no WhatsApp do cliente.</p>`)
+        : usaCorreios()
+          ? sec('Envio pelos Correios e código de rastreio', `<p>Informe o <b>CEP de origem</b> em <b>Funcionamento</b> para o cálculo automático de PAC e SEDEX no carrinho. Em cada pedido, preencha o código de rastreio dos Correios e clique em <b>Enviar rastreio</b> para avisar o cliente no WhatsApp.</p>`)
+          : usaLocal()
+            ? sec('Entrega, taxa por bairro e pedido mínimo', `<p>Cadastre os bairros que você atende e a taxa de cada um. O cliente escolhe o bairro e o site soma a taxa sozinho. Com pedido mínimo, o site só deixa enviar quando o valor for atingido.</p>`)
+            : sec('Retirada no local e pedido mínimo', `<p>Configure o tempo médio de preparo para retirada e o pedido mínimo em <b>Funcionamento</b>.</p>`)}
+      ${sec(usaLocal() ? 'Equipe e entregadores' : 'Equipe', `${usaLocal() ? '<p>Na aba <b>Equipe</b> você encontra duas abas no topo: <b>Funcionários</b> e <b>Entregadores</b>.</p>' : '<p>Na aba <b>Equipe</b> você gerencia quem pode acessar a Área da loja.</p>'}
         <ul><li><b>Dono:</b> entra com a senha dele e vê tudo, inclusive a aba Equipe.</li>
-        <li><b>Funcionários (até ${LIMITE_EQUIPE} incluídos · extras + R$ 10/mês):</b> cada um entra pelo nome e PIN, só vendo o que o dono liberou (atalhos Atendente, Cozinha e Gerente). Cada mudança de situação mostra quem fez.</li>
-        <li><b>Entregadores (até ${LIMITE_ENTREGADORES} incluídos · extras + R$ 10/mês):</b> cadastre nome e WhatsApp dos entregadores. Em cada pedido de entrega, escolha o entregador e clique em <b>Enviar rota</b> para mandar endereço, link do Google Maps e valor a cobrar no WhatsApp dele.</li></ul>`)}
+        <li><b>Funcionários (até ${LIMITE_EQUIPE} incluídos · extras + R$ 10/mês):</b> cada um entra pelo nome e PIN, só vendo o que o dono liberou (atalhos Atendente, ${ehLoja ? 'Separação' : 'Cozinha'} e Gerente). Cada mudança de situação mostra quem fez.</li>
+        ${usaLocal() ? `<li><b>Entregadores (até ${LIMITE_ENTREGADORES} incluídos · extras + R$ 10/mês):</b> cadastre nome e WhatsApp dos entregadores. Em cada pedido de entrega, escolha o entregador e clique em <b>Enviar rota</b> para mandar endereço, link do Google Maps e valor a cobrar no WhatsApp dele.</li>` : ''}</ul>`)}
       ${sec('O que é com o Studio Magalhães', `<ul><li><b>Visual:</b> cores, logo, fontes, nome e textos da apresentação são mudados pelo Studio, como atualização avulsa.</li>
         <li><b>Erros:</b> se algo não funcionar, avise o Studio. Correção de erros é sempre gratuita.</li>
         <li>O Studio fornece o site. Entregadores, pagamentos e atendimento são da loja.</li></ul>`)}
@@ -710,6 +759,16 @@
         ...(p.obs ? [`*Obs.:* ${p.obs}`] : [])
       ];
       window.open(`https://wa.me/${numEn}?text=${encodeURIComponent(linhas.join('\n'))}`, '_blank', 'noopener');
+      return;
+    }
+    if (d.enviarRastreio) {
+      const l = C.pedidos(), p = l.find(x => x.numero === +d.enviarRastreio);
+      const cod = String(p?.rastreio || '').trim().toUpperCase();
+      if (!cod) { salvo('Digite o código de rastreio antes de enviar', 'info'); return; }
+      const numCli = p && whatsLimpo(p.whats);
+      const msg = `Olá, ${p.nome}! Seu pedido nº ${p.numero} da *${V.nome}* foi postado nos Correios.\n\n*Código de rastreio:* ${cod}\n*Acompanhe em:* https://rastreamento.correios.com.br`;
+      if (numCli) window.open(`https://wa.me/${numCli}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+      else navigator.clipboard?.writeText(msg).then(() => salvo('Mensagem de rastreio copiada')).catch(() => {});
       return;
     }
     if (d.cancelarPed && pode('situacao')) { abrirCancelamento(+d.cancelarPed); return; }
@@ -777,6 +836,17 @@
     if (g && d.it) { const it = g.itens[+d.i]; it[d.it] = d.it === 'preco' ? num(t.value) : t.value; salvarDepois(); return; }
     if (t.matches('[data-qr-base]')) { qrBase = t.value; atualizarQR(); return; }
     if (t.matches('[data-qr-mesa]')) { qrMesa = t.value; atualizarQR(); return; }
+    if (t.matches('[data-cep-origem]')) {
+      const dg = t.value.replace(/\D/g, '').slice(0, 8);
+      t.value = dg.length > 5 ? `${dg.slice(0, 5)}-${dg.slice(5)}` : dg;
+      C.definirVisual({ cepOrigem: t.value });
+      return;
+    }
+    if (d.rastreioPed) {
+      const l = C.pedidos(), p = l.find(x => x.numero === +d.rastreioPed);
+      if (p) { p.rastreio = t.value.toUpperCase().replace(/\s+/g, ''); C.salvarPedidos(l); }
+      return;
+    }
     if (d.cpC && t.type !== 'checkbox' && t.tagName !== 'SELECT') {
       const cp = cupons()[+t.closest('[data-cp]').dataset.cp];
       if (d.cpC === 'codigo') { t.value = t.value.toUpperCase().replace(/\s+/g, ''); cp.codigo = t.value; }
@@ -827,7 +897,16 @@
     if (d.dia) { const i = d.dia; ds.loja.horario[i] = t.checked ? [[$(`[data-de="${i}"]`).value, $(`[data-ate="${i}"]`).value]] : []; salvar(); loja(); return; }
     if (d.pag) { const l = ds.loja.pagamentos; if (t.checked) { if (!l.includes(d.pag)) l.push(d.pag); } else ds.loja.pagamentos = l.filter(x => x !== d.pag); salvar(); }
   });
-  C.aoMudar(tipo => { if (entrou() && $('[data-principal]') && tipo === 'pedidos' && aba === 'pedidos') render(); else if (entrou() && $('[data-novos]')) { const n = C.pedidos().filter(p => p.status === 'novo').length, b = $('[data-novos]'); b.hidden = !n; b.textContent = n; } });
+  C.aoMudar(tipo => {
+    if (tipo === 'visual') {
+      const nv = C.visual;
+      raiz.setProperty('--p', nv.cores.p); raiz.setProperty('--escuro', nv.cores.escuro);
+      if (entrou() && $('[data-principal]')) render();
+      return;
+    }
+    if (entrou() && $('[data-principal]') && tipo === 'pedidos' && aba === 'pedidos') render();
+    else if (entrou() && $('[data-novos]')) { const n = C.pedidos().filter(p => p.status === 'novo').length, b = $('[data-novos]'); b.hidden = !n; b.textContent = n; }
+  });
 
   if (entrou()) montar(); else telaEntrar();
 })();

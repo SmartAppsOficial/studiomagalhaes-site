@@ -58,6 +58,12 @@
   const temLocal = () => { const m = modoEntrega(); return (m === 'entregadores' || m === 'ambos') && !!D().loja.entrega.ativa; };
   const temCorreios = () => { const m = modoEntrega(); return m === 'correios' || m === 'ambos'; };
   const temRetirada = () => { const m = modoEntrega(); return m === 'correios' ? false : (m === 'nenhuma' ? true : !!D().loja.retirada); };
+  function pagamentosAtivos(tipo = cliente.tipo) {
+    const lista = D().loja.pagamentos || [];
+    if (tipo !== 'correios') return lista;
+    const online = lista.filter(pg => !/na entrega|dinheiro|vale-refei/i.test(pg));
+    return online.length >= 2 ? online : [...new Set([...online, 'Pix', 'Cartão de crédito (link)', 'Boleto bancário'])];
+  }
   function estimarFrete(cepLimpo, uf) {
     const orig = String(V.cepOrigem || '24220000').replace(/\D/g, '').padEnd(8, '0');
     const regO = orig[0], regD = cepLimpo[0];
@@ -223,15 +229,18 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     requestAnimationFrame(() => typeof setas === 'function' && setas());
   }
   function renderRodape() {
-    const l = D().loja;
+    const l = D().loja, soCorreios = modoEntrega() === 'correios';
     const linhas = C.DIAS.map((d, i) => { const h = l.horario[i] || []; return `<tr><td>${d}</td><td>${h.length ? h.map(([a, b]) => `${C.hora(a)} às ${C.hora(b)}`).join(' · ') : 'Fechado'}</td></tr>`; }).join('');
+    const titEntrega = soCorreios ? 'Envio' : (!temLocal() && !temCorreios() ? 'Retirada' : 'Entrega');
+    const pagsRodape = soCorreios ? pagamentosAtivos('correios') : l.pagamentos;
     $('[data-rodape]').innerHTML = `<div class="rodape-grade">
       <div><a class="logo" href="#inicio"><span class="logo-sigla">${marca()}</span><span><span class="logo-nome">${esc(V.nome)}</span></span></a>
-        <p style="margin-top:14px">${esc(l.endereco)}<br>${esc(l.cidade)}</p>
-        <p style="margin-top:12px"><a href="#" data-mapa>Como chegar</a></p>
-        <h3 style="margin-top:22px">Pagamento</h3><p>${l.pagamentos.map(esc).join(' · ')}</p></div>
+        ${soCorreios
+          ? `<p style="margin-top:14px">Loja online · envio a partir de ${esc(l.cidade)}</p>`
+          : `<p style="margin-top:14px">${esc(l.endereco)}<br>${esc(l.cidade)}</p><p style="margin-top:12px"><a href="#" data-mapa>Como chegar</a></p>`}
+        <h3 style="margin-top:22px">Pagamento</h3><p>${pagsRodape.map(esc).join(' · ')}</p></div>
       <div><h3>Horário</h3><table>${linhas}</table></div>
-      <div><h3>Entrega</h3><p>${temLocal() ? `Entregamos em ${l.entrega.bairros.map(b => esc(b.nome)).join(', ')}.` : ''}${temLocal() && temCorreios() ? '<br>' : ''}${temCorreios() ? 'Enviamos para todo o Brasil pelos Correios (PAC e SEDEX).' : ''}${!temLocal() && !temCorreios() ? 'No momento, somente retirada no local.' : ''}</p>
+      <div><h3>${titEntrega}</h3><p>${temLocal() ? `Entregamos em ${l.entrega.bairros.map(b => esc(b.nome)).join(', ')}.` : ''}${temLocal() && temCorreios() ? '<br>' : ''}${temCorreios() ? 'Enviamos para todo o Brasil pelos Correios (PAC e SEDEX).' : ''}${!temLocal() && !temCorreios() ? 'No momento, somente retirada no local.' : ''}</p>
         ${temRetirada() && (temLocal() || temCorreios()) ? `<p style="margin-top:8px">${L.tipo === 'loja' ? 'Retirada na loja.' : 'Retirada no balcão.'}</p>` : ''}</div>
     </div>
     <div class="rodape-base"><span>© ${new Date().getFullYear()} ${esc(V.nome)}</span>
@@ -572,7 +581,12 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     if (MESA && !cliente.tipo) cliente.tipo = 'mesa';
     const valido = (cliente.tipo === 'mesa' && MESA) || (cliente.tipo === 'entrega' && uLoc) || (cliente.tipo === 'correios' && uCor) || (cliente.tipo === 'retirada' && uRet);
     if (!valido) cliente.tipo = MESA ? 'mesa' : (uLoc ? 'entrega' : uCor ? 'correios' : uRet ? 'retirada' : '');
-    if (cliente.pagamento && !l.pagamentos.includes(cliente.pagamento)) cliente.pagamento = '';
+    const pagsDisp = pagamentosAtivos(cliente.tipo);
+    if (cliente.pagamento && !pagsDisp.includes(cliente.pagamento)) cliente.pagamento = '';
+    const obsPlaceholder = cliente.tipo === 'correios' ? 'Ex.: embrulhar para presente, recado no cartão'
+      : cliente.tipo === 'retirada' ? 'Ex.: passo para retirar às 17h'
+      : cliente.tipo === 'mesa' ? 'Ex.: sem cebola, trazer talheres extras'
+      : 'Ex.: interfone quebrado, ligar quando chegar';
     const bairro = l.entrega.bairros.find(b => b.nome === cliente.bairro);
     const cepLimpo = String(cliente.cep || '').replace(/\D/g, '');
     if (cliente.tipo === 'correios' && cepLimpo.length === 8 && (!freteInfo || freteInfo.cep !== cepLimpo) && !freteCarregando) {
@@ -618,13 +632,13 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       <label class="campo"><span>Seu nome</span><input class="entrada" data-cli="nome" value="${esc(cliente.nome)}" autocomplete="name" placeholder="Como podemos te chamar?"></label>
       <label class="campo"><span>Seu WhatsApp (fica salvo para os próximos pedidos)</span><input class="entrada" data-cli="whats" type="tel" inputmode="tel" autocomplete="tel" value="${esc(cliente.whats)}" placeholder="(21) 99999-9999"></label>
       <div class="campo"><span class="rotulo">Forma de pagamento</span><div class="chips">
-        ${l.pagamentos.map(pg => `<button type="button" data-pag="${esc(pg)}" aria-pressed="${cliente.pagamento === pg}">${esc(pg)}</button>`).join('')}</div></div>
+        ${pagsDisp.map(pg => `<button type="button" data-pag="${esc(pg)}" aria-pressed="${cliente.pagamento === pg}">${esc(pg)}</button>`).join('')}</div></div>
       ${/dinheiro/i.test(cliente.pagamento) ? `<label class="campo"><span>Troco para quanto? (opcional)</span><input class="entrada" data-cli="troco" inputmode="decimal" value="${esc(cliente.troco)}" placeholder="Ex.: 100"></label>` : ''}
       ${temCupons || cupomCod ? `<div class="campo"><span class="rotulo">Cupom de desconto (opcional)</span>
         ${cupom && desconto > 0 ? `<div class="cupom-ok"><span>${ic('tag')} ${esc(cupomCod)} · - ${R(desconto)}</span><button type="button" data-tirar-cupom>Remover</button></div>`
           : `<div class="cupom-linha"><input class="entrada" data-cupom-in value="${esc(cupomDigitado)}" maxlength="24" placeholder="Ex.: BEMVINDO10"><button type="button" class="btn btn-borda" data-aplicar-cupom>Aplicar</button></div>`}
         ${cupomErro || cupomMotivo ? `<div class="cupom-erro">${esc(cupomErro || cupomMotivo)}</div>` : ''}</div>` : ''}
-      <label class="campo"><span>Observações do pedido (opcional)</span><textarea class="entrada" data-cli="obs" maxlength="200" placeholder="Ex.: interfone quebrado, ligar quando chegar">${esc(cliente.obs)}</textarea></label>
+      <label class="campo"><span>Observações do pedido (opcional)</span><textarea class="entrada" data-cli="obs" maxlength="200" placeholder="${esc(obsPlaceholder)}">${esc(cliente.obs)}</textarea></label>
       <div class="resumo"><div><span>Subtotal</span><span>${R(sub)}</span></div>
         ${desconto > 0 ? `<div class="desc-linha"><span>Cupom ${esc(cupomCod)}</span><span>- ${R(desconto)}</span></div>` : ''}
         ${cliente.tipo === 'entrega' ? `<div><span>Entrega${bairro ? ' · ' + esc(bairro.nome) : ''}</span><span>${bairro ? (taxa ? R(taxa) : 'grátis') : 'escolha o bairro'}</span></div>` : ''}

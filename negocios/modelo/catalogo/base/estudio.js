@@ -466,7 +466,8 @@
     if (prop.pagOnline) { mensal += 25; linhas.push(['Pagamento online no site (Pix/Cartão)', '+ R$ 25,00/mês']); extrasTxt.push('Pagamento online (+R$ 25)'); }
     if (prop.dominio) { mensal += 20; linhas.push(['Domínio próprio (.com.br)', '+ R$ 20,00/mês']); extrasTxt.push('Domínio próprio (+R$ 20)'); }
     if (prop.funcExtras > 0) { const v = prop.funcExtras * 10; mensal += v; linhas.push([`+${prop.funcExtras} funcionário${prop.funcExtras > 1 ? 's' : ''} extra${prop.funcExtras > 1 ? 's' : ''}`, `+ ${R(v)}/mês`]); extrasTxt.push(`+${prop.funcExtras} func. (+${R(v)})`); }
-    if (prop.entExtras > 0) { const v = prop.entExtras * 10; mensal += v; linhas.push([`+${prop.entExtras} entregador${prop.entExtras > 1 ? 'es' : ''} extra${prop.entExtras > 1 ? 's' : ''}`, `+ ${R(v)}/mês`]); extrasTxt.push(`+${prop.entExtras} entreg. (+${R(v)})`); }
+    const usaEntLocal = (C.visual.entregaModo || 'entregadores') === 'entregadores' || C.visual.entregaModo === 'ambos';
+    if (usaEntLocal && prop.entExtras > 0) { const v = prop.entExtras * 10; mensal += v; linhas.push([`+${prop.entExtras} entregador${prop.entExtras > 1 ? 'es' : ''} extra${prop.entExtras > 1 ? 's' : ''}`, `+ ${R(v)}/mês`]); extrasTxt.push(`+${prop.entExtras} entreg. (+${R(v)})`); }
     if (prop.chatIA) { mensal += 100; linhas.push(['Chat com IA (a partir de)', '+ R$ 100,00/mês']); extrasTxt.push('Chat IA (+R$ 100)'); }
     if (prop.correios) { linhas.push(['Cálculo de frete Correios / Melhor Envio', 'Incluso (R$ 0)']); extrasTxt.push('Frete Correios (incluso)'); }
     mensal = Math.round(mensal * 100) / 100;
@@ -509,6 +510,7 @@
   }
   function montarPlanos() {
     const c = calcProposta(), l = C.dados.loja, v = C.visual;
+    const usaEntLocal = (v.entregaModo || 'entregadores') === 'entregadores' || v.entregaModo === 'ambos';
     const fila = window.Nuvem ? window.Nuvem.fila().length : 0, us = window.Nuvem && window.Nuvem.usuario;
     painelPlanos.innerHTML = `
     <div class="est-topo"><span class="est-marca">SM</span><div><b>Valores e proposta</b><small>Monte os detalhes e feche com ${esc(v.nome)}</small></div>
@@ -527,8 +529,8 @@
           <label class="est-addon${prop.dominio ? ' ativo' : ''}"><div class="est-addon-txt"><b>Domínio próprio (.com.br) · + R$ 20/mês</b><small>Sem ele, usa endereço grátis do Studio.</small></div><input class="est-addon-check" type="checkbox" data-addon="dominio"${prop.dominio ? ' checked' : ''}></label>
           <div class="est-addon${prop.funcExtras > 0 ? ' ativo' : ''}"><div class="est-addon-txt"><b>Funcionários extras · + R$ 10/mês cada</b><small>3 já incluídos no plano.</small></div>
             <div class="est-stepper"><button type="button" data-step="funcExtras:-1">−</button><span>${prop.funcExtras}</span><button type="button" data-step="funcExtras:1">+</button></div></div>
-          <div class="est-addon${prop.entExtras > 0 ? ' ativo' : ''}"><div class="est-addon-txt"><b>Entregadores extras · + R$ 10/mês cada</b><small>3 já incluídos no plano.</small></div>
-            <div class="est-stepper"><button type="button" data-step="entExtras:-1">−</button><span>${prop.entExtras}</span><button type="button" data-step="entExtras:1">+</button></div></div>
+          ${usaEntLocal ? `<div class="est-addon${prop.entExtras > 0 ? ' ativo' : ''}"><div class="est-addon-txt"><b>Entregadores extras · + R$ 10/mês cada</b><small>3 já incluídos no plano.</small></div>
+            <div class="est-stepper"><button type="button" data-step="entExtras:-1">−</button><span>${prop.entExtras}</span><button type="button" data-step="entExtras:1">+</button></div></div>` : ''}
           <label class="est-addon${prop.chatIA ? ' ativo' : ''}"><div class="est-addon-txt"><b>Chat com IA · + R$ 100/mês</b><small>Atendimento automático inteligente (a partir de R$ 100 conforme volume).</small></div><input class="est-addon-check" type="checkbox" data-addon="chatIA"${prop.chatIA ? ' checked' : ''}></label>
           <label class="est-addon${prop.correios ? ' ativo' : ''}"><div class="est-addon-txt"><b>Frete Correios / Melhor Envio · Incluso</b><small>Cálculo por CEP (PAC e SEDEX) para vendas online em todo o Brasil.</small></div><input class="est-addon-check" type="checkbox" data-addon="correios"${prop.correios ? ' checked' : ''}></label>
         </div>
@@ -653,7 +655,7 @@
     else if (d.apresentar !== undefined) apresentar(true);
     else if (d.sairApresentar !== undefined) apresentar(false);
     else if (d.cena) { mudar({ cena: d.cena }, null, true); }
-    else if (d.entregaModo) { mudar({ entregaModo: d.entregaModo }, null, true); }
+    else if (d.entregaModo) { prop.correios = (d.entregaModo === 'correios' || d.entregaModo === 'ambos'); mudar({ entregaModo: d.entregaModo }, null, true); }
     else if (d.estilo) { const [k, val] = d.estilo.split(':'); mudar({ [k]: val }, null, true); }
     else if (d.aleatorio !== undefined) { gerarAleatorio(true); }
     else if (d.toggleFlut !== undefined) { const y = $('.est-corpo', painel)?.scrollTop; flutAtivo = !flutAtivo; salvarFlut(); renderFlut(); montar(); const c = $('.est-corpo', painel); if (c) c.scrollTop = y; aviso(flutAtivo ? 'Botão Aleatório ativado na tela (aparece ao fechar o pincel)' : 'Botão Aleatório escondido da tela', 'brilho'); }
