@@ -26,7 +26,7 @@
       return {
         principal: '<model-viewer src="' + PASTA_RAMO + 'modelos/anel-solitario.glb" alt="Anel solitário de ouro com diamante em 3D"' +
           ' auto-rotate auto-rotate-delay="0" rotation-per-second="18deg" camera-controls disable-zoom disable-pan interaction-prompt="none"' +
-          ' touch-action="pan-y" orientation="0deg -35deg 0deg" camera-orbit="30deg 70deg 150%" field-of-view="28deg" environment-image="neutral" exposure="1.15"' +
+          ' touch-action="pan-y" orientation="0deg -35deg 0deg" camera-orbit="30deg 70deg 135%" max-camera-orbit="auto auto 300%" field-of-view="28deg" environment-image="neutral" exposure="1.15"' +
           ' shadow-intensity="0.9" shadow-softness="1" loading="eager" reveal="auto">' +
           '<div slot="poster">' + reserva.principal + '</div></model-viewer>',
         miniatura: reserva.principal,
