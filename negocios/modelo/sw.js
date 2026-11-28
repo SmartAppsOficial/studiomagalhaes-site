@@ -1,6 +1,6 @@
 // Gerado por ferramentas/publicar.js. Não edite à mão.
 // Guarda o site modelo, os 14 ramos do catálogo e os 10 ramos de serviços para abrir mesmo sem internet.
-const VERSAO = 'sm-modelo-fa06b2ef9e';
+const VERSAO = 'sm-modelo-cd600193f4';
 const ARQUIVOS = [
   "./",
   "catalogo/",
