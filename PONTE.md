@@ -105,6 +105,9 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 28/11/2026, Claude do Paulo (negócios: multa de permanência)
+- No contrato padrão (`negocios/clientes/contrato-padrao.js`), a multa por sair antes da permanência mínima baixou de 50% para **20% das mensalidades que faltam**, por decisão do Paulo, depois do aviso do Gemini de que 50% tende a ser visto como abusivo. Cada contrato ainda pode mudar o valor no campo do formulário. O cache do app subiu para `sm-clientes-3`.
+
 ### 28/11/2026, Claude do Paulo (negócios: gerador de contratos)
 - **Aba nova "Contratos" em `negocios/clientes/`** (área privada, só com o login Google do Paulo): gera o contrato a partir do contrato padrão (`contrato-padrao.js`). As cláusulas ligam sozinhas conforme o produto e os adicionais (Catálogo digital ou Site premium, pagamento online, domínio, equipe extra, chat com IA, Correios, teste grátis, nota fiscal), e cada uma pode ser desligada ou editada só naquele contrato. Dá para escrever cláusulas novas.
 - Começa de um cliente fechado (puxa nome, WhatsApp, plano, adicionais, pagamento e modo de entrega) ou em branco. Mostra a mensalidade total e a prévia com o que falta preencher destacado, e gera PDF pela impressão.
