@@ -358,3 +358,23 @@ textarea.entrada { min-height: 70px; resize: vertical; }
 .aviso { position: fixed; left: 50%; top: 16px; translate: -50% 0; z-index: 200; background: var(--tinta); color: var(--fundo); padding: 12px 18px; border-radius: 14px; font-weight: 700; font-size: .92rem; box-shadow: 0 14px 30px -12px rgba(0,0,0,.6); display: flex; gap: 10px; align-items: center; max-width: calc(100% - 32px); animation: desce .3s; }
 .aviso[hidden] { display: none; }
 @keyframes desce { from { transform: translateY(-14px); opacity: 0; } }
+
+/* Detalhe "Estrela e letras espaçadas" (pincel > Visual > Detalhe dos títulos): visual de joalheria e marcas finas. */
+body[data-detalhe="estrela"] .logo-nome { font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+body[data-detalhe="estrela"] .logo-seg { letter-spacing: .18em; text-transform: uppercase; font-size: .62rem; }
+body[data-detalhe="estrela"] .hero h1 { font-weight: 500; letter-spacing: .04em; line-height: 1.15; }
+body[data-detalhe="estrela"] .hero-selo { letter-spacing: .2em; text-transform: uppercase; font-size: .68rem; }
+body[data-detalhe="estrela"] .secao-cab h2 { font-weight: 500; letter-spacing: .08em; }
+body[data-detalhe="estrela"] .btn-p { letter-spacing: .08em; }
+body[data-detalhe="estrela"] .hero-selo::before, body[data-detalhe="estrela"] .secao-cab h2::after {
+  content: ''; display: inline-block; width: .8em; height: .8em; vertical-align: -.05em;
+  background: linear-gradient(135deg, var(--d), var(--p));
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+}
+body[data-detalhe="estrela"] .hero-selo::before { margin-right: .6em; }
+body[data-detalhe="estrela"] .secao-cab h2::after { margin-left: .5em; width: .55em; height: .55em; vertical-align: .1em; }
+@media (max-width: 520px) {
+  body[data-detalhe="estrela"] .logo-nome { letter-spacing: .05em; font-size: .95rem; white-space: nowrap; }
+  body[data-detalhe="estrela"] .logo-seg { display: none; }
+  body[data-detalhe="estrela"] .secao-cab h2 { letter-spacing: .02em; font-size: 1.3rem; }
+}

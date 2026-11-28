@@ -73,6 +73,7 @@ window.Catalogo = (() => {
     if (am.g) v.grade = am.g;
     if (am.ct) v.cantos = am.ct;
     if (am.tp) v.topoEstilo = am.tp;
+    if (am.dt) v.detalhe = am.dt;
     if (am.em) v.entregaModo = am.em;
     if (am.cp) v.cepOrigem = am.cp;
     if (am.po) v.pagOnline = am.po;

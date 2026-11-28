@@ -30,7 +30,8 @@ const STATUS = { fechado: "Fechado", producao: "Em produção", "no-ar": "No ar"
 const data = (t) => { const d = t && t.toDate ? t.toDate() : t ? new Date(t) : null; return d ? d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" }) : "agora"; };
 const codificar = (o) => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const configDe = (f) => { try { return typeof f.config === "string" ? JSON.parse(f.config) : f.config || null; } catch { return null; } };
-const linkModelo = (f) => `${location.origin}/negocios/modelo/catalogo/${encodeURIComponent(f.pasta || "lanchonete")}/#cfg=${codificar(configDe(f) || {})}`;
+// &fech= faz o pincel abrir em modo "Editando o cliente fechado" e salvar de volta nesta ficha.
+const linkModelo = (f) => `${location.origin}/negocios/modelo/catalogo/${encodeURIComponent(f.pasta || "lanchonete")}/#cfg=${codificar(configDe(f) || {})}&fech=${encodeURIComponent(f.id || "")}`;
 let toastT;
 function toast(t) { let e = $(".toast"); if (!e) { e = document.createElement("div"); e.className = "toast"; document.body.appendChild(e); } e.textContent = t; e.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { e.hidden = true; }, 2200); }
 
@@ -118,7 +119,8 @@ function abrirDetalhe(id) {
       <label class="campo"><span>Situação</span><select class="entrada" data-status>${Object.entries(STATUS).map(([v, n]) => `<option value="${v}"${(f.status || "fechado") === v ? " selected" : ""}>${n}</option>`).join("")}</select></label>
       <label class="campo"><span>Observações</span><textarea class="entrada" data-obs maxlength="5000">${esc(f.obs || "")}</textarea><span class="salvo" data-salvo></span></label>
       <div class="botoes">
-        ${configDe(f) ? `<a class="btn btn-p btn-cheio" href="${esc(linkModelo(f))}" target="_blank" rel="noopener">${ic("abrir")}Abrir o modelo do cliente</a>
+        ${configDe(f) ? `<a class="btn btn-p btn-cheio" href="${esc(linkModelo(f))}" target="_blank" rel="noopener">${ic("editar")}Abrir e editar no pincel</a>
+        <p class="dica-editar" style="margin:6px 0 0;font-size:.8rem;opacity:.75">Mude no pincel e toque em “Salvar alterações no cliente”. A ficha é atualizada aqui.</p>
         <div class="linha"><button type="button" class="btn" data-copiar>${ic("link")}Copiar link</button><button type="button" class="btn btn-perigo" data-apagar>${ic("lixo")}Apagar</button></div>`
         : `<button type="button" class="btn btn-perigo" data-apagar>${ic("lixo")}Apagar</button>`}
       </div>

@@ -41,6 +41,7 @@
     document.body.dataset.cantos = V.cantos || 'arredondado';
     document.body.dataset.grade = V.grade || 'horizontal';
     document.body.dataset.topo = V.topoEstilo || 'claro';
+    document.body.dataset.detalhe = V.detalhe || 'nenhum';
     document.title = `${V.nome} · ${V.segmento}`;
     const meta = $('meta[name="theme-color"]'); if (meta) meta.content = V.cores.escuro;
   }
@@ -161,7 +162,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       f.innerHTML = `Prévia exclusiva para <b>${esc(V.nome)}</b> · Studio Magalhães · <a href="admin.html${esc(HASH_AMOSTRA)}">Testar Área da loja</a>`;
       return;
     }
-    f.innerHTML = C.ajustado()
+    f.innerHTML = (C.ajustado() || L.previaCliente)
       ? `Prévia do <b>Catálogo digital</b> para ${esc(V.nome)} · produtos e preços de exemplo · <a href="admin.html">ver a área da loja</a>`
       : `Loja de demonstração do <b>Catálogo digital</b> · nome, produtos e preços são exemplos · <a href="admin.html">ver a área da loja</a> · <a href="../">outros modelos</a>`;
   }
