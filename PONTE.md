@@ -105,6 +105,10 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 28/11/2026, Claude do Paulo (negócios: editar cliente fechado no pincel)
+- Na área "Clientes fechados" (`negocios/clientes/`), o botão da ficha virou **"Abrir e editar no pincel"**: abre o modelo do cliente no app de modelos em modo "Editando o cliente fechado", e o botão **"Salvar alterações no cliente"** grava o visual e o catálogo de volta na ficha (`fechamentos`, só com o login do Paulo). Cache `sm-clientes-4`.
+- No motor do Catálogo digital (`negocios/modelo/catalogo/base/`): opção nova no pincel, **Visual → Detalhe dos títulos → "Estrela e letras espaçadas"** (usada na Jansen Joias), que também vai no link de amostra; e `previaCliente` para lojas de clientes mostrarem "Prévia para <loja>" na faixa.
+
 ### 28/11/2026, Claude do Paulo (negócios: multa de permanência)
 - No contrato padrão (`negocios/clientes/contrato-padrao.js`), a multa por sair antes da permanência mínima baixou de 50% para **20% das mensalidades que faltam**, por decisão do Paulo, depois do aviso do Gemini de que 50% tende a ser visto como abusivo. Cada contrato ainda pode mudar o valor no campo do formulário. O cache do app subiu para `sm-clientes-3`.
 

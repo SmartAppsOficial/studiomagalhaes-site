@@ -59,7 +59,13 @@ window.Nuvem = (() => {
       return n;
     } finally { enviando = false; avisar(); }
   }
+  /** Atualiza o modelo de um fechamento já salvo (precisa de login do Studio e internet). */
+  async function atualizarFechamento(id, campos) {
+    const { fs, db, a } = await carregar();
+    if (!a.currentUser) throw new Error('sem-login');
+    await fs.updateDoc(fs.doc(db, 'fechamentos', id), { ...campos, atualizadoEm: fs.serverTimestamp() });
+  }
   window.addEventListener('online', () => { if (usuario) enviarFila().catch(() => {}); });
 
-  return { carregar, entrar, salvarFechamento, enviarFila, fila, get usuario() { return usuario; }, get erro() { return ultimoErro; }, sair: async () => { const { auth, a } = await carregar(); await auth.signOut(a); }, aoMudar: f => ouvintes.push(f) };
+  return { carregar, entrar, salvarFechamento, atualizarFechamento, enviarFila, fila, get usuario() { return usuario; }, get erro() { return ultimoErro; }, sair: async () => { const { auth, a } = await carregar(); await auth.signOut(a); }, aoMudar: f => ouvintes.push(f) };
 })();

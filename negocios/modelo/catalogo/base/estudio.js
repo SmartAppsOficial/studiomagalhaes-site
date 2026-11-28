@@ -16,6 +16,9 @@
   const ultPath = partesPath[partesPath.length - 1] || '';
   const PASTA = (ultPath.endsWith('.html') ? partesPath[partesPath.length - 2] : ultPath) || L.id; // ex.: "lanchonete"
   const URL_PUB = 'https://studiomagalhaes.com.br/negocios/modelo/catalogo/';
+  const CH_FECH = 'sm-catalogo:fech-aberto:' + L.id;
+  let fechAberto = null;
+  try { fechAberto = JSON.parse(sessionStorage.getItem(CH_FECH) || 'null'); } catch { fechAberto = null; }
 
   /* ---------- Modo amostra recebida por link (?amostra=... ou #amostra=...) para cliente remoto ---------- */
   if (C.modoAmostra) {
@@ -356,6 +359,7 @@
         ${grpEstilo('Fundo do topo', 'fundoHero', V.fundoHero || 'pontos', [['pontos', 'Pontilhado', 'sw-pontos'], ['grade', 'Grade fina', 'sw-grade'], ['listras', 'Listras sutis', 'sw-listras'], ['liso', 'Brilho limpo', 'sw-liso']])}
         ${grpEstilo('Estilo dos cartões', 'grade', V.grade || 'horizontal', [['horizontal', 'Lateral', 'sw-horizontal'], ['vitrine', 'Vitrine grande', 'sw-vitrine'], ['compacto', 'Lista rápida', 'sw-compacto']])}
         ${grpEstilo('Cantos e formato', 'cantos', V.cantos || 'arredondado', [['arredondado', 'Moderno', 'sw-arredondado'], ['editorial', 'Reto editorial', 'sw-editorial'], ['pilula', 'Arredondado', 'sw-pilula']])}
+        ${grpEstilo('Detalhe dos títulos', 'detalhe', V.detalhe || 'nenhum', [['nenhum', 'Simples', ''], ['estrela', 'Estrela e letras espaçadas', '']])}
         ${grpEstilo('Barra do topo', 'topoEstilo', V.topoEstilo || 'claro', [['claro', 'Barra clara', 'sw-topo-claro'], ['escuro', 'Barra escura', 'sw-topo-escuro']])}`)}
       ${sanf('cores', 'Cores da loja', `${PALETAS.length} paletas`, `
         <div class="est-paletas">${PALETAS.map(([p, d]) => `<button type="button" class="est-paleta" data-paleta="${p},${d}" aria-pressed="${V.cores.p.toLowerCase() === p && V.cores.d.toLowerCase() === d}" aria-label="Paleta de cores"><i style="background:${p}"></i><i style="background:${d}"></i></button>`).join('')}</div>
@@ -418,7 +422,7 @@
     <div class="est-topo"><span class="est-marca">${cliente ? esc(V.sigla) : 'SM'}</span><div><b>${cliente ? 'Personalizar o site' : 'Preparar para o cliente'}</b><small>Organizado por abas com prévia ao vivo</small></div>
       <button type="button" class="est-x" data-fechar aria-label="Fechar">${ic('x')}</button></div>
     ${secPrevia()}${secAbas()}
-    <div class="est-corpo">${conteudoAba}</div>
+    <div class="est-corpo">${secFechAberto()}${conteudoAba}</div>
     <div class="est-pe">${cliente
       ? `<button type="button" class="est-btn" data-sair-apresentar>${ic('x')}Sair da apresentação</button><button type="button" class="est-btn est-btn-p" data-fechar>${ic('check')}Ver como ficou</button>`
       : `<button type="button" class="est-btn" data-fechar>${ic('check')}Pronto</button><button type="button" class="est-btn est-btn-p" data-apresentar>${ic('play')}Apresentar</button>`}</div>`;
@@ -509,6 +513,7 @@
       em: v.entregaModo || 'entregadores'
     };
     if (v.cepOrigem) p.cp = v.cepOrigem;
+    if (v.detalhe && v.detalhe !== 'nenhum') p.dt = v.detalhe;
     if (v.pagOnline) p.po = v.pagOnline;
     if (v.demoFechada) p.df = 1;
     if (v.logo && /^https?:\/\//i.test(v.logo)) p.lg = v.logo;
@@ -622,6 +627,8 @@
   /* ---------- Abrir um modelo guardado (link vindo da área de clientes fechados) ---------- */
   if (location.hash.startsWith('#cfg=')) {
     const cfg = C.decodificar(location.hash.slice(5));
+    const mf = location.hash.match(/[#&]fech=([A-Za-z0-9_-]{1,80})/);
+    if (mf && cfg) definirFechAberto({ id: mf[1], loja: (cfg.ajuste && cfg.ajuste.visual && cfg.ajuste.visual.nome) || '' });
     history.replaceState(null, '', location.pathname + location.search);
     if (cfg && C.aplicarConfig(cfg)) setTimeout(() => aviso(`Modelo de ${C.visual.nome} aberto`, 'check'), 400);
     else setTimeout(() => aviso('Não deu para abrir esse modelo aqui', 'info'), 400);
@@ -701,6 +708,8 @@
     else if (d.enviarFila !== undefined) { try { const n = await window.Nuvem.enviarFila(); aviso(n ? `${n} enviado(s)` : 'Entre com o Google e tenha internet para enviar', n ? 'check' : 'info'); } catch { aviso('Não deu para enviar agora', 'info'); } montar(); }
     else if (d.sairGoogle !== undefined) { try { await window.Nuvem.sair(); } catch { /* */ } montar(); }
     else if (d.fechamento !== undefined) salvarFechamento();
+    else if (d.fechSalvar !== undefined) salvarNoFechamento();
+    else if (d.fechParar !== undefined) { definirFechAberto(null); montar(); aviso('Edição do cliente encerrada', 'check'); }
     else if (d.amostraCopiar !== undefined) {
       const url = gerarLinkAmostra();
       try { await navigator.clipboard.writeText(url); aviso('Link da amostra copiado! É só colar no WhatsApp ou e-mail.', 'check'); }
@@ -777,6 +786,23 @@
       refazerPlanos();
     }
   });
+
+  /* ---------- Cliente fechado aberto para edição (vem da área de clientes fechados) ---------- */
+  function definirFechAberto(f) { fechAberto = f; try { if (f) sessionStorage.setItem(CH_FECH, JSON.stringify(f)); else sessionStorage.removeItem(CH_FECH); } catch { /* */ } }
+  function secFechAberto() {
+    if (!fechAberto) return '';
+    return `<section class="est-grupo" style="border:1px solid #f2c46d;border-radius:14px;padding:12px;margin-bottom:12px">
+      <h3 style="margin-bottom:6px">${ic('editar')}Editando o cliente fechado ${esc(fechAberto.loja || C.visual.nome)}</h3>
+      <p class="est-nota" style="margin:0 0 10px">Mude o que quiser no pincel e salve. A ficha do cliente na sua área é atualizada.</p>
+      <button type="button" class="est-btn est-btn-p est-cheio" data-fech-salvar>${ic('salvar')}Salvar alterações no cliente</button>
+      <button type="button" class="est-btn est-cheio" style="margin-top:8px" data-fech-parar>Parar de editar este cliente</button></section>`;
+  }
+  async function salvarNoFechamento() {
+    const v = C.visual;
+    const campos = { loja: v.nome, cena: v.cena, cores: v.cores, logo: v.logo || '', sigla: v.sigla || '', entregaModo: v.entregaModo || 'entregadores', config: JSON.stringify(C.configAtual()) };
+    try { await window.Nuvem.atualizarFechamento(fechAberto.id, campos); definirFechAberto({ ...fechAberto, loja: v.nome }); montar(); aviso(`Alterações de ${v.nome} salvas na sua área`, 'check'); }
+    catch (e) { aviso(/sem-login/.test(e.message) ? 'Entre com o Google (aba Enviar) para salvar no cliente.' : /sem-servidor|sem-config/.test(e.message) ? 'Para salvar, abra o modelo pelo site (com internet).' : 'Não deu para salvar agora (' + (e.code || e.message) + ').', 'info'); }
+  }
 
   async function salvarFechamento(override = null) {
     const V = C.visual;

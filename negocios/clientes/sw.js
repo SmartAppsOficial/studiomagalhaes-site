@@ -1,7 +1,7 @@
 // Clientes fechados: guarda a "casca" do app para abrir rápido e sem internet.
 // Os dados vêm do Firestore, que mantém a própria cópia no aparelho.
 // Rede primeiro (para sempre pegar a versão nova); sem rede, usa o que está guardado.
-const VERSAO = 'sm-clientes-3';
+const VERSAO = 'sm-clientes-4';
 const CASCA = ['./', 'index.html', 'clientes.css', 'clientes.js', 'contratos.js', 'contrato-padrao.js', '../firebase-config.js', 'manifest.webmanifest',
   'icones/icone-192.png', 'icones/icone-512.png', 'icones/apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSAO).then(c => c.addAll(CASCA)).then(() => self.skipWaiting())); });
