@@ -58,7 +58,10 @@
   const temLocal = () => { const m = modoEntrega(); return (m === 'entregadores' || m === 'ambos') && !!D().loja.entrega.ativa; };
   const temCorreios = () => { const m = modoEntrega(); return m === 'correios' || m === 'ambos'; };
   const temRetirada = () => { const m = modoEntrega(); return m === 'correios' ? false : (m === 'nenhuma' ? true : !!D().loja.retirada); };
+  const pagOnline = () => V.pagOnline || '';
+  const nomePagOnline = () => pagOnline() === 'infinitepay' ? 'InfinitePay' : pagOnline() === 'mercadopago' ? 'Mercado Pago' : '';
   function pagamentosAtivos(tipo = cliente.tipo) {
+    if (pagOnline()) return ['Pix online', 'Cartão de crédito online', 'Cartão de débito online'];
     const lista = D().loja.pagamentos || [];
     if (tipo !== 'correios') return lista;
     const online = lista.filter(pg => !/na entrega|dinheiro|vale-refei/i.test(pg));
@@ -232,7 +235,7 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     const l = D().loja, soCorreios = modoEntrega() === 'correios';
     const linhas = C.DIAS.map((d, i) => { const h = l.horario[i] || []; return `<tr><td>${d}</td><td>${h.length ? h.map(([a, b]) => `${C.hora(a)} às ${C.hora(b)}`).join(' · ') : 'Fechado'}</td></tr>`; }).join('');
     const titEntrega = soCorreios ? 'Envio' : (!temLocal() && !temCorreios() ? 'Retirada' : 'Entrega');
-    const pagsRodape = soCorreios ? pagamentosAtivos('correios') : l.pagamentos;
+    const pagsRodape = pagOnline() ? [`Pagamento online via ${nomePagOnline()} (Pix e cartão)`] : (soCorreios ? pagamentosAtivos('correios') : l.pagamentos);
     $('[data-rodape]').innerHTML = `<div class="rodape-grade">
       <div><a class="logo" href="#inicio"><span class="logo-sigla">${marca()}</span><span><span class="logo-nome">${esc(V.nome)}</span></span></a>
         ${soCorreios
@@ -632,7 +635,8 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       <label class="campo"><span>Seu nome</span><input class="entrada" data-cli="nome" value="${esc(cliente.nome)}" autocomplete="name" placeholder="Como podemos te chamar?"></label>
       <label class="campo"><span>Seu WhatsApp (fica salvo para os próximos pedidos)</span><input class="entrada" data-cli="whats" type="tel" inputmode="tel" autocomplete="tel" value="${esc(cliente.whats)}" placeholder="(21) 99999-9999"></label>
       <div class="campo"><span class="rotulo">Forma de pagamento</span><div class="chips">
-        ${pagsDisp.map(pg => `<button type="button" data-pag="${esc(pg)}" aria-pressed="${cliente.pagamento === pg}">${esc(pg)}</button>`).join('')}</div></div>
+        ${pagsDisp.map(pg => `<button type="button" data-pag="${esc(pg)}" aria-pressed="${cliente.pagamento === pg}">${esc(pg)}</button>`).join('')}</div>
+        ${pagOnline() ? `<div class="alerta" style="margin-top:10px">${ic('check')}<span>Pagamento seguro direto no site via <b>${esc(nomePagOnline())}</b>${pagOnline() === 'infinitepay' ? ' (Pix taxa zero e cartão)' : ' (Pix e cartão)'}.</span></div>` : ''}</div>
       ${/dinheiro/i.test(cliente.pagamento) ? `<label class="campo"><span>Troco para quanto? (opcional)</span><input class="entrada" data-cli="troco" inputmode="decimal" value="${esc(cliente.troco)}" placeholder="Ex.: 100"></label>` : ''}
       ${temCupons || cupomCod ? `<div class="campo"><span class="rotulo">Cupom de desconto (opcional)</span>
         ${cupom && desconto > 0 ? `<div class="cupom-ok"><span>${ic('tag')} ${esc(cupomCod)} · - ${R(desconto)}</span><button type="button" data-tirar-cupom>Remover</button></div>`
@@ -648,8 +652,8 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
       ${!sit.aberta ? `<div class="alerta erro">${ic('relogio')}<span>${esc(sit.texto)}${sit.detalhe ? ', ' + esc(sit.detalhe) : ''}. Você pode montar o pedido e enviar quando abrirmos.</span></div>` : ''}
       ${erroEnvio ? `<div class="alerta erro" data-erro>${ic('info')}<span>${esc(erroEnvio)}</span></div>` : ''}` : ''}
     </div>
-    ${itens.length ? `<div class="folha-pe"><button type="button" class="btn btn-p btn-total" data-enviar${abaixo || !sit.aberta ? ' disabled' : ''}><span>${ic('whats')} Enviar pedido</span><span>${R(totalFinal)}</span></button>
-      <p class="nota">O pedido abre pronto no WhatsApp da loja. É só conferir e enviar.</p></div>` : ''}`;
+    ${itens.length ? `<div class="folha-pe"><button type="button" class="btn btn-p btn-total" data-enviar${abaixo || !sit.aberta ? ' disabled' : ''}><span>${pagOnline() ? `${ic('check')} Pagar com ${esc(nomePagOnline())}` : `${ic('whats')} Enviar pedido`}</span><span>${R(totalFinal)}</span></button>
+      <p class="nota">${pagOnline() ? `Checkout seguro via ${esc(nomePagOnline())}. Na demonstração, confirma o pedido na hora na Área da loja.` : 'O pedido abre pronto no WhatsApp da loja. É só conferir e enviar.'}</p></div>` : ''}`;
   }
   function abrirCarrinho() { erroEnvio = ''; cupomErro = ''; renderCarrinho(); abrirFolha('carrinho'); }
   const folhaCar = $('[data-folha="carrinho"]');
@@ -721,34 +725,37 @@ ${L.demo ? `<div class="demo-faixa" data-faixa></div>` : ''}
     if (cupomCod && cupomMotivo) { cupomErro = cupomMotivo; erroEnvio = cupomMotivo; manterRolagem(renderCarrinho); $('[data-erro]', folhaCar)?.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     const total = Math.max(0, cent(sub - desconto + taxa));
     const linhasItens = itens.map(it => ({ nome: C.produto(it.produto).nome, qtd: it.qtd, detalhes: C.detalhes(it), total: cent(C.precoItem(it) * it.qtd), produto: it.produto }));
+    const provOnline = nomePagOnline();
     const pedido = C.registrarPedido({
       itens: linhasItens, subtotal: sub, desconto, cupom: desconto > 0 ? cupomCod : '', taxa, total, tipo: cliente.tipo, mesa: cliente.tipo === 'mesa' ? MESA : '',
       bairro: cliente.tipo === 'entrega' ? cliente.bairro : (cliente.tipo === 'correios' ? `Correios ${freteOp?.id || ''}` : ''),
       endereco: (cliente.tipo === 'entrega' || cliente.tipo === 'correios') ? [cliente.endereco, cliente.compl, cliente.tipo === 'correios' ? `CEP ${cliente.cep} · ${freteInfo?.local || ''}` : ''].filter(Boolean).join(' · ') : '',
-      nome: cliente.nome.trim(), whats: cliente.whats.trim(), pagamento: cliente.pagamento, troco: cliente.troco, obs: cliente.obs.trim()
+      nome: cliente.nome.trim(), whats: cliente.whats.trim(), pagamento: provOnline ? `${cliente.pagamento} (${provOnline})` : cliente.pagamento, pagoOnline: provOnline || '', troco: cliente.troco, obs: cliente.obs.trim()
     });
-    const m = [`*Pedido nº ${pedido.numero} · ${V.nome}*`, ''];
-    for (const it of linhasItens) { m.push(`*${it.qtd}x ${it.nome}* · ${R(it.total)}`); it.detalhes.forEach(d => m.push(`   ${d}`)); }
-    m.push('', `Subtotal: ${R(sub)}`);
-    if (desconto > 0) m.push(`Desconto (${cupomCod}): - ${R(desconto)}`);
-    if (cliente.tipo === 'entrega') m.push(`Entrega (${cliente.bairro}): ${taxa ? R(taxa) : 'grátis'}`);
-    if (cliente.tipo === 'correios' && freteOp) m.push(`Frete (${freteOp.nome} · ${freteOp.prazo}): ${R(freteOp.valor)}`);
-    m.push(`*Total: ${R(total)}*`, '');
-    m.push(cliente.tipo === 'mesa' && MESA ? `*Mesa:* ${MESA}`
-      : cliente.tipo === 'entrega' ? `*Entrega:* ${pedido.endereco} · ${cliente.bairro}`
-      : cliente.tipo === 'correios' ? `*Envio Correios (${freteOp?.id || ''}):* ${pedido.endereco}`
-      : '*Retirada no local*');
-    m.push(`*Pagamento:* ${cliente.pagamento}${/dinheiro/i.test(cliente.pagamento) && cliente.troco ? ` (troco para R$ ${cliente.troco})` : ''}`);
-    m.push(`*Nome:* ${pedido.nome}`);
-    if (pedido.whats) m.push(`*WhatsApp:* ${pedido.whats}`);
-    if (pedido.obs) m.push(`*Observações:* ${pedido.obs}`);
-    const num = String(l.whats || '').replace(/\D/g, ''), n = num && num.length <= 11 ? '55' + num : num;
-    window.open(`https://wa.me/${n}?text=${encodeURIComponent(m.join('\n'))}`, '_blank', 'noopener');
+    if (!provOnline) {
+      const m = [`*Pedido nº ${pedido.numero} · ${V.nome}*`, ''];
+      for (const it of linhasItens) { m.push(`*${it.qtd}x ${it.nome}* · ${R(it.total)}`); it.detalhes.forEach(d => m.push(`   ${d}`)); }
+      m.push('', `Subtotal: ${R(sub)}`);
+      if (desconto > 0) m.push(`Desconto (${cupomCod}): - ${R(desconto)}`);
+      if (cliente.tipo === 'entrega') m.push(`Entrega (${cliente.bairro}): ${taxa ? R(taxa) : 'grátis'}`);
+      if (cliente.tipo === 'correios' && freteOp) m.push(`Frete (${freteOp.nome} · ${freteOp.prazo}): ${R(freteOp.valor)}`);
+      m.push(`*Total: ${R(total)}*`, '');
+      m.push(cliente.tipo === 'mesa' && MESA ? `*Mesa:* ${MESA}`
+        : cliente.tipo === 'entrega' ? `*Entrega:* ${pedido.endereco} · ${cliente.bairro}`
+        : cliente.tipo === 'correios' ? `*Envio Correios (${freteOp?.id || ''}):* ${pedido.endereco}`
+        : '*Retirada no local*');
+      m.push(`*Pagamento:* ${cliente.pagamento}${/dinheiro/i.test(cliente.pagamento) && cliente.troco ? ` (troco para R$ ${cliente.troco})` : ''}`);
+      m.push(`*Nome:* ${pedido.nome}`);
+      if (pedido.whats) m.push(`*WhatsApp:* ${pedido.whats}`);
+      if (pedido.obs) m.push(`*Observações:* ${pedido.obs}`);
+      const num = String(l.whats || '').replace(/\D/g, ''), n = num && num.length <= 11 ? '55' + num : num;
+      window.open(`https://wa.me/${n}?text=${encodeURIComponent(m.join('\n'))}`, '_blank', 'noopener');
+    }
     if (desconto > 0 && cupomCod) registrarUsoCupom(cupomCod, cliente.whats);
     salvarUltimo(itens.map(({ uid, ...it }) => it));
     carrinho = []; cupomCod = ''; cupomDigitado = ''; cliente.obs = ''; cliente.troco = ''; salvarCarrinho(); salvarCliente(); fecharFolhas();
     renderHero();
-    aviso(`Pedido nº ${pedido.numero} pronto no WhatsApp`, 'whats');
+    aviso(provOnline ? `Pedido nº ${pedido.numero} pago via ${provOnline} (simulação)` : `Pedido nº ${pedido.numero} pronto no WhatsApp`, provOnline ? 'check' : 'whats');
   }
 
   /* ---------- Cliques gerais ---------- */

@@ -75,6 +75,7 @@ window.Catalogo = (() => {
     if (am.tp) v.topoEstilo = am.tp;
     if (am.em) v.entregaModo = am.em;
     if (am.cp) v.cepOrigem = am.cp;
+    if (am.po) v.pagOnline = am.po;
     if (am.df) v.demoFechada = true;
     if (am.lg) v.logo = am.lg;
     const t = {};

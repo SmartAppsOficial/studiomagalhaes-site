@@ -184,7 +184,7 @@
           ${p.status === 'cancelado' && p.whats ? `<button type="button" class="btn btn-peq" data-avisar-cancel="${p.numero}">${ic('whats')}Avisar cliente</button>` : ''}</div>
           ${p.por ? `<small>${esc(STATUS[p.status])} por ${esc(p.por)}${p.motivoCancelamento ? ` · ${esc(p.motivoCancelamento)}` : ''}</small>` : (p.motivoCancelamento ? `<small>Motivo: ${esc(p.motivoCancelamento)}</small>` : '')}</div></div>
       <ul>${p.itens.map(i => `<li>${i.qtd}x ${esc(i.nome)} · ${R(i.total)}${i.detalhes.length ? `<small>${i.detalhes.map(esc).join(' · ')}</small>` : ''}</li>`).join('')}</ul>
-      <div class="pedido-pe"><span>Total do pedido: <b>${R(p.total)}</b>${p.desconto ? ` (cupom ${esc(p.cupom || '')} -${R(p.desconto)})` : ''}${p.taxa ? ` (${p.tipo === 'correios' ? 'frete' : 'entrega'} ${R(p.taxa)})` : ''}</span><span>${esc(p.pagamento)}${p.troco ? ` · troco para R$ ${esc(p.troco)}` : ''}</span>
+      <div class="pedido-pe"><span>Total do pedido: <b>${R(p.total)}</b>${p.desconto ? ` (cupom ${esc(p.cupom || '')} -${R(p.desconto)})` : ''}${p.taxa ? ` (${p.tipo === 'correios' ? 'frete' : 'entrega'} ${R(p.taxa)})` : ''}</span>${p.pagoOnline ? `<span style="background:#e6f6ea;color:#165b29;padding:2px 8px;border-radius:99px;font-weight:700;font-size:.78rem">✓ Pago online · ${esc(p.pagoOnline)}</span>` : ''}<span>${esc(p.pagamento)}${p.troco ? ` · troco para R$ ${esc(p.troco)}` : ''}</span>
         ${p.endereco ? `<span>${esc(p.endereco)}</span>` : ''}${p.obs ? `<span>Obs.: ${esc(p.obs)}</span>` : ''}</div>
       ${usaLocal() && p.tipo === 'entrega' && p.status !== 'cancelado' && entregadores().filter(e => e.ativo !== false).length ? `<div class="pedido-entreg"><span>${ic('entrega')}Entregador:</span>
         <select data-entreg-ped="${p.numero}" aria-label="Escolher entregador do pedido ${p.numero}"><option value="">Escolher entregador</option>
@@ -510,9 +510,15 @@
       ${uLoc ? `<div class="campo"><span>Bairros atendidos e taxa de entrega</span>
         ${l.entrega.bairros.map((b, i) => `<div class="bairro"><input class="entrada" data-bairro="nome" data-i="${i}" value="${esc(b.nome)}" aria-label="Bairro"><input class="entrada" data-bairro="taxa" data-i="${i}" inputmode="decimal" value="${preco(b.taxa)}" aria-label="Taxa"><button type="button" class="btn btn-ic btn-perigo" data-tirar-bairro="${i}" aria-label="Tirar bairro">${ic('x')}</button></div>`).join('')}
         <button type="button" class="btn btn-peq" data-mais-bairro style="justify-self:start">${ic('mais')}Adicionar bairro</button></div>` : ''}</div>
-    <div class="cartao"><h2>Formas de pagamento</h2><p class="sub">Só informam o cliente. O pagamento é combinado com ele, fora do site.</p>
+    <div class="cartao"><h2>Formas de pagamento</h2>${C.visual.pagOnline
+      ? `<p class="sub"><b>Pagamento online ativo (${C.visual.pagOnline === 'infinitepay' ? 'InfinitePay' : 'Mercado Pago'}):</b> o cliente paga por Pix ou cartão direto no site e o dinheiro cai na sua própria conta, sem passar pelo Studio Magalhães.</p>
+        ${C.visual.pagOnline === 'infinitepay'
+          ? `<label class="campo" style="max-width:340px"><span>Sua InfiniteTag (handle sem o $)</span><input class="entrada" data-l="infiniteTag" value="${esc(l.infiniteTag || '')}" maxlength="40" placeholder="Ex.: minhaloja"></label>
+             <p class="sub" style="margin:-6px 0 12px">No app <b>InfinitePay</b>, vá em <i>Vendas → Checkout → Configurações</i>, ative <b>Checkout Integrado</b> e informe sua InfiniteTag acima. Pix com taxa zero e confirmação automática.</p>`
+          : `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px"><button type="button" class="btn btn-p btn-peq" data-conectar-mp>${ic('cadeado')}Conectar conta Mercado Pago</button><small style="color:var(--suave)">Autorização segura em 1 clique (OAuth). O dinheiro vai direto para sua conta.</small></div>`}`
+      : `<p class="sub">Só informam o cliente. O pagamento é combinado com ele, fora do site. <span style="display:block;margin-top:4px">Quer receber por Pix e cartão direto no site via <b>Mercado Pago</b> ou <b>InfinitePay</b>? Fale com o Studio Magalhães (+ R$ 25/mês).</span></p>
       <div class="checks">${todosPags.map(pg => `<label><input type="checkbox" data-pag="${esc(pg)}"${l.pagamentos.includes(pg) ? ' checked' : ''}>${esc(pg)}</label>`).join('')}</div>
-      <form data-novo-pag style="display:flex;gap:8px;margin-top:10px"><input class="entrada" name="pag" placeholder="Outra forma de pagamento" maxlength="40" required><button class="btn">${ic('mais')}Adicionar</button></form></div>
+      <form data-novo-pag style="display:flex;gap:8px;margin-top:10px"><input class="entrada" name="pag" placeholder="Outra forma de pagamento" maxlength="40" required><button class="btn">${ic('mais')}Adicionar</button></form>`}</div>
     <div class="cartao"><h2>Cupons de desconto</h2><p class="sub">Crie cupons promocionais para seus clientes (o desconto é concedido pela própria loja). Marque <b>1 uso</b> para impedir o mesmo cliente de usar o cupom mais de uma vez.</p>
       ${cupons().map((cp, i) => `<div class="cupom-row" data-cp="${i}">
         <input class="entrada" data-cp-c="codigo" value="${esc(cp.codigo)}" maxlength="24" placeholder="Código (ex.: BEMVINDO10)" aria-label="Código do cupom">
@@ -806,6 +812,7 @@
     if (g && d.apagarGrupo !== undefined) { if (confirm(`Excluir a opção "${g.nome}"? Ela sai de todos os produtos.`)) { ds.grupos = ds.grupos.filter(x => x !== g); ds.produtos.forEach(p => { p.grupos = (p.grupos || []).filter(x => x !== g.id); }); salvar('Opção excluída'); opcoes(); } return; }
     // loja
     if (d.maisCp !== undefined) { cupons().push({ codigo: 'PROMO10', tipo: 'pct', valor: 10, minimo: 0, usoUnico: true, ativo: true }); salvar('Cupom criado'); loja(); return; }
+    if (d.conectarMp !== undefined) { salvo('Na loja publicada, abre o login seguro do Mercado Pago (OAuth) para conectar em 1 clique.', 'info'); return; }
     if (d.tirarCp !== undefined) { cupons().splice(+d.tirarCp, 1); salvar('Cupom excluído'); loja(); return; }
     if (d.qrImprimir !== undefined) { imprimirPlacaQR(); return; }
     if (d.qrPng !== undefined) { baixarQRPng(); return; }

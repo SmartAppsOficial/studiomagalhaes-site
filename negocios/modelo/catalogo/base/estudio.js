@@ -364,13 +364,23 @@
         <div class="est-ops">${Object.entries(FONTES).map(([id, f]) => `<button type="button" class="est-op" data-fonte="${id}" aria-pressed="${fonteAtual === id}"><span class="aa" style="font-family:${f.t.replace(/"/g, "'")};font-weight:700">Aa</span>${f.nome}</button>`).join('')}</div>`)}`;
 
     const modoEnt = V.entregaModo || 'entregadores';
+    const pagOn = V.pagOnline || '';
     const secEntrega = () => `<section class="est-grupo" style="padding-top:12px">
+        <h3 style="margin-bottom:8px"><span class="n">1</span>Modo de entrega</h3>
         <div class="est-ops">
           ${[['entregadores', 'Entregadores', 'entrega'], ['correios', 'Correios (digital)', 'entrega'], ['ambos', 'Entregadores e Correios', 'entrega'], ['nenhuma', 'Sem entrega', 'loja']].map(([id, nm, icn]) =>
             `<button type="button" class="est-op" style="min-height:68px;padding:10px 8px" data-entrega-modo="${id}" aria-pressed="${modoEnt === id}">${ic(icn)}${nm}</button>`).join('')}
         </div>
         ${modoEnt === 'correios' || modoEnt === 'ambos' ? `<label class="est-campo" style="margin-top:12px"><span>CEP de origem da loja (para cálculo de frete)</span><input class="est-entrada" data-v="cepOrigem" inputmode="numeric" maxlength="9" value="${esc(V.cepOrigem || '24220-000')}" placeholder="24220-000"></label>` : ''}
         <p class="est-nota">No modo <b>Correios</b>, a loja funciona como negócio 100% digital com cálculo por CEP no carrinho.</p>
+      </section>
+      <section class="est-grupo">
+        <h3 style="margin-bottom:8px"><span class="n">2</span>Como a loja recebe do cliente</h3>
+        <div class="est-ops" style="grid-template-columns:1fr">
+          ${[['', 'Combinar fora do site (WhatsApp / na entrega)', 'Grátis · padrão do plano'], ['mercadopago', 'Pagamento online · Mercado Pago', '+ R$ 25/mês · Pix e cartão direto na conta da loja'], ['infinitepay', 'Pagamento online · InfinitePay', '+ R$ 25/mês · Pix taxa zero e cartão na conta da loja']].map(([id, nm, sub]) =>
+            `<button type="button" class="est-op" style="min-height:58px;padding:10px 12px;text-align:left;justify-items:start;gap:3px" data-pag-online="${id}" aria-pressed="${pagOn === id}"><span>${nm}</span><small>${sub}</small></button>`).join('')}
+        </div>
+        <p class="est-nota">O dinheiro cai direto na conta da loja (sem passar pelo Studio). A loja só conecta o Mercado Pago ou informa sua InfiniteTag.</p>
       </section>
       <section class="est-grupo"><div class="est-linha"><a class="est-btn" style="flex:1" href="admin.html">${ic('cadeado')}Área da loja</a><a class="est-btn" style="flex:1" href="../">${ic('lista')}Outros modelos</a></div></section>`;
 
@@ -449,7 +459,8 @@
   ];
   const prop = {
     planoId: 'catalogo',
-    pagOnline: false,
+    pagOnline: !!C.visual.pagOnline,
+    pagProvedor: C.visual.pagOnline || 'mercadopago',
     dominio: false,
     funcExtras: 0,
     entExtras: 0,
@@ -458,12 +469,18 @@
     formaPag: 'Pix'
   };
   const R = C.dinheiro;
+  const nomeProv = id => id === 'infinitepay' ? 'InfinitePay' : id === 'mercadopago' ? 'Mercado Pago' : 'Mercado Pago ou InfinitePay';
   function calcProposta() {
     const p = PLANOS_DET.find(x => x.id === prop.planoId) || PLANOS_DET[0];
     const linhas = [[p.nome, R(p.mensal) + '/mês']];
     let mensal = p.mensal;
     const extrasTxt = [];
-    if (prop.pagOnline) { mensal += 25; linhas.push(['Pagamento online no site (Pix/Cartão)', '+ R$ 25,00/mês']); extrasTxt.push('Pagamento online (+R$ 25)'); }
+    if (prop.pagOnline) {
+      mensal += 25;
+      const pv = nomeProv(prop.pagProvedor);
+      linhas.push([`Pagamento online (${pv})`, '+ R$ 25,00/mês']);
+      extrasTxt.push(`Pagamento online via ${pv} (+R$ 25)`);
+    }
     if (prop.dominio) { mensal += 20; linhas.push(['Domínio próprio (.com.br)', '+ R$ 20,00/mês']); extrasTxt.push('Domínio próprio (+R$ 20)'); }
     if (prop.funcExtras > 0) { const v = prop.funcExtras * 10; mensal += v; linhas.push([`+${prop.funcExtras} funcionário${prop.funcExtras > 1 ? 's' : ''} extra${prop.funcExtras > 1 ? 's' : ''}`, `+ ${R(v)}/mês`]); extrasTxt.push(`+${prop.funcExtras} func. (+${R(v)})`); }
     const usaEntLocal = (C.visual.entregaModo || 'entregadores') === 'entregadores' || C.visual.entregaModo === 'ambos';
@@ -492,6 +509,7 @@
       em: v.entregaModo || 'entregadores'
     };
     if (v.cepOrigem) p.cp = v.cepOrigem;
+    if (v.pagOnline) p.po = v.pagOnline;
     if (v.demoFechada) p.df = 1;
     if (v.logo && /^https?:\/\//i.test(v.logo)) p.lg = v.logo;
     const tx = {};
@@ -525,7 +543,10 @@
       </section>
       <section class="est-grupo"><h3><span class="n">2</span>Adicionais opcionais</h3>
         <div class="est-addon-lista">
-          <label class="est-addon${prop.pagOnline ? ' ativo' : ''}"><div class="est-addon-txt"><b>Pagamento online no site · + R$ 25/mês</b><small>Cliente paga por Pix ou cartão direto no site (dinheiro cai na conta da loja via Mercado Pago).</small></div><input class="est-addon-check" type="checkbox" data-addon="pagOnline"${prop.pagOnline ? ' checked' : ''}></label>
+          <label class="est-addon${prop.pagOnline ? ' ativo' : ''}"><div class="est-addon-txt"><b>Pagamento online no site · + R$ 25/mês</b><small>Cliente paga por Pix ou cartão direto no site (dinheiro cai na conta da loja via Mercado Pago ou InfinitePay).</small></div><input class="est-addon-check" type="checkbox" data-addon="pagOnline"${prop.pagOnline ? ' checked' : ''}></label>
+          ${prop.pagOnline ? `<div class="est-addon ativo" style="flex-direction:column;align-items:stretch;gap:8px"><small style="color:#b5c3da;font-weight:700">Qual conta a loja vai conectar?</small>
+            <div class="est-ops" style="grid-template-columns:1fr 1fr 1fr;gap:6px">${[['mercadopago', 'Mercado Pago'], ['infinitepay', 'InfinitePay'], ['qualquer', 'Decide depois']].map(([id, nm]) =>
+              `<button type="button" class="est-op" style="min-height:42px;padding:6px;font-size:.78rem" data-pag-prov="${id}" aria-pressed="${prop.pagProvedor === id}">${nm}</button>`).join('')}</div></div>` : ''}
           <label class="est-addon${prop.dominio ? ' ativo' : ''}"><div class="est-addon-txt"><b>Domínio próprio (.com.br) · + R$ 20/mês</b><small>Sem ele, usa endereço grátis do Studio.</small></div><input class="est-addon-check" type="checkbox" data-addon="dominio"${prop.dominio ? ' checked' : ''}></label>
           <div class="est-addon${prop.funcExtras > 0 ? ' ativo' : ''}"><div class="est-addon-txt"><b>Funcionários extras · + R$ 10/mês cada</b><small>3 já incluídos no plano.</small></div>
             <div class="est-stepper"><button type="button" data-step="funcExtras:-1">−</button><span>${prop.funcExtras}</span><button type="button" data-step="funcExtras:1">+</button></div></div>
@@ -656,6 +677,7 @@
     else if (d.sairApresentar !== undefined) apresentar(false);
     else if (d.cena) { mudar({ cena: d.cena }, null, true); }
     else if (d.entregaModo) { prop.correios = (d.entregaModo === 'correios' || d.entregaModo === 'ambos'); mudar({ entregaModo: d.entregaModo }, null, true); }
+    else if (d.pagOnline !== undefined) { prop.pagOnline = !!d.pagOnline; if (d.pagOnline) prop.pagProvedor = d.pagOnline; mudar({ pagOnline: d.pagOnline }, null, true); aviso(d.pagOnline ? `Pagamento online via ${nomeProv(d.pagOnline)} ativado` : 'Pagamento combinado fora do site', 'check'); }
     else if (d.estilo) { const [k, val] = d.estilo.split(':'); mudar({ [k]: val }, null, true); }
     else if (d.aleatorio !== undefined) { gerarAleatorio(true); }
     else if (d.toggleFlut !== undefined) { const y = $('.est-corpo', painel)?.scrollTop; flutAtivo = !flutAtivo; salvarFlut(); renderFlut(); montar(); const c = $('.est-corpo', painel); if (c) c.scrollTop = y; aviso(flutAtivo ? 'Botão Aleatório ativado na tela (aparece ao fechar o pincel)' : 'Botão Aleatório escondido da tela', 'brilho'); }
@@ -707,7 +729,11 @@
   });
   painelPlanos.addEventListener('change', e => {
     const t = e.target;
-    if (t.dataset.addon) { prop[t.dataset.addon] = t.checked; refazerPlanos(); return; }
+    if (t.dataset.addon) {
+      prop[t.dataset.addon] = t.checked;
+      if (t.dataset.addon === 'pagOnline') mudar({ pagOnline: t.checked ? (prop.pagProvedor === 'infinitepay' ? 'infinitepay' : 'mercadopago') : '' }, null, false);
+      refazerPlanos(); return;
+    }
     if (t.dataset.pf === 'formaPag') prop.formaPag = t.value;
   });
   painelPlanos.addEventListener('click', async e => {
@@ -715,6 +741,7 @@
     const d = b.dataset;
     if (d.fecharPlanos !== undefined) abrirPlanos(false);
     else if (d.planoId) { prop.planoId = d.planoId; refazerPlanos(); }
+    else if (d.pagProv) { prop.pagProvedor = d.pagProv; if (prop.pagOnline) mudar({ pagOnline: d.pagProv === 'infinitepay' ? 'infinitepay' : 'mercadopago' }, null, false); refazerPlanos(); }
     else if (d.step) { const [k, delta] = d.step.split(':'); prop[k] = Math.max(0, Math.min(20, (prop[k] || 0) + +delta)); refazerPlanos(); }
     else if (d.entrar !== undefined) {
       try { await window.Nuvem.entrar(); aviso('Conectado', 'check'); refazerPlanos(); }
