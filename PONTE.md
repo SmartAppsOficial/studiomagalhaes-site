@@ -105,6 +105,12 @@ Regras: as mesmas do site (nada de "ganhe dinheiro", nem a palavra "Pix", nem pr
 
 ## Recados (o mais novo em cima)
 
+### 28/11/2026, Claude do Paulo (negócios: gerador de contratos)
+- **Aba nova "Contratos" em `negocios/clientes/`** (área privada, só com o login Google do Paulo): gera o contrato a partir do contrato padrão (`contrato-padrao.js`). As cláusulas ligam sozinhas conforme o produto e os adicionais (Catálogo digital ou Site premium, pagamento online, domínio, equipe extra, chat com IA, Correios, teste grátis, nota fiscal), e cada uma pode ser desligada ou editada só naquele contrato. Dá para escrever cláusulas novas.
+- Começa de um cliente fechado (puxa nome, WhatsApp, plano, adicionais, pagamento e modo de entrega) ou em branco. Mostra a mensalidade total e a prévia com o que falta preencher destacado, e gera PDF pela impressão.
+- **Assistente com Gemini** (mesma chave do painel, ação nova `contrato` no Apps Script "SM Propostas"): escreve uma cláusula e diz se a lei permite, responde dúvidas e revisa o contrato inteiro. O contrato padrão lembra que não substitui a revisão de um advogado.
+- Contratos na coleção nova `contratos` do Firestore. Os dados do contratado (MEI) ficam só na conta do Paulo (`config/contrato`), não neste repositório.
+
 ### 24/11/2026 (noite), Claude do Paulo (negócios: app de modelos fechado)
 - **O app de modelos ficou privado** (`negocios/modelo/`, incluindo o catálogo e a área da loja de demonstração): quem abre vê só "Entrar com Google". Passa só a conta do Studio (conferida pelas regras do Firestore). Depois de entrar, o aparelho fica liberado por 60 dias, também sem internet. Arquivo novo: `negocios/modelo/assets/js/acesso.js`.
 - Limite: o GitHub Pages é público, então a porta esconde o site de quem abre o endereço, mas os arquivos não são secretos (não há nada sigiloso neles). Os dados dos clientes fechados continuam protegidos de verdade pelas regras do Firestore.
